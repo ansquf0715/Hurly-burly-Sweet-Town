@@ -8,6 +8,7 @@ TagManager:
   - flour
   - egg
   - whipper
+  - bowl
   layers:
   - Default
   - TransparentFX

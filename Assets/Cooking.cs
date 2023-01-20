@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using TMPro;
 
 public class Cooking : MonoBehaviour //, IDragHandler
 {
@@ -11,6 +12,9 @@ public class Cooking : MonoBehaviour //, IDragHandler
     public GameObject maker;
     public GameObject CookingMenu;
     public GameObject startButton;
+    public GameObject blueList;
+    public GameObject bluePlus;
+    public GameObject bluePlusUI;
 
     public GameObject milk;
     public GameObject flour;
@@ -27,6 +31,9 @@ public class Cooking : MonoBehaviour //, IDragHandler
     public GameObject eggButton;
 
     public GameObject whipper;
+
+    public GameObject perfect;
+
 
     GameObject clonedMaker;
     GameObject clonedCookingMenu;
@@ -46,30 +53,64 @@ public class Cooking : MonoBehaviour //, IDragHandler
 
     GameObject clonedWhipper;
 
+    GameObject clonedPerfect;
+    GameObject clonedPlusUI;
+
     bool bowlBack = false; //사용하는지 확인할 것
-    bool[] checkIngredients = new bool[3];
+
+    //bool[] checkIngredients = new bool[3];
+    bool checkMilk = false;
+    bool checkFlour = false;
+    bool checkEgg = false;
+    bool isMenu = false;
+    bool isPlus = false;
+
     Vector2 whipperPos;
-    float distance = 10.0f;
+    //float distance = 10.0f;
+
+    //public float LimitTime;
+    //public TextMeshProUGUI NameText;
+    //public Slider slTimer;
+    //float fSliderBarTime;
 
     // Start is called before the first frame update
     void Start()
     {
         startButton.SetActive(false);
+        blueList.SetActive(false);
+        bluePlus.SetActive(false);
+
+        //slTimer = GetComponent<Slider>();
+
         Invoke("showMaker", 1f);
         Invoke("showMenu", 1.5f);
         Invoke("showStart", 2f);
-
-        for (int i = 0; i < checkIngredients.Length; i++)
-            checkIngredients[i] = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (bowlBack == true)
+        {
             putIngredients();
-        Mixing();
+            //Timer();
+        }
     }
+
+    //void Timer()
+    //{
+    //    //LimitTime -= Time.deltaTime;
+    //    //NameText.text = "시간 : " + Mathf.Round(LimitTime);
+
+    //    if(slTimer.value >0.0f)
+    //    {
+    //        slTimer.value -= Time.deltaTime;
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("Time is zero");
+    //    }
+    //}
 
     void showMaker()
     {
@@ -94,6 +135,34 @@ public class Cooking : MonoBehaviour //, IDragHandler
         Invoke("showBowlBack", 1f);
     }
 
+    public void clickBlueList()
+    {
+        if(isMenu == false)
+        {
+            clonedCookingMenu = Instantiate(CookingMenu, new Vector3(0, 0, 0), Quaternion.identity);
+            isMenu = true;
+        }
+        else if (isMenu == true)
+        {
+            isMenu = false;
+            Destroy(clonedCookingMenu);
+        }
+    }
+
+    public void clickBluePlus()
+    {
+        if(isPlus == false)
+        {
+            clonedPlusUI = Instantiate(bluePlusUI, new Vector3(0, 0, 0), Quaternion.identity);
+            isPlus = true;
+        }
+        else if(isPlus==true)
+        {
+            isPlus = false;
+            Destroy(clonedPlusUI);
+        }
+    }
+
     void showBowl()
     {
         clonedBowl = Instantiate(bowl, new Vector3(0.18f, -1.4f, 0), Quaternion.identity);
@@ -102,6 +171,8 @@ public class Cooking : MonoBehaviour //, IDragHandler
     void showBowlBack()
     {
         backRenderer.sprite = backGrounds[1];
+        blueList.SetActive(true);
+        bluePlus.SetActive(true);
         clonedMilk = Instantiate(milk, new Vector3(-8.59f, -0.36f, 0), Quaternion.identity);
         clonedFlour = Instantiate(flour, new Vector3(-7.23f, 0.69f, 0), Quaternion.identity);
         clonedAsset1 = Instantiate(asset1, new Vector3(6.58f, -0.92f, 0), Quaternion.identity);
@@ -119,7 +190,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
 
     void putIngredients()
     {
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButton(0))
         {
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
@@ -131,21 +202,24 @@ public class Cooking : MonoBehaviour //, IDragHandler
             {
                 if (rayHit.collider.gameObject.tag.Equals("milk"))
                 {
-                    checkIngredients[0] = true;
+                    //checkIngredients[0] = true;
+                    checkMilk = true;
                     clonedFilledMilk = Instantiate(filledMilk, new Vector3(0.1679f, -2.1505f, 0), Quaternion.identity);
                     clonedMilkButton = Instantiate(milkButton, new Vector3(4.55f, -1.35f, 0), Quaternion.identity);
                     Destroy(clonedMilkButton, 1f);
                 }
                 if (rayHit.collider.gameObject.tag.Equals("flour"))
                 {
-                    checkIngredients[1] = true;
+                    //checkIngredients[1] = true;
+                    checkFlour = true;
                     clonedFilledFlour = Instantiate(filledFlour, new Vector3(0.2046f, -0.9852f, 0), Quaternion.identity);
                     clonedFlourButton = Instantiate(flourButton, new Vector3(4.55f, -1.35f, 0), Quaternion.identity);
                     Destroy(clonedFlourButton, 1f);
                 }
                 if (rayHit.collider.gameObject.tag.Equals("egg"))
                 {
-                    checkIngredients[2] = true;
+                    //checkIngredients[2] = true;
+                    checkEgg = true;
                     clonedCrackedEgg = Instantiate(crackedEgg, new Vector3(1.47f, 3.24f, 0), Quaternion.identity);
                     clonedEggButton = Instantiate(eggButton, new Vector3(3.85f, 1.83f, 0), Quaternion.identity);
                     Invoke("showInsideEgg", 0.5f);
@@ -153,61 +227,47 @@ public class Cooking : MonoBehaviour //, IDragHandler
                     Destroy(clonedCrackedEgg, 1.5f);
                     Destroy(clonedEggButton, 1.5f);
                 }
-                //if(rayHit.collider.gameObject.tag.Equals("whipper"))
-                //{
-                //    Debug.Log("whipper clicked");
-                //}
+
+                if (rayHit.collider.gameObject.tag.Equals("whipper"))
+                {
+                    OnMouseDrag();
+                    Invoke("showPerfect", 3f);
+                }
             }
         }
-    }
 
-    bool isReady()
-    {
-        for(int i=0; i<checkIngredients.Length; i++)
+        if(checkMilk && checkFlour&& checkEgg)
         {
-            if (checkIngredients[i] != true)
-                return false;
+            Invoke("showWhipper", 1f);
+            checkMilk = false;
+            checkFlour = false;
+            checkEgg = false;
         }
-        return true;
     }
 
     void showWhipper()
     {
         clonedWhipper = Instantiate(whipper, new Vector3(2.07f, 1.3582f, 0), Quaternion.identity);
+        
     }
 
-    void Mixing()
+    void showPerfect()
     {
-        if(isReady()==true)
-        {
-            Invoke("showWhipper", 1f);
-        }
+        clonedPerfect = Instantiate(perfect, new Vector3(0, 0, 0), Quaternion.identity);
     }
-    //void IDragHandler.OnDrag(PointerEventData eventData)
-    //{
-    //    //Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance);
-    //    if(this.gameObject.tag.Equals("whipper"))
-    //    {
-    //        Debug.Log("whipper");
-    //        clonedWhipper.transform.position = eventData.position;
-
-    //    }
-    //}
 
     private void OnMouseDrag()
     {
         Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        //Debug.Log("mouse " + mousePosition);
-        this.gameObject.transform.position = objPosition;
+        //Debug.Log("mouse Position" + objPosition);
+        //clonedWhipper.transform.position = objPosition;
 
-        //if (this.gameObject.tag.Equals("whipper"))
-        //{
-        //    Debug.Log("Drag!!");
-
-        //    Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10);
-        //    Vector3 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        //    this.gameObject.transform.position = objPosition;
-        //}
+        if(objPosition.x >= -0.95 && objPosition.x <= 3.49
+            && objPosition.y >=0.16 && objPosition.y <= 1.47)
+        {
+            clonedWhipper.transform.position = objPosition;
+        }
     }
+
 }
