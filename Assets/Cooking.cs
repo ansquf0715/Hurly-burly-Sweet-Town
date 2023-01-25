@@ -6,7 +6,7 @@ using TMPro;
 
 public class Cooking : MonoBehaviour //, IDragHandler
 {
-    public Sprite[] backGrounds = new Sprite[2];
+    public Sprite[] backGrounds = new Sprite[3];
     public GameObject BackGround;
     public SpriteRenderer backRenderer;
     public GameObject maker;
@@ -34,6 +34,10 @@ public class Cooking : MonoBehaviour //, IDragHandler
 
     public GameObject perfect;
 
+    public GameObject pan;
+    public GameObject filledBowl;
+    public GameObject dough;
+    public GameObject thickDough;
 
     GameObject clonedMaker;
     GameObject clonedCookingMenu;
@@ -53,10 +57,16 @@ public class Cooking : MonoBehaviour //, IDragHandler
 
     GameObject clonedWhipper;
 
+    GameObject clonedPan;
+    GameObject clonedFilledBowl;
+    GameObject clonedDough;
+    GameObject clonedThickDough;
+
     GameObject clonedPerfect;
     GameObject clonedPlusUI;
 
     bool bowlBack = false; //사용하는지 확인할 것
+    bool inductionBack = false;
 
     //bool[] checkIngredients = new bool[3];
     bool checkMilk = false;
@@ -65,12 +75,12 @@ public class Cooking : MonoBehaviour //, IDragHandler
     bool isMenu = false;
     bool isPlus = false;
 
-    Vector2 whipperPos;
-    //float distance = 10.0f;
+    bool isPerfect = false;
+    bool isDough = false;
 
-    //public float LimitTime;
-    //public TextMeshProUGUI NameText;
-    //public Slider slTimer;
+    Vector2 whipperPos;
+
+    public Slider slTimer;
     //float fSliderBarTime;
 
     // Start is called before the first frame update
@@ -79,8 +89,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
         startButton.SetActive(false);
         blueList.SetActive(false);
         bluePlus.SetActive(false);
-
-        //slTimer = GetComponent<Slider>();
+        slTimer.gameObject.SetActive(false);
 
         Invoke("showMaker", 1f);
         Invoke("showMenu", 1.5f);
@@ -93,24 +102,22 @@ public class Cooking : MonoBehaviour //, IDragHandler
         if (bowlBack == true)
         {
             putIngredients();
-            //Timer();
+        }
+
+        if(inductionBack == true)
+        {
+            Timer();
+            baking();
         }
     }
 
-    //void Timer()
-    //{
-    //    //LimitTime -= Time.deltaTime;
-    //    //NameText.text = "시간 : " + Mathf.Round(LimitTime);
-
-    //    if(slTimer.value >0.0f)
-    //    {
-    //        slTimer.value -= Time.deltaTime;
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("Time is zero");
-    //    }
-    //}
+    void Timer()
+    {
+        if (slTimer.value > 0.0f)
+            slTimer.value -= Time.deltaTime;
+        else
+            Debug.Log("Time is zero");
+    }
 
     void showMaker()
     {
@@ -173,6 +180,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
         backRenderer.sprite = backGrounds[1];
         blueList.SetActive(true);
         bluePlus.SetActive(true);
+
         clonedMilk = Instantiate(milk, new Vector3(-8.59f, -0.36f, 0), Quaternion.identity);
         clonedFlour = Instantiate(flour, new Vector3(-7.23f, 0.69f, 0), Quaternion.identity);
         clonedAsset1 = Instantiate(asset1, new Vector3(6.58f, -0.92f, 0), Quaternion.identity);
@@ -182,6 +190,8 @@ public class Cooking : MonoBehaviour //, IDragHandler
         Invoke("showBowl", 0.5f);
     }
 
+
+
     void showInsideEgg()
     {
         clonedInsideEgg = Instantiate(insideEgg, new Vector3(0, 1.4761f, 0), Quaternion.identity);
@@ -190,7 +200,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
 
     void putIngredients()
     {
-        if(Input.GetMouseButton(0))
+        if(Input.GetMouseButtonDown(0))
         {
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
@@ -228,10 +238,25 @@ public class Cooking : MonoBehaviour //, IDragHandler
                     Destroy(clonedEggButton, 1.5f);
                 }
 
-                if (rayHit.collider.gameObject.tag.Equals("whipper"))
+            }
+        }
+        if(Input.GetMouseButton(0))
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (rayHit.collider.gameObject.tag.Equals("whipper"))
+            {
+                OnMouseDrag();
+                //Invoke("delayPerfect", 3f);
+                Invoke("delayPerfect", 1f);
+
+                if (isPerfect == true)
                 {
-                    OnMouseDrag();
-                    Invoke("showPerfect", 3f);
+                    showPerfect();
+                    CancelInvoke("delayPerfect");
                 }
             }
         }
@@ -245,29 +270,126 @@ public class Cooking : MonoBehaviour //, IDragHandler
         }
     }
 
+    void delayPerfect()
+    {
+        isPerfect = true;
+    }
+
     void showWhipper()
     {
         clonedWhipper = Instantiate(whipper, new Vector3(2.07f, 1.3582f, 0), Quaternion.identity);
-        
     }
 
     void showPerfect()
     {
         clonedPerfect = Instantiate(perfect, new Vector3(0, 0, 0), Quaternion.identity);
+        isPerfect = false;
+        Invoke("showInductionBack", 0.5f);
     }
 
     private void OnMouseDrag()
     {
         Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        //Debug.Log("mouse Position" + objPosition);
-        //clonedWhipper.transform.position = objPosition;
 
         if(objPosition.x >= -0.95 && objPosition.x <= 3.49
             && objPosition.y >=0.16 && objPosition.y <= 1.47)
         {
             clonedWhipper.transform.position = objPosition;
         }
+    }
+    void showInductionBack()
+    {
+        bowlBack = false;
+        inductionBack = true;
+
+        Destroy(clonedMilk);
+        Destroy(clonedFlour);
+        Destroy(clonedEggs);
+        Destroy(clonedAsset1);
+        Destroy(clonedAsset2);
+        Destroy(clonedWhipper);
+        Destroy(clonedBowl);
+        Destroy(clonedPerfect);
+        Destroy(clonedFilledFlour);
+        Destroy(clonedFilledMilk);
+
+        backRenderer.sprite = backGrounds[2];
+        slTimer.gameObject.SetActive(true);
+
+        Invoke("showPan", 1f);
+    }
+
+    void showPan()
+    {
+        clonedPan = Instantiate(pan, new Vector3(-1.21f, -0.7f, 0), Quaternion.identity);
+        Invoke("showFilledBowl", 1f);
+    }
+    
+    void showFilledBowl()
+    {
+        clonedFilledBowl = Instantiate(filledBowl, new Vector3(4.58f, 1.45f, 0), Quaternion.identity);
+    }
+
+    void baking()
+    {
+        if(Input.GetMouseButton(0))
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (rayHit.collider != null)
+            {
+                if (rayHit.collider.gameObject.tag.Equals("bowl"))
+                {
+                    clonedFilledBowl.transform.Rotate(Vector3.forward * Time.deltaTime * 15f);
+                    if(isDough==true)
+                    {
+                        changeDoughSize();
+                        Destroy(clonedFilledBowl, 1.3f);
+                        clonedThickDough = Instantiate(thickDough, new Vector3(0, -0.96f, 0), Quaternion.identity);
+                    }
+                }
+            }
+        }
+        if(Input.GetMouseButtonDown(0))
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if(rayHit.collider != null)
+            {
+                if(rayHit.collider.gameObject.tag.Equals("bowl"))
+                {
+                    clonedDough = Instantiate(dough, new Vector3(0, -0.96f, 0), Quaternion.identity);
+                    isDough = true;
+
+                    //clonedDough.transform.localScale += new Vector3(0.2f, 0.2f, 0);
+
+                }
+            }
+        }
+        if(Input.GetMouseButtonUp(0))
+        {
+            isDough = false;
+        }
+    }
+
+    void changeDoughSize()
+    {
+        //Debug.Log("change Dough Size");
+        //Vector2 originScale = clonedDough.transform.localScale;
+        //float time = 0;
+        //float speed = 1;
+
+        //clonedDough.transform.localScale = originScale * (1f + time * speed);
+        //time += Time.deltaTime;
+
+        clonedDough.transform.localScale += Time.deltaTime * new Vector3(0.1f, 0.1f, 0);
     }
 
 }
