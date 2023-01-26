@@ -9,6 +9,8 @@ TagManager:
   - egg
   - whipper
   - bowl
+  - pan
+  - dottedLine
   layers:
   - Default
   - TransparentFX
@@ -18,8 +20,8 @@ TagManager:
   - UI
   - 
   - 
+  - pan
   - 
-  - milk
   - 
   - 
   - 

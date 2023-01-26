@@ -39,6 +39,10 @@ public class Cooking : MonoBehaviour //, IDragHandler
     public GameObject dough;
     public GameObject thickDough;
 
+    public GameObject strawberry;
+    public GameObject dottedLine;
+    public GameObject knife;
+
     GameObject clonedMaker;
     GameObject clonedCookingMenu;
     GameObject clonedMilk;
@@ -62,11 +66,17 @@ public class Cooking : MonoBehaviour //, IDragHandler
     GameObject clonedDough;
     GameObject clonedThickDough;
 
+    GameObject clonedStrawberry1;
+    GameObject clonedStrawberry2;
+    GameObject clonedDottedLine;
+
     GameObject clonedPerfect;
     GameObject clonedPlusUI;
+    GameObject clonedKnife;
 
     bool bowlBack = false; //사용하는지 확인할 것
     bool inductionBack = false;
+    bool cuttingBoardBack = false;
 
     //bool[] checkIngredients = new bool[3];
     bool checkMilk = false;
@@ -77,11 +87,19 @@ public class Cooking : MonoBehaviour //, IDragHandler
 
     bool isPerfect = false;
     bool isDough = false;
+    bool isThickDough = false;
+    int pancakeCount = 0;
+    int strawberryCount = 0;
+    bool isLine = false;
+
+    bool checkStrawberry1 = false;
+    bool checkStrawberry2 = false;
 
     Vector2 whipperPos;
 
     public Slider slTimer;
     //float fSliderBarTime;
+    float tempTime = 0; //쓰는지 확인
 
     // Start is called before the first frame update
     void Start()
@@ -94,6 +112,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
         Invoke("showMaker", 1f);
         Invoke("showMenu", 1.5f);
         Invoke("showStart", 2f);
+
     }
 
     // Update is called once per frame
@@ -108,6 +127,11 @@ public class Cooking : MonoBehaviour //, IDragHandler
         {
             Timer();
             baking();
+        }
+
+        if(cuttingBoardBack == true)
+        {
+            cutIngredients();
         }
     }
 
@@ -189,8 +213,6 @@ public class Cooking : MonoBehaviour //, IDragHandler
         bowlBack = true;
         Invoke("showBowl", 0.5f);
     }
-
-
 
     void showInsideEgg()
     {
@@ -287,6 +309,11 @@ public class Cooking : MonoBehaviour //, IDragHandler
         Invoke("showInductionBack", 0.5f);
     }
 
+    void showJustPerfect()
+    {
+        clonedPerfect = Instantiate(perfect, new Vector3(0, 0, 0), Quaternion.identity);
+    }
+
     private void OnMouseDrag()
     {
         Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -345,11 +372,23 @@ public class Cooking : MonoBehaviour //, IDragHandler
                 if (rayHit.collider.gameObject.tag.Equals("bowl"))
                 {
                     clonedFilledBowl.transform.Rotate(Vector3.forward * Time.deltaTime * 15f);
-                    if(isDough==true)
+                    if(isDough==true || isThickDough == true)
                     {
                         changeDoughSize();
-                        Destroy(clonedFilledBowl, 1.3f);
-                        clonedThickDough = Instantiate(thickDough, new Vector3(0, -0.96f, 0), Quaternion.identity);
+
+                        tempTime += Time.deltaTime;
+
+                        if(tempTime>=1.3f)
+                        {
+                            //Destroy(clonedFilledBowl, 1.3f);
+                            //Invoke("showThickDough", 2f);
+                            Destroy(clonedFilledBowl);
+                            Destroy(clonedDough);
+                            isDough = false;
+                            clonedThickDough = Instantiate(thickDough, new Vector3(0, -0.96f, 0), Quaternion.identity);
+                            isThickDough = true;
+                            tempTime = 0;
+                        }
                     }
                 }
             }
@@ -365,10 +404,57 @@ public class Cooking : MonoBehaviour //, IDragHandler
             {
                 if(rayHit.collider.gameObject.tag.Equals("bowl"))
                 {
-                    clonedDough = Instantiate(dough, new Vector3(0, -0.96f, 0), Quaternion.identity);
-                    isDough = true;
+                    //clonedDough = Instantiate(dough, new Vector3(0, -0.96f, 0), Quaternion.identity);
+                    //isDough = true;
 
-                    //clonedDough.transform.localScale += new Vector3(0.2f, 0.2f, 0);
+                    if(pancakeCount < 2)
+                    {
+                        makeDough();
+
+                    }
+                }
+
+                if(rayHit.collider.gameObject.tag.Equals("pan"))
+                {
+                    //var originPos = clonedThickDough.transform.position;
+                    //var tempPos = clonedThickDough.transform.position;
+                    //tempPos.y += 1000 * Time.deltaTime;
+                    //clonedThickDough.transform.position = tempPos;
+
+                    //if(clonedThickDough.transform.position.y >= 2)
+                    //{
+                    //    //Debug.Log("걸?");
+                    //    //clonedThickDough.transform.position = originPos;
+                    //    tempPos.y -= 1000 * Time.deltaTime;
+                    //    clonedThickDough.transform.position = tempPos;
+                    //}
+
+                    if(clonedThickDough != null)
+                    {
+                        //Debug.Log("pancake Cout" + pancakeCount);
+                        pancakeCount++;
+                        if(pancakeCount == 1)
+                        {
+                            showFilledBowl();
+                            //makeDough();
+
+                            Destroy(clonedThickDough);
+                            isThickDough = false;
+                            //clonedDough = Instantiate(dough, new Vector3(0, -0.96f, 0), Quaternion.identity);
+                            //isDough = true;
+
+                            //Debug.Log("isDough" + isDough);
+
+
+                        }
+                        else if(pancakeCount == 2)
+                        {
+                            isThickDough = false;
+                            showJustPerfect();
+                            Invoke("showCuttingBoardBack", 1f);
+                            
+                        }
+                    }
 
                 }
             }
@@ -379,17 +465,108 @@ public class Cooking : MonoBehaviour //, IDragHandler
         }
     }
 
+    void makeDough()
+    {
+        clonedDough = Instantiate(dough, new Vector3(0, -0.96f, 0), Quaternion.identity);
+        isDough = true;
+    }
+
+    void showThickDough()
+    {
+        clonedThickDough = Instantiate(thickDough, new Vector3(0, -0.96f, 0), Quaternion.identity);
+    }
+
     void changeDoughSize()
     {
-        //Debug.Log("change Dough Size");
-        //Vector2 originScale = clonedDough.transform.localScale;
-        //float time = 0;
-        //float speed = 1;
-
-        //clonedDough.transform.localScale = originScale * (1f + time * speed);
-        //time += Time.deltaTime;
-
         clonedDough.transform.localScale += Time.deltaTime * new Vector3(0.1f, 0.1f, 0);
     }
 
+    void hidePerfect()
+    {
+        Destroy(clonedPerfect);
+    }
+
+    void showCuttingBoardBack()
+    {
+        //Debug.Log("이거 불러지나?");
+        inductionBack = false;
+        cuttingBoardBack = true;
+
+        Destroy(clonedPan);
+        Destroy(clonedThickDough);
+        isThickDough = false;
+
+        backRenderer.sprite = backGrounds[3];
+        slTimer.gameObject.SetActive(false);
+
+        Invoke("hidePerfect", 0.7f);
+
+        Invoke("showStrawberry", 1f);
+        strawberryCount = 1;
+        //Invoke("showDottedLine", 1.5f);
+        Invoke("delayLine", 1.5f);
+    }
+
+    void showStrawberry()
+    {
+        clonedStrawberry1 = Instantiate(strawberry, new Vector3(-1.7f, 0, 0), Quaternion.identity);
+        clonedStrawberry2 = Instantiate(strawberry, new Vector3(2.13f, 0, 0), Quaternion.identity);
+        clonedStrawberry2.transform.localEulerAngles = new Vector3(0, 0, 40);
+    }
+
+    void cutIngredients()
+    {
+        //strawberryCount++;
+        if(strawberryCount == 1)
+        {
+            if(isLine==true)
+            {
+                clonedDottedLine = Instantiate(dottedLine, new Vector3(-1.65f, -0.02f, 0), Quaternion.identity);
+                clonedDottedLine.transform.localEulerAngles = new Vector3(0, 0, 45);
+                isLine = false;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (rayHit.collider != null)
+            {
+                //Debug.Log("여기까지 니ㅗ");
+                if (rayHit.collider.gameObject.tag.Equals("dottedLine"))
+                {
+                    //Debug.Log("걸려?1");
+                    if (strawberryCount == 1)
+                    {
+                        //Debug.Log("걸리는지?2");
+                        checkStrawberry1 = true;
+                        Invoke("showKnife", 1f);
+                        clonedKnife.transform.position = new Vector3(0.27f, 0.01f, 0);
+                        clonedKnife.transform.Rotate(Vector3.forward * Time.deltaTime * 10f);
+                    }
+                    else if (strawberryCount == 2)
+                        checkStrawberry2 = true;
+                }
+            }
+        }
+    }
+
+    void delayLine()
+    {
+        isLine = true;
+    }
+
+    void showKnife()
+    {
+        clonedKnife = Instantiate(knife, new Vector3(0, 0, 0), Quaternion.identity);
+    }
+
+    //void showDottedLine()
+    //{
+    //    clonedDottedLine = Instantiate(dottedLine, new Vector3(-1.65f, -0.02f, 0), Quaternion.identity);
+    //}
 }
