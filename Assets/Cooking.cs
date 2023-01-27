@@ -42,6 +42,9 @@ public class Cooking : MonoBehaviour //, IDragHandler
     public GameObject strawberry;
     public GameObject dottedLine;
     public GameObject knife;
+    public GameObject halfStrawberry;
+
+    public GameObject banana;
 
     GameObject clonedMaker;
     GameObject clonedCookingMenu;
@@ -73,6 +76,14 @@ public class Cooking : MonoBehaviour //, IDragHandler
     GameObject clonedPerfect;
     GameObject clonedPlusUI;
     GameObject clonedKnife;
+    GameObject clonedHalfStrawberry1;
+    GameObject clonedHalfStrawberry2;
+
+    GameObject clonedBanana;
+    GameObject clonedTempLine1;
+    GameObject clonedTempLine2;
+    GameObject clonedTempLine3;
+
 
     bool bowlBack = false; //사용하는지 확인할 것
     bool inductionBack = false;
@@ -89,11 +100,12 @@ public class Cooking : MonoBehaviour //, IDragHandler
     bool isDough = false;
     bool isThickDough = false;
     int pancakeCount = 0;
-    int strawberryCount = 0;
-    bool isLine = false;
 
-    bool checkStrawberry1 = false;
-    bool checkStrawberry2 = false;
+    bool cuttingStrawberry = false;
+    bool cuttingBanana = false;
+    int isLine = 0;
+    int isKnife = 1;
+    bool isBanana = false;
 
     Vector2 whipperPos;
 
@@ -224,10 +236,12 @@ public class Cooking : MonoBehaviour //, IDragHandler
     {
         if(Input.GetMouseButtonDown(0))
         {
+
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
             Ray2D ray = new Ray2D(touchPos, Vector2.zero);
             RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
             //RaycastHit2D[] hits = Physics2D.RaycastAll(ray.origin, ray.direction);
 
             if (rayHit.collider != null)
@@ -356,6 +370,14 @@ public class Cooking : MonoBehaviour //, IDragHandler
     void showFilledBowl()
     {
         clonedFilledBowl = Instantiate(filledBowl, new Vector3(4.58f, 1.45f, 0), Quaternion.identity);
+    }
+
+    void getRay()
+    {
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+        Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+        RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
     }
 
     void baking()
@@ -502,9 +524,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
         Invoke("hidePerfect", 0.7f);
 
         Invoke("showStrawberry", 1f);
-        strawberryCount = 1;
-        //Invoke("showDottedLine", 1.5f);
-        Invoke("delayLine", 1.5f);
+
     }
 
     void showStrawberry()
@@ -512,61 +532,152 @@ public class Cooking : MonoBehaviour //, IDragHandler
         clonedStrawberry1 = Instantiate(strawberry, new Vector3(-1.7f, 0, 0), Quaternion.identity);
         clonedStrawberry2 = Instantiate(strawberry, new Vector3(2.13f, 0, 0), Quaternion.identity);
         clonedStrawberry2.transform.localEulerAngles = new Vector3(0, 0, 40);
+        cuttingStrawberry = true;
+
+        Invoke("delayLine", 0.5f);
+
     }
 
     void cutIngredients()
     {
-        //strawberryCount++;
-        if(strawberryCount == 1)
+        if(cuttingStrawberry == true) //딸기 자르는 장면
         {
-            if(isLine==true)
+            if(isLine==1)
             {
+                isLine = 0;
+
                 clonedDottedLine = Instantiate(dottedLine, new Vector3(-1.65f, -0.02f, 0), Quaternion.identity);
                 clonedDottedLine.transform.localEulerAngles = new Vector3(0, 0, 45);
-                isLine = false;
+            }
+
+            if(isLine == 2)
+            {
+                isLine = 0;
+
+                clonedDottedLine = Instantiate(dottedLine, new Vector3(2.35f, 0.01f, 0), Quaternion.identity);
+                clonedDottedLine.transform.localEulerAngles = new Vector3(0, 0, 85);
+                isKnife = 2;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+                Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+                RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+                if (rayHit.collider != null)
+                {
+                    //Debug.Log(rayHit.collider.name);
+                    //isKnife = true;
+
+                    //if(isKnife == true)
+                    if(isKnife==1)
+                    {
+                        isKnife = 0;
+                        clonedKnife = Instantiate(knife, new Vector3(0.27f, 0.01f, 0), Quaternion.identity);
+                        Invoke("hideKnife", 1f);
+                        Destroy(clonedDottedLine);
+                        Destroy(clonedStrawberry1);
+                        clonedHalfStrawberry1 = Instantiate(halfStrawberry, new Vector3(-1.7f, 0, 0), Quaternion.identity);
+                        isLine = 2;
+                    }
+
+                    if(isKnife==2)
+                    {
+                        isKnife = 0;
+                        clonedKnife = Instantiate(knife, new Vector3(4.39f, -0.22f, 0), Quaternion.identity);
+                        Invoke("hideKnife", 1f);
+                        Destroy(clonedDottedLine);
+                        Destroy(clonedStrawberry2);
+                        clonedHalfStrawberry2 = Instantiate(halfStrawberry, new Vector3(2.13f, 0, 0), Quaternion.identity);
+                        clonedHalfStrawberry2.transform.localEulerAngles = new Vector3(0, 0, 45);
+                        Invoke("changeToBanana", 2f);
+
+                        isBanana = true;
+
+                    }
+                }
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if(cuttingBanana == true)
         {
-            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
-            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
-            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+            Destroy(clonedHalfStrawberry1);
+            Destroy(clonedHalfStrawberry2);
 
-            if (rayHit.collider != null)
+            if(isBanana == true)
             {
-                //Debug.Log("여기까지 니ㅗ");
-                if (rayHit.collider.gameObject.tag.Equals("dottedLine"))
+                Invoke("showBanana", 1.5f);
+
+                //Invoke("showTreeLine", 1f);
+
+                isBanana = false;
+
+                if(isLine == 1)
                 {
-                    //Debug.Log("걸려?1");
-                    if (strawberryCount == 1)
-                    {
-                        //Debug.Log("걸리는지?2");
-                        checkStrawberry1 = true;
-                        Invoke("showKnife", 1f);
-                        clonedKnife.transform.position = new Vector3(0.27f, 0.01f, 0);
-                        clonedKnife.transform.Rotate(Vector3.forward * Time.deltaTime * 10f);
-                    }
-                    else if (strawberryCount == 2)
-                        checkStrawberry2 = true;
+                    clonedDottedLine = Instantiate(dottedLine, new Vector3(-2, 0, 0), Quaternion.identity);
+                    isKnife = 1;
                 }
             }
+
+            if(Input.GetMouseButtonDown(0))
+            {
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+                Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+                RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+                if(isKnife == 1)
+                {
+                    isKnife = 0;
+                    //clonedKnife=Instantiate(knife, new Vector3())
+                }
+            }
+
         }
     }
 
     void delayLine()
     {
-        isLine = true;
+        isLine++;
     }
 
-    void showKnife()
+    void hideKnife()
     {
-        clonedKnife = Instantiate(knife, new Vector3(0, 0, 0), Quaternion.identity);
+        Destroy(clonedKnife);
     }
 
-    //void showDottedLine()
-    //{
-    //    clonedDottedLine = Instantiate(dottedLine, new Vector3(-1.65f, -0.02f, 0), Quaternion.identity);
-    //}
+    void changeToBanana()
+    {
+        cuttingStrawberry = false;
+        cuttingBanana = true;
+        isBanana = true;
+    }
+
+    void showBanana()
+    {
+        clonedBanana = Instantiate(banana, new Vector3(0.31f, -0.33f, 0), Quaternion.identity);
+        //isBanana = false;
+
+        Invoke("showThreeLine", 0.5f);
+        Invoke("hideThreeLine", 1f);
+    }
+
+    void showThreeLine()
+    {
+        clonedTempLine1 = Instantiate(dottedLine, new Vector3(-2, 0, 0), Quaternion.identity);
+        clonedTempLine2 = Instantiate(dottedLine, new Vector3(0, 0, 0), Quaternion.identity);
+        clonedTempLine3 = Instantiate(dottedLine, new Vector3(2, 0, 0), Quaternion.identity);
+    }
+
+    void hideThreeLine()
+    {
+        Destroy(clonedTempLine1);
+        Destroy(clonedTempLine2);
+        Destroy(clonedTempLine3);
+
+        isLine = 1;
+    }
+
 }
