@@ -45,6 +45,24 @@ public class Cooking : MonoBehaviour //, IDragHandler
     public GameObject halfStrawberry;
 
     public GameObject banana;
+    public GameObject backKnife;
+    public GameObject cutBanana;
+
+    public GameObject decoRecipe;
+    public GameObject pancakes;
+    public GameObject strawberryCup;
+    public GameObject blueberryCup;
+    public GameObject bananaCup;
+    public GameObject whipping;
+
+    public GameObject whipped;
+    public GameObject eachStrawberry; //반딸기, 한딸기는 strawberry 쓸 것
+    public GameObject eachBlueberry; //3번모두 회전으로 바꾸면 될듯
+    public GameObject eachBanana;
+
+    //public GameObject[] eachStrawberry = new GameObject[3];
+    //public GameObject[] eachBlueberry = new GameObject[3];
+    //public GameObject[] eachBanana = new GameObject[3];
 
     GameObject clonedMaker;
     GameObject clonedCookingMenu;
@@ -83,11 +101,25 @@ public class Cooking : MonoBehaviour //, IDragHandler
     GameObject clonedTempLine1;
     GameObject clonedTempLine2;
     GameObject clonedTempLine3;
+    GameObject clonedCutBanana;
 
+    GameObject clonedDecoRecipe;
+    GameObject clonedPancakes;
+    GameObject clonedStrawberryCup;
+    GameObject clonedBlueberryCup;
+    GameObject clonedBananaCup;
+    GameObject clonedWhipping;
 
+    GameObject clonedWhipped;
+    List<GameObject> clonedEachStrawberry = new List<GameObject>();
+    List<GameObject> clonedEachBlueberry = new List<GameObject>();
+    List<GameObject> clonedEachBanana = new List<GameObject>();
+
+ 
     bool bowlBack = false; //사용하는지 확인할 것
     bool inductionBack = false;
     bool cuttingBoardBack = false;
+    bool decoratingBack = false;
 
     //bool[] checkIngredients = new bool[3];
     bool checkMilk = false;
@@ -107,11 +139,15 @@ public class Cooking : MonoBehaviour //, IDragHandler
     int isKnife = 1;
     bool isBanana = false;
 
+    bool isDecoRecipe = false;
+
     Vector2 whipperPos;
 
     public Slider slTimer;
     //float fSliderBarTime;
     float tempTime = 0; //쓰는지 확인
+
+    float i = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -145,6 +181,11 @@ public class Cooking : MonoBehaviour //, IDragHandler
         {
             cutIngredients();
         }
+
+        if(decoratingBack == true)
+        {
+            Decorating();
+        }
     }
 
     void Timer()
@@ -177,6 +218,8 @@ public class Cooking : MonoBehaviour //, IDragHandler
         Destroy(clonedCookingMenu);
         Invoke("showBowlBack", 1f);
     }
+
+
 
     public void clickBlueList()
     {
@@ -610,18 +653,38 @@ public class Cooking : MonoBehaviour //, IDragHandler
             {
                 Invoke("showBanana", 1.5f);
 
-                //Invoke("showTreeLine", 1f);
-
                 isBanana = false;
 
-                if(isLine == 1)
-                {
-                    clonedDottedLine = Instantiate(dottedLine, new Vector3(-2, 0, 0), Quaternion.identity);
-                    isKnife = 1;
-                }
+                //if (isLine == 1)
+                //{
+                //    clonedDottedLine = Instantiate(dottedLine, new Vector3(-2, 0, 0), Quaternion.identity);
+                //    isKnife = 1;
+                //}
             }
 
-            if(Input.GetMouseButtonDown(0))
+            if (isLine == 1)
+            {
+                isLine = 0;
+                clonedDottedLine = Instantiate(dottedLine, new Vector3(-2, 0, 0), Quaternion.identity);
+                isKnife = 1;
+            }
+
+            if(isLine == 2)
+            {
+                isLine = 0;
+                //clonedDottedLine = Instantiate(dottedLine, new Vector3(0, -0.09f, 0), Quaternion.identity);
+                clonedDottedLine = Instantiate(dottedLine, new Vector3(0, 0, 0), Quaternion.identity);
+                isKnife = 2;
+            }
+
+            if(isLine == 3)
+            {
+                isLine = 0;
+                clonedDottedLine = Instantiate(dottedLine, new Vector3(2, 0, 0), Quaternion.identity);
+                isKnife = 3;
+            }
+
+            if (Input.GetMouseButtonDown(0))
             {
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
@@ -631,9 +694,37 @@ public class Cooking : MonoBehaviour //, IDragHandler
                 if(isKnife == 1)
                 {
                     isKnife = 0;
-                    //clonedKnife=Instantiate(knife, new Vector3())
+                    clonedKnife = Instantiate(backKnife, new Vector3(-1.71f, -1.39f, 0), Quaternion.identity);
+                    Invoke("hideKnife", 1f);
+                    Destroy(clonedDottedLine);
+                    isLine = 2;
+                }
+
+                if(isKnife==2)
+                {
+                    isKnife = 0;
+                    clonedKnife = Instantiate(backKnife, new Vector3(0.52f, -1.39f, 0), Quaternion.identity);
+                    Invoke("hideKnife", 1f);
+                    Destroy(clonedDottedLine);
+                    isLine = 3;
+                }
+
+                if(isKnife == 3)
+                {
+                    isKnife = 0;
+                    isLine = 0;
+                    clonedKnife = Instantiate(backKnife, new Vector3(2.59f, -1.2f, 0), Quaternion.identity);
+                    //Invoke("hideKnife", 1f);
+                    Destroy(clonedDottedLine);
+                    Destroy(clonedBanana);
+                    clonedCutBanana = Instantiate(cutBanana, new Vector3(0.31f, -0.33f, 0), Quaternion.identity);
+                    //isBanana = false;
+                    //showJustPerfect();
+                    Invoke("showJustPerfect", 1f);
+                    Invoke("showDecoratingBack", 2f);
                 }
             }
+
 
         }
     }
@@ -678,6 +769,100 @@ public class Cooking : MonoBehaviour //, IDragHandler
         Destroy(clonedTempLine3);
 
         isLine = 1;
+        //Debug.Log("isLine" + isLine);
+    }
+
+    void showDecoratingBack()
+    {
+        cuttingBoardBack = false;
+        decoratingBack = true;
+
+        //Destroy(clonedPerfect);
+        Invoke("hidePerfect", 0.7f);
+        Destroy(clonedCutBanana);
+        Destroy(clonedKnife);
+
+        backRenderer.sprite = backGrounds[4];
+        clonedPancakes = Instantiate(pancakes, new Vector3(0, 0, 0), Quaternion.identity);
+        clonedStrawberryCup = Instantiate(strawberryCup, new Vector3(-6.25f, 2.57f, 0), Quaternion.identity);
+        clonedBlueberryCup = Instantiate(blueberryCup, new Vector3(-6.19f, -1.79f, 0), Quaternion.identity);
+        clonedBananaCup = Instantiate(bananaCup, new Vector3(6.19f, -1.9f, 0), Quaternion.identity);
+        clonedWhipping = Instantiate(whipping, new Vector3(4.88f, 2.57f, 0), Quaternion.identity);
+
+        isDecoRecipe = true;
+    }
+
+    void Decorating()
+    {
+        if(isDecoRecipe==true)
+        {
+            isDecoRecipe = false;
+
+            Invoke("showDecoRecipe", 1f);
+            //Invoke("hideDecoRecipe", 3f);
+        }
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if(rayHit.collider != null)
+            {
+                if(rayHit.collider.gameObject.tag.Equals("whipping"))
+                {
+                    clonedWhipped = Instantiate(whipped, new Vector3(0, 0, 0), Quaternion.identity);
+                    SpriteRenderer whippedSR = clonedWhipped.GetComponent<SpriteRenderer>();
+
+                    //int i = 10;
+                    while (i>0)
+                    {
+                        //i -= 1;
+
+                        float time = 0;
+                        time += Time.deltaTime;
+                        if(time == 1)
+                        {
+                            time = 0;
+                            i -= 1;
+                        }
+                        Color c = whippedSR.color;
+                        c.a += 25.5f;
+                        whippedSR.color = c;
+                        Debug.Log("color " + c.a);
+                        //whippedSR.material.color = c;
+                    }
+                }
+
+                if (rayHit.collider.gameObject.tag.Equals("strawberryCup"))
+                {
+
+                }
+            }
+        }
+
+    }
+
+    void showDecoRecipe()
+    {
+        clonedDecoRecipe = Instantiate(decoRecipe, new Vector3(0, 0, 0), Quaternion.identity);
+        //changeUIRecipe();
+
+        Invoke("hideDecoRecipe", 2f);
+
+    }
+
+    void hideDecoRecipe()
+    {
+        Destroy(clonedDecoRecipe);
+    }
+
+    void changeUIRecipe()
+    {
+        Destroy(clonedCookingMenu);
+        clonedCookingMenu = Instantiate(decoRecipe, new Vector3(0, 0, 0), Quaternion.identity);
     }
 
 }

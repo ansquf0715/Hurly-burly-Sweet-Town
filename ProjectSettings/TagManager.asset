@@ -11,6 +11,10 @@ TagManager:
   - bowl
   - pan
   - dottedLine
+  - strawberryCup
+  - blueberryCup
+  - bananaCup
+  - whipping
   layers:
   - Default
   - TransparentFX
