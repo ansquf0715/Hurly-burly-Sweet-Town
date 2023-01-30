@@ -15,6 +15,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
     public GameObject blueList;
     public GameObject bluePlus;
     public GameObject bluePlusUI;
+    public GameObject nextButton;
 
     public GameObject milk;
     public GameObject flour;
@@ -60,9 +61,15 @@ public class Cooking : MonoBehaviour //, IDragHandler
     public GameObject eachBlueberry; //3번모두 회전으로 바꾸면 될듯
     public GameObject eachBanana;
 
-    //public GameObject[] eachStrawberry = new GameObject[3];
-    //public GameObject[] eachBlueberry = new GameObject[3];
-    //public GameObject[] eachBanana = new GameObject[3];
+    public GameObject firstButton;
+    public GameObject secondButton;
+    public GameObject thirdButton;
+
+    public GameObject greenButton;
+    public GameObject redButton;
+
+    public GameObject whiteCup;
+    public GameObject dropCoffee;
 
     GameObject clonedMaker;
     GameObject clonedCookingMenu;
@@ -115,11 +122,21 @@ public class Cooking : MonoBehaviour //, IDragHandler
     List<GameObject> clonedEachBlueberry = new List<GameObject>();
     List<GameObject> clonedEachBanana = new List<GameObject>();
 
+    GameObject clonedFirstButton;
+    GameObject clonedSecondButton;
+    GameObject clonedThirdButton;
+
+    GameObject clonedGreenButton;
+    GameObject clonedRedButton;
+
+    GameObject clonedWhiteCup;
+    GameObject clonedDropCoffee;
  
     bool bowlBack = false; //사용하는지 확인할 것
     bool inductionBack = false;
     bool cuttingBoardBack = false;
     bool decoratingBack = false;
+    bool coffeeMachineBack = false;
 
     //bool[] checkIngredients = new bool[3];
     bool checkMilk = false;
@@ -140,14 +157,18 @@ public class Cooking : MonoBehaviour //, IDragHandler
     bool isBanana = false;
 
     bool isDecoRecipe = false;
+    bool decoWhipped = false;
+    int decoStrawberryCount = 0;
+    int decoBlueberryCount = 0;
+    int decoBananaCount = 0;
+
+    bool isWhiteCup = false;
 
     Vector2 whipperPos;
 
     public Slider slTimer;
     //float fSliderBarTime;
     float tempTime = 0; //쓰는지 확인
-
-    float i = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -156,6 +177,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
         blueList.SetActive(false);
         bluePlus.SetActive(false);
         slTimer.gameObject.SetActive(false);
+        nextButton.SetActive(false);
 
         Invoke("showMaker", 1f);
         Invoke("showMenu", 1.5f);
@@ -185,6 +207,11 @@ public class Cooking : MonoBehaviour //, IDragHandler
         if(decoratingBack == true)
         {
             Decorating();
+        }
+
+        if(coffeeMachineBack == true)
+        {
+            makeCoffee();
         }
     }
 
@@ -790,6 +817,8 @@ public class Cooking : MonoBehaviour //, IDragHandler
         clonedWhipping = Instantiate(whipping, new Vector3(4.88f, 2.57f, 0), Quaternion.identity);
 
         isDecoRecipe = true;
+
+        nextButton.SetActive(true);
     }
 
     void Decorating()
@@ -811,34 +840,149 @@ public class Cooking : MonoBehaviour //, IDragHandler
 
             if(rayHit.collider != null)
             {
-                if(rayHit.collider.gameObject.tag.Equals("whipping"))
+
+                if (rayHit.collider.gameObject.tag.Equals("whipping"))
                 {
                     clonedWhipped = Instantiate(whipped, new Vector3(0, 0, 0), Quaternion.identity);
-                    SpriteRenderer whippedSR = clonedWhipped.GetComponent<SpriteRenderer>();
+                    decoWhipped = true;
 
+                    //SpriteRenderer whippedSR = clonedWhipped.GetComponent<SpriteRenderer>();
                     //int i = 10;
-                    while (i>0)
-                    {
-                        //i -= 1;
-
-                        float time = 0;
-                        time += Time.deltaTime;
-                        if(time == 1)
-                        {
-                            time = 0;
-                            i -= 1;
-                        }
-                        Color c = whippedSR.color;
-                        c.a += 25.5f;
-                        whippedSR.color = c;
-                        Debug.Log("color " + c.a);
-                        //whippedSR.material.color = c;
-                    }
+                    //while (i>0)
+                    //{
+                    //    i -= 1;
+                    //    Color c = whippedSR.color;
+                    //    c.a += 25.5f;
+                    //    whippedSR.color = c;
+                    //    Debug.Log("color " + c.a);
+                    //    //whippedSR.material.color = c;
+                    //}
                 }
 
                 if (rayHit.collider.gameObject.tag.Equals("strawberryCup"))
                 {
+                    decoStrawberryCount++;
+                    if(decoStrawberryCount == 1)
+                    {
+                        GameObject temp;
+                        temp = Instantiate(eachStrawberry, new Vector3(-0.58f, 0.11f, 0), Quaternion.identity);
+                        clonedEachStrawberry.Add(temp);
 
+                        clonedFirstButton = Instantiate(firstButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
+                        Invoke("hideNumberButton", 0.5f);
+                    }
+
+                    if (decoStrawberryCount == 2)
+                    {
+                        GameObject temp;
+                        SpriteRenderer sr = null;
+
+                        temp = Instantiate(strawberry, new Vector3(0.43f, 0.16f, 0), Quaternion.identity);
+                        temp.transform.localEulerAngles = new Vector3(0, 0, -90);
+                        temp.transform.localScale = new Vector3(0.15f, 0.15f, 1);
+
+                        sr = temp.GetComponent<SpriteRenderer>();
+                        sr.sortingOrder = 5;
+                        
+                        clonedEachStrawberry.Add(temp);
+                        clonedSecondButton = Instantiate(secondButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
+                        Invoke("hideNumberButton", 0.5f);
+
+                    }
+
+                    if (decoStrawberryCount == 3)
+                    {
+                        GameObject temp;
+                        temp = Instantiate(eachStrawberry, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
+                        temp.transform.localEulerAngles = new Vector3(0, 0, -85.96f);
+                        clonedEachStrawberry.Add(temp);
+                        clonedEachStrawberry[0].transform.position = new Vector3(-0.9f, 0.11f, 0);
+                        clonedEachStrawberry[1].transform.position = new Vector3(-0.07f, 0.18f, 0);
+
+                        clonedThirdButton = Instantiate(thirdButton, new Vector3(3.96f, 3.72f, 0), Quaternion.identity);
+                        Invoke("hideNumberButton", 0.5f);
+                    }
+                }
+
+                if(rayHit.collider.gameObject.tag.Equals("blueberryCup"))
+                {
+                    decoBlueberryCount++;
+                    if(decoBlueberryCount == 1)
+                    {
+                        GameObject temp;
+                        temp = Instantiate(eachBlueberry, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
+                        clonedEachBlueberry.Add(temp);
+
+                        clonedFirstButton = Instantiate(firstButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
+                        Invoke("hideNumberButton", 0.5f);
+                    }
+
+                    if (decoBlueberryCount == 2)
+                    {
+                        GameObject temp;
+                        temp = Instantiate(eachBlueberry, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
+                        temp.transform.localEulerAngles = new Vector3(0, 0, -181.34f);
+                        clonedEachBlueberry.Add(temp);
+
+                        clonedSecondButton = Instantiate(secondButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
+                        Invoke("hideNumberButton", 0.5f);
+                    }
+
+                    if (decoBlueberryCount == 3)
+                    {
+                        GameObject temp;
+                        SpriteRenderer sr = null;
+
+                        temp = Instantiate(eachBlueberry, new Vector3(-0.21f, -0.45f, 0), Quaternion.identity);
+                        temp.transform.localEulerAngles = new Vector3(0, 0, 158.51f);
+
+                        sr = temp.GetComponent<SpriteRenderer>();
+                        sr.sortingOrder = 6;
+
+                        clonedEachBlueberry.Add(temp);
+
+                        clonedThirdButton = Instantiate(thirdButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
+                        Invoke("hideNumberButton", 0.5f);
+                    }
+                }
+
+                if(rayHit.collider.gameObject.tag.Equals("bananaCup"))
+                {
+                    decoBananaCount++;
+                    if(decoBananaCount == 1)
+                    {
+                        GameObject temp;
+                        temp = Instantiate(eachBanana, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
+                        clonedEachBanana.Add(temp);
+
+                        clonedFirstButton = Instantiate(firstButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
+                        clonedFirstButton.transform.localEulerAngles = new Vector3(0, 180, 0);
+                        Invoke("hideNumberButton", 0.5f);
+
+                    }
+
+                    if (decoBananaCount == 2)
+                    {
+                        GameObject temp;
+                        temp = Instantiate(eachBanana, new Vector3(-0.76f, -0.57f, 0), Quaternion.identity);
+                        clonedEachBanana.Add(temp);
+
+                        clonedSecondButton = Instantiate(secondButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
+                        clonedSecondButton.transform.localEulerAngles = new Vector3(0, 180, 0);
+                        Invoke("hideNumberButton", 0.5f);
+                    }
+
+                    if(decoBananaCount == 3)
+                    {
+                        GameObject temp;
+                        temp = Instantiate(eachBanana, new Vector3(0.65f, -0.54f, 0), Quaternion.identity);
+                        temp.transform.localEulerAngles = new Vector3(0, 0, -18.65f);
+                        clonedEachBanana.Add(temp);
+
+                        clonedThirdButton = Instantiate(thirdButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
+                        clonedThirdButton.transform.localEulerAngles = new Vector3(0, 180, 0);
+                        Invoke("hideNumberButton", 0.5f);
+                    }
                 }
             }
         }
@@ -851,7 +995,6 @@ public class Cooking : MonoBehaviour //, IDragHandler
         //changeUIRecipe();
 
         Invoke("hideDecoRecipe", 2f);
-
     }
 
     void hideDecoRecipe()
@@ -865,4 +1008,81 @@ public class Cooking : MonoBehaviour //, IDragHandler
         clonedCookingMenu = Instantiate(decoRecipe, new Vector3(0, 0, 0), Quaternion.identity);
     }
 
+    void hideNumberButton()
+    {
+        if(clonedFirstButton != null)
+        {
+            Destroy(clonedFirstButton);
+        }
+        else if(clonedSecondButton != null)
+        {
+            Destroy(clonedSecondButton);
+        }
+        else if(clonedThirdButton != null)
+        {
+            Destroy(clonedThirdButton);
+        }
+    }
+
+    public void showCoffeMachineBack()
+    {
+        decoratingBack = false;
+        coffeeMachineBack = true;
+
+        Destroy(clonedStrawberryCup);
+        Destroy(clonedBlueberryCup);
+        Destroy(clonedBananaCup);
+        Destroy(clonedWhipping);
+        Destroy(clonedPancakes);
+        Destroy(clonedWhipped);
+        for (int i = 0; i < clonedEachStrawberry.Count; i++)
+            Destroy(clonedEachStrawberry[i]);
+        for (int i = 0; i < clonedEachBlueberry.Count; i++)
+            Destroy(clonedEachBlueberry[i]);
+        for (int i = 0; i < clonedEachBanana.Count; i++)
+            Destroy(clonedEachBanana[i]);
+
+        backRenderer.sprite = backGrounds[5];
+        nextButton.SetActive(false);
+        clonedGreenButton = Instantiate(greenButton, new Vector3(-1.86f, 3.78f, 0), Quaternion.identity);
+        clonedRedButton = Instantiate(redButton, new Vector3(-3.2f, 3.78f, 0), Quaternion.identity);
+
+        isWhiteCup = true;
+    }
+
+    void makeCoffee()
+    {
+        if(isWhiteCup == true)
+        {
+            Invoke("showWhiteCup", 1f);
+            isWhiteCup = false;
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (rayHit.collider != null)
+            {
+                if (rayHit.collider.gameObject.tag.Equals("greenButton"))
+                {
+                    Debug.Log("초록버튼 눌리나?");
+                    //0.7038139
+                    clonedDropCoffee = Instantiate(dropCoffee, new Vector3(-1.7094f, 1.307f, 0), Quaternion.identity);
+                    clonedDropCoffee.transform.localScale += Time.deltaTime * new Vector3(0, 0.1f, 0);
+                }
+
+                if (rayHit.collider.gameObject.tag.Equals("redButton"))
+                {
+
+                }
+            }
+        }
+    }
+    void showWhiteCup()
+    {
+        clonedWhiteCup = Instantiate(whiteCup, new Vector3(-1.58f, -1.3f, 0), Quaternion.identity);
+    }
 }
