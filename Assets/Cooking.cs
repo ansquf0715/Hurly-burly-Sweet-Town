@@ -70,6 +70,11 @@ public class Cooking : MonoBehaviour //, IDragHandler
 
     public GameObject whiteCup;
     public GameObject dropCoffee;
+    public GameObject kettle;
+    public GameObject dropMilk;
+
+    public GameObject topWhiteCup;
+    public GameObject heart;
 
     GameObject clonedMaker;
     GameObject clonedCookingMenu;
@@ -127,16 +132,24 @@ public class Cooking : MonoBehaviour //, IDragHandler
     GameObject clonedThirdButton;
 
     GameObject clonedGreenButton;
+    GameObject clonedGreenButton2;
     GameObject clonedRedButton;
+    GameObject clonedRedButton2;
 
     GameObject clonedWhiteCup;
     GameObject clonedDropCoffee;
+    GameObject clonedKettle;
+    GameObject clonedDropMilk;
+
+    GameObject clonedTopWhiteCup;
+    GameObject clonedHeart;
  
     bool bowlBack = false; //사용하는지 확인할 것
     bool inductionBack = false;
     bool cuttingBoardBack = false;
     bool decoratingBack = false;
     bool coffeeMachineBack = false;
+    bool latteArtBack = false;
 
     //bool[] checkIngredients = new bool[3];
     bool checkMilk = false;
@@ -163,6 +176,8 @@ public class Cooking : MonoBehaviour //, IDragHandler
     int decoBananaCount = 0;
 
     bool isWhiteCup = false;
+    bool isShot = false;
+    bool isHotMilk = false;
 
     Vector2 whipperPos;
 
@@ -188,30 +203,35 @@ public class Cooking : MonoBehaviour //, IDragHandler
     // Update is called once per frame
     void Update()
     {
-        if (bowlBack == true)
+        if (bowlBack)
         {
             putIngredients();
         }
 
-        if(inductionBack == true)
+        if(inductionBack)
         {
             Timer();
             baking();
         }
 
-        if(cuttingBoardBack == true)
+        if(cuttingBoardBack)
         {
             cutIngredients();
         }
 
-        if(decoratingBack == true)
+        if(decoratingBack)
         {
             Decorating();
         }
 
-        if(coffeeMachineBack == true)
+        if(coffeeMachineBack)
         {
             makeCoffee();
+        }
+
+        if(latteArtBack)
+        {
+            doLatteArt();
         }
     }
 
@@ -1047,6 +1067,11 @@ public class Cooking : MonoBehaviour //, IDragHandler
         clonedGreenButton = Instantiate(greenButton, new Vector3(-1.86f, 3.78f, 0), Quaternion.identity);
         clonedRedButton = Instantiate(redButton, new Vector3(-3.2f, 3.78f, 0), Quaternion.identity);
 
+        clonedGreenButton2 = Instantiate(greenButton, new Vector3(2.97f, 3.78f, 0), Quaternion.identity);
+        clonedGreenButton2.gameObject.tag = "greenButton2";
+        clonedRedButton2 = Instantiate(redButton, new Vector3(1.6f, 3.78f, 0), Quaternion.identity);
+        clonedRedButton2.gameObject.tag = "redButton2";
+
         isWhiteCup = true;
     }
 
@@ -1068,21 +1093,74 @@ public class Cooking : MonoBehaviour //, IDragHandler
             {
                 if (rayHit.collider.gameObject.tag.Equals("greenButton"))
                 {
-                    Debug.Log("초록버튼 눌리나?");
                     //0.7038139
                     clonedDropCoffee = Instantiate(dropCoffee, new Vector3(-1.7094f, 1.307f, 0), Quaternion.identity);
-                    clonedDropCoffee.transform.localScale += Time.deltaTime * new Vector3(0, 0.1f, 0);
+                    //clonedDropCoffee.transform.localScale += Time.deltaTime * new Vector3(0, 3f, 0);
+                    isShot = true;
                 }
 
                 if (rayHit.collider.gameObject.tag.Equals("redButton"))
                 {
 
                 }
+
+                if(rayHit.collider.gameObject.tag.Equals("greenButton2"))
+                {
+                    //Debug.Log("되나");
+                    clonedDropMilk = Instantiate(dropMilk, new Vector3(1.47f, 1.35f, 0), Quaternion.identity);
+                    isHotMilk = true;
+                }
             }
+        }
+        if(isShot == true && isHotMilk == true)
+        {
+            isShot = false;
+            isHotMilk = false;
+
+            Invoke("showLatteArt", 1f);
         }
     }
     void showWhiteCup()
     {
         clonedWhiteCup = Instantiate(whiteCup, new Vector3(-1.58f, -1.3f, 0), Quaternion.identity);
+        clonedKettle = Instantiate(kettle, new Vector3(1.53f, -0.61f, 0), Quaternion.identity);
+    }
+
+    void showLatteArt()
+    {
+        coffeeMachineBack = false;
+        latteArtBack = true;
+
+        backRenderer.sprite = backGrounds[6];
+
+        Destroy(clonedGreenButton);
+        Destroy(clonedGreenButton2);
+        Destroy(clonedRedButton);
+        Destroy(clonedRedButton2);
+        Destroy(clonedDropCoffee);
+        Destroy(clonedDropMilk);
+        Destroy(clonedWhiteCup);
+        Destroy(clonedKettle);
+
+        clonedTopWhiteCup = Instantiate(topWhiteCup, new Vector3(-2.98f, 0.13f, 0), Quaternion.identity);
+        Invoke("showKettle", 1f);
+    }
+
+    void showKettle()
+    {
+        clonedKettle = Instantiate(kettle, new Vector3(4.23f, -0.18f, 0), Quaternion.identity);
+        clonedKettle.transform.localScale = new Vector3(0.26f, 0.26f, 1);
+
+
+    }
+
+    void showHeart()
+    {
+        clonedHeart = Instantiate(heart, new Vector3(-3.59f, -0.26f, 0), Quaternion.identity);
+    }
+
+    void doLatteArt()
+    {
+
     }
 }

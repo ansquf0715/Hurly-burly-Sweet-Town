@@ -17,6 +17,8 @@ TagManager:
   - whipping
   - greenButton
   - redButton
+  - greenButton2
+  - redButton2
   layers:
   - Default
   - TransparentFX
