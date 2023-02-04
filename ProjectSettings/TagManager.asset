@@ -19,6 +19,8 @@ TagManager:
   - redButton
   - greenButton2
   - redButton2
+  - kettle
+  - bell
   layers:
   - Default
   - TransparentFX

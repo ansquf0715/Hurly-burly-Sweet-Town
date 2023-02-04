@@ -76,6 +76,13 @@ public class Cooking : MonoBehaviour //, IDragHandler
     public GameObject topWhiteCup;
     public GameObject heart;
 
+    public GameObject heartCoffee;
+    public GameObject syrup;
+    public GameObject leaf;
+    public GameObject bell;
+
+    public GameObject complete;
+
     GameObject clonedMaker;
     GameObject clonedCookingMenu;
     GameObject clonedMilk;
@@ -143,6 +150,12 @@ public class Cooking : MonoBehaviour //, IDragHandler
 
     GameObject clonedTopWhiteCup;
     GameObject clonedHeart;
+    GameObject clonedHeartCoffee;
+    GameObject clonedSyrup;
+    GameObject clonedLeaf;
+    GameObject clonedBell;
+
+    GameObject clonedComplete;
  
     bool bowlBack = false; //사용하는지 확인할 것
     bool inductionBack = false;
@@ -150,6 +163,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
     bool decoratingBack = false;
     bool coffeeMachineBack = false;
     bool latteArtBack = false;
+    bool deliveryBack = false;
 
     //bool[] checkIngredients = new bool[3];
     bool checkMilk = false;
@@ -178,6 +192,9 @@ public class Cooking : MonoBehaviour //, IDragHandler
     bool isWhiteCup = false;
     bool isShot = false;
     bool isHotMilk = false;
+
+    bool drawHeart = false;
+    int[] remakePancakes = new int[4]; //[0]:휘핑, [1]:딸기, [2]:블루베리, [3]:바나나
 
     Vector2 whipperPos;
 
@@ -232,6 +249,11 @@ public class Cooking : MonoBehaviour //, IDragHandler
         if(latteArtBack)
         {
             doLatteArt();
+        }
+
+        if(deliveryBack)
+        {
+            deliver();
         }
     }
 
@@ -460,14 +482,6 @@ public class Cooking : MonoBehaviour //, IDragHandler
     void showFilledBowl()
     {
         clonedFilledBowl = Instantiate(filledBowl, new Vector3(4.58f, 1.45f, 0), Quaternion.identity);
-    }
-
-    void getRay()
-    {
-        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
-        Ray2D ray = new Ray2D(touchPos, Vector2.zero);
-        RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
     }
 
     void baking()
@@ -865,6 +879,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
                 {
                     clonedWhipped = Instantiate(whipped, new Vector3(0, 0, 0), Quaternion.identity);
                     decoWhipped = true;
+                    remakePancakes[0] = 1;
 
                     //SpriteRenderer whippedSR = clonedWhipped.GetComponent<SpriteRenderer>();
                     //int i = 10;
@@ -882,6 +897,8 @@ public class Cooking : MonoBehaviour //, IDragHandler
                 if (rayHit.collider.gameObject.tag.Equals("strawberryCup"))
                 {
                     decoStrawberryCount++;
+                    remakePancakes[1]++;
+
                     if(decoStrawberryCount == 1)
                     {
                         GameObject temp;
@@ -902,7 +919,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
                         temp.transform.localScale = new Vector3(0.15f, 0.15f, 1);
 
                         sr = temp.GetComponent<SpriteRenderer>();
-                        sr.sortingOrder = 5;
+                        sr.sortingOrder = 8;
                         
                         clonedEachStrawberry.Add(temp);
                         clonedSecondButton = Instantiate(secondButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
@@ -927,7 +944,9 @@ public class Cooking : MonoBehaviour //, IDragHandler
                 if(rayHit.collider.gameObject.tag.Equals("blueberryCup"))
                 {
                     decoBlueberryCount++;
-                    if(decoBlueberryCount == 1)
+                    remakePancakes[2]++;
+
+                    if (decoBlueberryCount == 1)
                     {
                         GameObject temp;
                         temp = Instantiate(eachBlueberry, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
@@ -969,7 +988,9 @@ public class Cooking : MonoBehaviour //, IDragHandler
                 if(rayHit.collider.gameObject.tag.Equals("bananaCup"))
                 {
                     decoBananaCount++;
-                    if(decoBananaCount == 1)
+                    remakePancakes[3]++;
+
+                    if (decoBananaCount == 1)
                     {
                         GameObject temp;
                         temp = Instantiate(eachBanana, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
@@ -1142,6 +1163,8 @@ public class Cooking : MonoBehaviour //, IDragHandler
         Destroy(clonedWhiteCup);
         Destroy(clonedKettle);
 
+        isPerfect = false;
+
         clonedTopWhiteCup = Instantiate(topWhiteCup, new Vector3(-2.98f, 0.13f, 0), Quaternion.identity);
         Invoke("showKettle", 1f);
     }
@@ -1151,7 +1174,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
         clonedKettle = Instantiate(kettle, new Vector3(4.23f, -0.18f, 0), Quaternion.identity);
         clonedKettle.transform.localScale = new Vector3(0.26f, 0.26f, 1);
 
-
+        Invoke("showHeart", 0.5f);
     }
 
     void showHeart()
@@ -1162,5 +1185,283 @@ public class Cooking : MonoBehaviour //, IDragHandler
     void doLatteArt()
     {
 
+        if (drawHeart)
+        {
+            drawHeart = false;
+            Invoke("delayPerfect", 1f);
+            //Debug.Log("draw heart " + drawHeart);
+            //isPerfect = true;
+            //Invoke("showJustPerfect", 1f);
+            //Invoke("hidePerfect", 2f);
+        }
+
+        if (isPerfect == true)
+        {
+            isPerfect = false;
+
+            showJustPerfect();
+            //Debug.Log("show perfect");
+            Invoke("hidePerfect", 1f);
+            CancelInvoke("delayPerfect");
+            Invoke("showDeliveryBack", 1f);
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (rayHit.collider != null)
+            {
+                if(rayHit.collider.gameObject.tag.Equals("kettle"))
+                {
+                    checkHeart();
+                }
+            }
+        }
+    }
+
+    void checkHeart()
+    {
+        Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        clonedKettle.transform.position = objPosition;
+
+        if (objPosition.x >= -6 && objPosition.x <= -1.3
+            && objPosition.y >= -2.3 && objPosition.y <= 1.8)
+        {
+            //clonedKettle.transform.position = objPosition;
+            drawHeart = true;
+        }
+    }
+
+    void showDeliveryBack()
+    {
+        latteArtBack = false;
+        deliveryBack = true;
+
+        Destroy(clonedKettle);
+        Destroy(clonedTopWhiteCup);
+        Destroy(clonedHeart);
+
+        backRenderer.sprite = backGrounds[7];
+
+        clonedBell = Instantiate(bell, new Vector3(-5.65f, 2.27f, 0), Quaternion.identity);
+
+        Invoke("showCompleteCoffee", 1f);
+        Invoke("showCompletePancakes", 1f);
+
+    }
+
+    void showCompleteCoffee()
+    {
+        clonedHeartCoffee = Instantiate(heartCoffee, new Vector3(5.9f, 1.62f, 0), Quaternion.identity);
+    }
+
+    void showCompletePancakes()
+    {
+
+        clonedEachStrawberry.Clear();
+        clonedEachBlueberry.Clear();
+        clonedEachBanana.Clear();
+
+        //SpriteRenderer whippedSr = null;
+        //SpriteRenderer strawberrySr = null;
+        //SpriteRenderer halfStrawberrySr = null;
+        //SpriteRenderer bananaSr = null;
+        //SpriteRenderer blueberrySr = null;
+
+        //whippedSr = clonedWhipped.GetComponent<SpriteRenderer>();
+        //whippedSr.sortingOrder = 4;
+
+
+        clonedPancakes = Instantiate(pancakes, new Vector3(-0.17f, -0.47f, 0), Quaternion.identity);
+        clonedPancakes.transform.localScale = new Vector3(0.16f, 0.16f, 1);
+
+        //sr = clonedPancakes.GetComponent<SpriteRenderer>();
+        //sr.sortingOrder = 4;
+        
+        clonedSyrup = Instantiate(syrup, new Vector3(-0.16f, -0.35f, 0), Quaternion.identity);
+
+        clonedLeaf = Instantiate(leaf, new Vector3(-0.14f, -0.28f, 0), Quaternion.identity);
+
+        //휘핑
+        if(remakePancakes[0] == 1)
+        {
+            clonedWhipped = Instantiate(whipped, new Vector3(-0.07f, -0.42f, 0), Quaternion.identity);
+            clonedWhipped.transform.localScale = new Vector3(1.1f, 1.1f, 0);
+        }
+
+        //딸기1개
+        if(remakePancakes[1] == 1)
+        {
+            //SpriteRenderer sr = null;
+            GameObject temp;
+            temp = Instantiate(halfStrawberry, new Vector3(-0.1f, -0.42f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.15f, 0.15f, 0);
+            //sr = temp.GetComponent<SpriteRenderer>();
+            //sr.sortingOrder = 6;
+            clonedEachStrawberry.Add(temp);
+        }
+        //딸기2개
+        if (remakePancakes[1] ==2)
+        {
+            SpriteRenderer sr = null;
+
+            clonedEachStrawberry.Clear();
+            GameObject temp;
+            temp = Instantiate(halfStrawberry, new Vector3(-0.56f, -0.42f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.15f, 0.15f, 0);
+
+            clonedEachStrawberry.Add(temp);
+
+            temp = Instantiate(strawberry, new Vector3(0.11f, -0.42f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.12f, 0.12f, 0);
+            sr = temp.GetComponent<SpriteRenderer>();
+            sr.sortingOrder = 8;
+            clonedEachStrawberry.Add(temp);
+        }
+        //딸기3개
+        if (remakePancakes[1]==3)
+        {
+            clonedEachStrawberry.Clear();
+            SpriteRenderer sr = null;
+            GameObject temp;
+            temp = Instantiate(halfStrawberry, new Vector3(-0.78f, -0.45f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.15f, 0.15f, 1);
+            clonedEachStrawberry.Add(temp);
+
+            temp = Instantiate(strawberry, new Vector3(-0.11f, -0.42f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.12f, 0.12f, 1);
+            sr = temp.GetComponent<SpriteRenderer>();
+            sr.sortingOrder = 8;
+            clonedEachStrawberry.Add(temp);
+
+            temp = Instantiate(halfStrawberry, new Vector3(0.51f, -0.45f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.15f, 0.15f, 1);
+            clonedEachStrawberry.Add(temp);
+        }
+
+        //블루베리1개
+        if(remakePancakes[2]==1)
+        {
+            clonedEachBlueberry.Clear();
+            GameObject temp;
+
+            temp = Instantiate(eachBlueberry, new Vector3(-0.2f, -0.97f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            temp.transform.localEulerAngles = new Vector3(0, 180f, 38.67f);
+            clonedEachBlueberry.Add(temp);
+        }
+        //블루베리2개
+        if (remakePancakes[2]==2)
+        {
+            clonedEachBlueberry.Clear();
+            GameObject temp;
+
+            temp = Instantiate(eachBlueberry, new Vector3(0.08f, -1f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            temp.transform.localEulerAngles = new Vector3(0, 180f, 38.67f);
+            clonedEachBlueberry.Add(temp);
+
+            temp = Instantiate(eachBlueberry, new Vector3(-0.43f, -0.03f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            temp.transform.localEulerAngles = new Vector3(0, 0, -19.03f);
+            clonedEachBlueberry.Add(temp);
+        }
+        //블루베리3개
+        if(remakePancakes[2]==3)
+        {
+            clonedEachBlueberry.Clear();
+            GameObject temp;
+
+            temp = Instantiate(eachBlueberry, new Vector3(-0.52f, -0.05f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            temp.transform.localEulerAngles = new Vector3(0, 0, -19.03f);
+            clonedEachBlueberry.Add(temp);
+
+            temp = Instantiate(eachBlueberry, new Vector3(0.21f, -0.01f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            temp.transform.localEulerAngles = new Vector3(0, 0, -105.16f);
+            clonedEachBlueberry.Add(temp);
+
+            temp = Instantiate(eachBlueberry, new Vector3(-0.22f, -1f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            temp.transform.localEulerAngles = new Vector3(0, 180, 38.67f);
+            clonedEachBlueberry.Add(temp);
+        }
+
+        //바나나1개
+        if(remakePancakes[3]==1)
+        {
+            //SpriteRenderer sr = null;
+            clonedEachBanana.Clear();
+            GameObject temp;
+
+            temp = Instantiate(eachBanana, new Vector3(-0.12f, 0.24f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            //sr = temp.GetComponent<SpriteRenderer>();
+            //sr.sortingOrder = 
+            clonedEachBanana.Add(temp);
+        }
+        //바나나2개
+        if (remakePancakes[3]==2)
+        {
+            clonedEachBanana.Clear();
+            GameObject temp;
+
+            temp = Instantiate(eachBanana, new Vector3(-0.67f, -0.99f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            clonedEachBanana.Add(temp);
+
+            temp = Instantiate(eachBanana, new Vector3(0.41f, -0.97f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            clonedEachBanana.Add(temp);
+        }
+        //바나나3개
+        if (remakePancakes[3]==3)
+        {
+            clonedEachBanana.Clear();
+            GameObject temp;
+
+            temp = Instantiate(eachBanana, new Vector3(-0.67f, -0.99f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            clonedEachBanana.Add(temp);
+
+            temp = Instantiate(eachBanana, new Vector3(0.41f, -0.97f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            clonedEachBanana.Add(temp);
+
+            temp = Instantiate(eachBanana, new Vector3(-0.14f, 0.24f, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(0.3f, 0.3f, 1);
+            clonedEachBanana.Add(temp);
+        }
+    }
+
+    void deliver()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if(rayHit.collider != null)
+            {
+                if(rayHit.collider.gameObject.tag.Equals("bell"))
+                {
+                    Invoke("showComplete", 0.5f);
+                }
+            }
+        }
+    }
+
+    void showComplete()
+    {
+        clonedComplete = Instantiate(complete, new Vector3(0, 0, 0), Quaternion.identity);
     }
 }
