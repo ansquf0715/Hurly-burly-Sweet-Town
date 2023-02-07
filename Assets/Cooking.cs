@@ -486,6 +486,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
 
     void baking()
     {
+
         if(Input.GetMouseButton(0))
         {
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -512,7 +513,16 @@ public class Cooking : MonoBehaviour //, IDragHandler
                             Destroy(clonedDough);
                             isDough = false;
                             clonedThickDough = Instantiate(thickDough, new Vector3(0, -0.96f, 0), Quaternion.identity);
-                            isThickDough = true;
+
+                            //Animator animator = GetComponent<Animator>();
+                            //if (animator.GetCurrentAnimatorStateInfo(0).IsName("ThickDough")
+                            //    && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
+                            //{
+                            //    Destroy(clonedThickDough);
+                            //}
+
+                            //isThickDough = true;
+                            isThickDough = false;
                             tempTime = 0;
                         }
                     }
