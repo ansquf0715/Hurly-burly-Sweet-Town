@@ -344,7 +344,7 @@ public class Cooking : MonoBehaviour //, IDragHandler
         Destroy(clonedInsideEgg, 1f);
     }
 
-    void putIngredients()
+    public void putIngredients()
     {
         if(Input.GetMouseButtonDown(0))
         {

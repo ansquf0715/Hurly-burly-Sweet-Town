@@ -21,6 +21,9 @@ TagManager:
   - redButton2
   - kettle
   - bell
+  - sugar
+  - butter
+  - pipingBag
   layers:
   - Default
   - TransparentFX
