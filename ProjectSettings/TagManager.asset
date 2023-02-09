@@ -24,6 +24,10 @@ TagManager:
   - sugar
   - butter
   - pipingBag
+  - ovenHandle
+  - ovenDoor
+  - ovenSwitch
+  - arrow
   layers:
   - Default
   - TransparentFX
