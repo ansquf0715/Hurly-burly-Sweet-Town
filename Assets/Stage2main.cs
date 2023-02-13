@@ -88,6 +88,8 @@ public class Stage2main : MonoBehaviour
     GameObject clonedX;
     public GameObject redButton;
     GameObject clonedRedButton;
+    public GameObject warning;
+    GameObject clonedWarning;
 
     bool isMixing = false;
     bool isMuffinDough = false;
@@ -522,6 +524,8 @@ public class Stage2main : MonoBehaviour
 
     void MuffinBaking()
     {
+        bool stopRoastingButton = false;
+
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
         Ray2D ray = new Ray2D(touchPos, Vector2.zero);
@@ -536,6 +540,9 @@ public class Stage2main : MonoBehaviour
                     Destroy(clonedClosedOven);
                     clonedOpenedOven = Instantiate(openedOven, new Vector3(0, -0.56f, 0), Quaternion.identity);
                     //toDestroy.Add(clonedOpenedOven);
+                    clonedRedButton = Instantiate(redButton, new Vector3(-0.98f, 2.25f, 0), Quaternion.identity);
+                    toDestroy.Add(clonedRedButton);
+                    clonedRedButton.transform.localScale = new Vector3(0.25f, 0.25f, 0);
 
                     if(!toDestroy.Contains(clonedFilledMuffinTray))
                     {
@@ -568,13 +575,38 @@ public class Stage2main : MonoBehaviour
 
                     Invoke("showTemperatureChoice", 1.5f);
                 }
+
+                if(rayHit.collider.gameObject.tag.Equals("redButton"))
+                {
+                    //if(clonedRoastingButton.transform.position.x <= 0.72f && clonedRoastingButton.transform.position.x >= -3.328f)
+                    //{
+                    //    if(!toDestroy.Contains(clonedPerfect))
+                    //    {
+                    //        clonedPerfect = Instantiate(perfect, new Vector3(0, 0, 0), Quaternion.identity);
+                    //        toDestroy.Add(clonedPerfect);
+                    //    }
+                    //}
+                    stopRoastingButton = true;
+                    if (!toDestroy.Contains(clonedPerfect))
+                    {
+                        clonedPerfect = Instantiate(perfect, new Vector3(0, 0, 0), Quaternion.identity);
+                        toDestroy.Add(clonedPerfect);
+                    }
+                }
             }
         }
 
-        //if(Input.GetMouseButton(0))
-        //{
-        //    clonedArrow.transform.Rotate(Vector3.forward * Time.deltaTime * 15);
-        //}
+        if(toDestroy.Contains(clonedRoastingButton))
+        {
+            if (clonedRoastingButton.transform.position.x >= 1.27f && clonedRoastingButton.transform.position.x <= 2.75f)
+            {
+                if (!toDestroy.Contains(clonedWarning))
+                {
+                    clonedWarning = Instantiate(warning, new Vector3(5.86f, 0.46f, 0), Quaternion.identity);
+                    toDestroy.Add(clonedWarning);
+                }
+            }
+        }
 
         if (Input.GetMouseButtonUp(0))
         {
@@ -589,6 +621,8 @@ public class Stage2main : MonoBehaviour
                 Destroy(clonedX, 1f);
                 spinArrow = true;
             }
+
+
         }
 
         if (isOvenReady)
@@ -608,13 +642,17 @@ public class Stage2main : MonoBehaviour
             clonedArrow.transform.Rotate(0, 0, -1);
         }
 
-        if(toDestroy.Contains(clonedDegreeOfRoasting))
+        //여기 무한루프니까 실행 시키지마
+        if (toDestroy.Contains(clonedDegreeOfRoasting))
         {
+            int counter = 0;
+            int maxCounter = 100;
             do
             {
                 clonedRoastingButton.transform.localPosition =
                     Vector3.MoveTowards(clonedRoastingButton.transform.position, new Vector3(2.78f, -3.328f, 0), 1 * Time.deltaTime);
-            } while (clonedRoastingButton.transform.position.x == 2.78f);
+                counter++;
+            } while (clonedRoastingButton.transform.position.x >= 2.78f || stopRoastingButton == true || counter<maxCounter);
         }
     }
 
@@ -654,9 +692,17 @@ public class Stage2main : MonoBehaviour
         Destroy(clonedArrow);
         Destroy(clonedTemperatureChoice);
 
-        clonedDegreeOfRoasting = Instantiate(degreeOfRoasting, new Vector3(0, -2.9f, 0), Quaternion.identity);
-        toDestroy.Add(clonedDegreeOfRoasting);
-        clonedRoastingButton = Instantiate(roastingButton, new Vector3(-3.001f, -3.328f, 0), Quaternion.identity);
-        toDestroy.Add(clonedRoastingButton);
+        if(!toDestroy.Contains(clonedDegreeOfRoasting))
+        {
+            clonedDegreeOfRoasting = Instantiate(degreeOfRoasting, new Vector3(0, -2.9f, 0), Quaternion.identity);
+            toDestroy.Add(clonedDegreeOfRoasting);
+        }
+
+        if(!toDestroy.Contains(clonedRoastingButton))
+        {
+            clonedRoastingButton = Instantiate(roastingButton, new Vector3(-3.001f, -3.328f, 0), Quaternion.identity);
+            toDestroy.Add(clonedRoastingButton);
+        }
+
     }
 }
