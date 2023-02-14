@@ -90,13 +90,34 @@ public class Stage2main : MonoBehaviour
     GameObject clonedRedButton;
     public GameObject warning;
     GameObject clonedWarning;
+    public GameObject greyMuffinTray;
+    GameObject clonedGreyMuffinTray;
+    public GameObject chocoMuffinBread;
+    GameObject clonedChocoMuffinBread;
+    public GameObject redMuffinBread;
+    GameObject clonedRedMuffinBread;
+    public GameObject whiteSharpCream;
+    GameObject clonedWhiteSharpCream;
+    public GameObject cheeseSharpCream;
+    GameObject clonedCheeseSharpCream;
+    public GameObject miniGameTitle;
+    GameObject clonedMiniGameTitle;
+    public GameObject miniGameDirection;
+    GameObject clonedMiniGameDirection;
+    public GameObject chocoMuffinWithWhipping;
+    GameObject clonedChocoMuffinWithWhipping;
+    //public GameObject redMuffinWithWhipping;
+    //GameObject clonedRedMuffinWithWhipping;
 
     bool isMixing = false;
     bool isMuffinDough = false;
     bool isbaking = false;
+    bool isMuffinWhipping = false;
+    bool isMinigame = false;
 
     public bool[] checkIngredients = new bool[5]; //0:우유, 1:밀가루, 2:계란, 3:설탕, 4:버터
     public bool[] checkMuffinDough = new bool[2]; //0:핑크도우, 1:초코도우
+    public bool[] checkMuffinWhipping = new bool[2]; //0:하얀 크림, 1: 치즈크림
 
     bool isPerfect = false;
     bool isButterReady = false;
@@ -104,6 +125,8 @@ public class Stage2main : MonoBehaviour
     bool isChocoDough = false;
     bool isOvenReady = false;
     bool spinArrow = false;
+
+    Vector3 targetPos = new Vector3(2.78f, -3.328f, 0);
 
     // Start is called before the first frame update
     void Start()
@@ -130,6 +153,16 @@ public class Stage2main : MonoBehaviour
         if(isbaking)
         {
             MuffinBaking();
+        }
+
+        if(isMuffinWhipping)
+        {
+            muffinWhipping();
+        }
+
+        if(isMinigame)
+        {
+            MiniGame();
         }
     }
 
@@ -525,6 +558,7 @@ public class Stage2main : MonoBehaviour
     void MuffinBaking()
     {
         bool stopRoastingButton = false;
+        //Vector3 targetPos = new Vector3(2.78f, -3.328f, 0);
 
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
@@ -587,10 +621,14 @@ public class Stage2main : MonoBehaviour
                     //    }
                     //}
                     stopRoastingButton = true;
+                    targetPos = clonedRoastingButton.transform.position;
+
                     if (!toDestroy.Contains(clonedPerfect))
                     {
                         clonedPerfect = Instantiate(perfect, new Vector3(0, 0, 0), Quaternion.identity);
                         toDestroy.Add(clonedPerfect);
+
+                        Invoke("showMuffinWhippingBack", 1.5f);
                     }
                 }
             }
@@ -642,17 +680,12 @@ public class Stage2main : MonoBehaviour
             clonedArrow.transform.Rotate(0, 0, -1);
         }
 
-        //여기 무한루프니까 실행 시키지마
         if (toDestroy.Contains(clonedDegreeOfRoasting))
         {
-            int counter = 0;
-            int maxCounter = 100;
-            do
+            if(!stopRoastingButton)
             {
-                clonedRoastingButton.transform.localPosition =
-                    Vector3.MoveTowards(clonedRoastingButton.transform.position, new Vector3(2.78f, -3.328f, 0), 1 * Time.deltaTime);
-                counter++;
-            } while (clonedRoastingButton.transform.position.x >= 2.78f || stopRoastingButton == true || counter<maxCounter);
+                clonedRoastingButton.transform.position = Vector3.MoveTowards(clonedRoastingButton.transform.position, targetPos , 1 * Time.deltaTime);
+            }
         }
     }
 
@@ -703,6 +736,151 @@ public class Stage2main : MonoBehaviour
             clonedRoastingButton = Instantiate(roastingButton, new Vector3(-3.001f, -3.328f, 0), Quaternion.identity);
             toDestroy.Add(clonedRoastingButton);
         }
+    }
 
+    void showMuffinWhippingBack()
+    {
+        isbaking = false;
+        isMuffinWhipping = true;
+
+        backRenderer.sprite = backGrounds[2];
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        clonedGreyMuffinTray = Instantiate(greyMuffinTray, new Vector3(-0.06f, -2.17f, 0), Quaternion.identity);
+        toDestroy.Add(clonedGreyMuffinTray);
+        clonedChocoMuffinBread = Instantiate(chocoMuffinBread, new Vector3(-2.01f, -0.48f, 0), Quaternion.identity);
+        toDestroy.Add(clonedChocoMuffinBread);
+        clonedRedMuffinBread = Instantiate(redMuffinBread, new Vector3(1.89f, -0.03f, 0), Quaternion.identity);
+        toDestroy.Add(clonedRedMuffinBread);
+
+        Invoke("ClonePipingBag", 1f);
+    }
+
+    void ClonePipingBag()
+    {
+        clonedPipingBag = Instantiate(pipingBag, new Vector3(6.25f, 1.14f, 0), Quaternion.identity);
+        clonedPipingBag.transform.localScale = new Vector3(1, 1, 0);
+        toDestroy.Add(clonedPipingBag);
+    }
+
+    void muffinWhipping()
+    {
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+        Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+        RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        if(Input.GetMouseButton(0))
+         {
+            if(rayHit.collider.gameObject.tag.Equals("pipingBag"))
+            {
+                Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+                clonedPipingBag.transform.position = objPosition;
+
+                //초코머핀
+                if(objPosition.x >= -1.44f && objPosition.x <= 0.76f
+                    && objPosition.y >= 2f && objPosition.y <= 4f)
+                {
+                    if(!toDestroy.Contains(clonedWhiteSharpCream))
+                    {
+                        clonedWhiteSharpCream = Instantiate(whiteSharpCream, new Vector3(-2.17f, 1.74f, 0), Quaternion.identity);
+                        toDestroy.Add(clonedWhiteSharpCream);
+                        checkMuffinWhipping[0] = true;
+                    }
+                }
+                //레드머핀
+                if(objPosition.x >= 2.54f && objPosition.x <= 4.69f
+                    && objPosition.y >= 2f && objPosition.y <= 4f)
+                {
+                    if(!toDestroy.Contains(clonedCheeseSharpCream))
+                    {
+                        clonedCheeseSharpCream = Instantiate(cheeseSharpCream, new Vector3(1.78f, 1.78f, 0), Quaternion.identity);
+                        toDestroy.Add(clonedCheeseSharpCream);
+                        checkMuffinWhipping[1] = true;
+                    }
+                }
+            }
+        }
+
+        if (checkwhipppingDone())
+        {
+            Invoke("showMiniGameTitle", 1f);
+
+            for (int i = 0; i < checkMuffinWhipping.Length; i++)
+                checkMuffinWhipping[i] = false;
+        }
+    }
+
+    bool checkwhipppingDone()
+    {
+        for(int i=0; i<checkMuffinWhipping.Length; i++)
+        {
+            if (checkMuffinWhipping[i] == false)
+                return false;
+        }
+        return true;
+    }
+
+    void showMiniGameTitle()
+    {
+        clonedMiniGameTitle = Instantiate(miniGameTitle, new Vector3(0, 0, 0), Quaternion.identity);
+        toDestroy.Add(clonedMiniGameTitle);
+
+        Invoke("showMiniGameBack", 1f);
+    }
+
+    void showMiniGameBack()
+    {
+        isMuffinWhipping = false;
+        isMinigame = true;
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        backRenderer.sprite = backGrounds[3];
+        clonedMiniGameDirection = Instantiate(miniGameDirection, new Vector3(0, 0, 0), Quaternion.identity);
+        Destroy(clonedMiniGameDirection, 3f);
+
+        Invoke("showChocoCupCake", 4f);
+    }
+
+    void MiniGame()
+    {
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+        Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+        RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        if(Input.GetMouseButton(0))
+        {
+            if(rayHit.collider.gameObject.tag.Equals("muffin"))
+            {
+                Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+                //clonedPipingBag.transform.position = objPosition;
+                objPosition.y = clonedChocoMuffinWithWhipping.transform.position.y;
+                clonedChocoMuffinWithWhipping.transform.position = objPosition;
+
+            }
+        }
+    }
+
+    void showChocoCupCake()
+    {
+        clonedChocoMuffinWithWhipping = Instantiate(chocoMuffinWithWhipping, new Vector3(-5.27f, -2.48f, 0), Quaternion.identity);
+        toDestroy.Add(clonedChocoMuffinWithWhipping);
     }
 }

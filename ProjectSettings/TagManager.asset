@@ -28,6 +28,7 @@ TagManager:
   - ovenDoor
   - ovenSwitch
   - arrow
+  - muffin
   layers:
   - Default
   - TransparentFX
