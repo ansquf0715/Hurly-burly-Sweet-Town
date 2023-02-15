@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Timers;
 
 public class Stage2main : MonoBehaviour
 {
@@ -106,8 +108,8 @@ public class Stage2main : MonoBehaviour
     GameObject clonedMiniGameDirection;
     public GameObject chocoMuffinWithWhipping;
     GameObject clonedChocoMuffinWithWhipping;
-    //public GameObject redMuffinWithWhipping;
-    //GameObject clonedRedMuffinWithWhipping;
+    public GameObject cherryMuffin;
+    GameObject clonedCherryMuffin;
 
     bool isMixing = false;
     bool isMuffinDough = false;
@@ -125,8 +127,14 @@ public class Stage2main : MonoBehaviour
     bool isChocoDough = false;
     bool isOvenReady = false;
     bool spinArrow = false;
+    public bool changeMuffin = false;
+
+    //GameObject[] randomDeco = new GameObject[5]; //µþ±â, Ã¼¸®, ¿À·»Áö, ¹Ù³ª³ª
+    List<GameObject> clonedItems = new List<GameObject>();
 
     Vector3 targetPos = new Vector3(2.78f, -3.328f, 0);
+    Vector2 objPos = new Vector2(-5.27f, -2.48f);
+    public Vector2 nowPos;
 
     // Start is called before the first frame update
     void Start()
@@ -863,17 +871,24 @@ public class Stage2main : MonoBehaviour
         Ray2D ray = new Ray2D(touchPos, Vector2.zero);
         RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        if(Input.GetMouseButton(0))
+        if(toDestroy.Contains(clonedChocoMuffinWithWhipping))
         {
-            if(rayHit.collider.gameObject.tag.Equals("muffin"))
+            if(Input.GetMouseButton(0))
             {
                 Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-                Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+                objPos = Camera.main.ScreenToWorldPoint(mousePosition);
+                objPos.y = clonedChocoMuffinWithWhipping.transform.position.y;
+            }
+            clonedChocoMuffinWithWhipping.transform.position = Vector2.Lerp(clonedChocoMuffinWithWhipping.transform.position, objPos, Time.deltaTime * 2f);
+        }
 
-                //clonedPipingBag.transform.position = objPosition;
-                objPosition.y = clonedChocoMuffinWithWhipping.transform.position.y;
-                clonedChocoMuffinWithWhipping.transform.position = objPosition;
-
+        if(changeMuffin)
+        {
+            if (!toDestroy.Contains(cherryMuffin))
+            {
+                clonedCherryMuffin = Instantiate(cherryMuffin, nowPos, Quaternion.identity);
+                toDestroy.Add(clonedCherryMuffin);
+                changeMuffin = false;
             }
         }
     }
@@ -883,4 +898,5 @@ public class Stage2main : MonoBehaviour
         clonedChocoMuffinWithWhipping = Instantiate(chocoMuffinWithWhipping, new Vector3(-5.27f, -2.48f, 0), Quaternion.identity);
         toDestroy.Add(clonedChocoMuffinWithWhipping);
     }
+
 }

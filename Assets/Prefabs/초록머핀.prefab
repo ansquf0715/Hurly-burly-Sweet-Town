@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 2794413461212479827}
   - component: {fileID: 8721346998650566189}
   - component: {fileID: 5963879825958226216}
+  - component: {fileID: 8264779430068796772}
+  - component: {fileID: -10335148590436010}
   m_Layer: 0
   m_Name: "\uCD08\uB85D\uBA38\uD540"
   m_TagString: muffin
@@ -111,3 +113,41 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 20.537035, y: 29.31}
   m_EdgeRadius: 0
+--- !u!50 &8264779430068796772
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569194505522823120}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 6
+--- !u!114 &-10335148590436010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569194505522823120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f6445bdcdb3bc47bea697d7e6b47cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tryAgain: {fileID: 9074774150634269076, guid: ef7533f732b3e784ea86b36aad5fb4f2, type: 3}
+  strawberry: {fileID: 214258724282180228, guid: 46b8d24c11381b34496c05a0fa8da42d, type: 3}
+  cherry: {fileID: 586051312954728742, guid: 0b5aa928157644f47a442eba20fb1f6f, type: 3}
+  orange: {fileID: 5205842875568368170, guid: 73dc51da70a744a449b184e9eb9adea4, type: 3}
+  banana: {fileID: 8656891154460198522, guid: 838c19515fccb3a4db32eedaf10315b2, type: 3}

@@ -29,6 +29,8 @@ TagManager:
   - ovenSwitch
   - arrow
   - muffin
+  - cherry
+  - orange
   layers:
   - Default
   - TransparentFX
