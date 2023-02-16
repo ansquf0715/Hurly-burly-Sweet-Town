@@ -31,6 +31,8 @@ TagManager:
   - muffin
   - cherry
   - orange
+  - yogurt
+  - iceBox
   layers:
   - Default
   - TransparentFX

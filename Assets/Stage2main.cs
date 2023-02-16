@@ -110,16 +110,36 @@ public class Stage2main : MonoBehaviour
     GameObject clonedChocoMuffinWithWhipping;
     public GameObject cherryMuffin;
     GameObject clonedCherryMuffin;
+    public GameObject iceBox;
+    GameObject clonedIceBox;
+    public GameObject yogurt;
+    GameObject clonedYogurt;
+    public GameObject strawberryCup;
+    GameObject clonedStrawberryCup;
+    public GameObject mixer;
+    GameObject clonedMixer;
+    public GameObject filledMilkForMixer;
+    GameObject clonedFilledMilkForMixer;
+    public GameObject ice;
+    GameObject clonedIce;
+    public GameObject strawberryBundle;
+    GameObject clonedStrawberryBundle;
+    public GameObject filledYogurt;
+    GameObject clonedFilledYogurt;
+    public GameObject mixerLid;
+    GameObject clonedMixerLid;
 
     bool isMixing = false;
     bool isMuffinDough = false;
     bool isbaking = false;
     bool isMuffinWhipping = false;
     bool isMinigame = false;
+    bool isMixer = false;
 
     public bool[] checkIngredients = new bool[5]; //0:우유, 1:밀가루, 2:계란, 3:설탕, 4:버터
     public bool[] checkMuffinDough = new bool[2]; //0:핑크도우, 1:초코도우
     public bool[] checkMuffinWhipping = new bool[2]; //0:하얀 크림, 1: 치즈크림
+    public bool[] checkMixerIngredients = new bool[4]; //0:우유, 1:얼음, 2:딸기, 3:요거트
 
     bool isPerfect = false;
     bool isButterReady = false;
@@ -171,6 +191,11 @@ public class Stage2main : MonoBehaviour
         if(isMinigame)
         {
             MiniGame();
+        }
+
+        if(isMixer)
+        {
+            Mixing();
         }
     }
 
@@ -884,11 +909,19 @@ public class Stage2main : MonoBehaviour
 
         if(changeMuffin)
         {
-            if (!toDestroy.Contains(cherryMuffin))
+            if (!toDestroy.Contains(clonedCherryMuffin))
             {
                 clonedCherryMuffin = Instantiate(cherryMuffin, nowPos, Quaternion.identity);
                 toDestroy.Add(clonedCherryMuffin);
                 changeMuffin = false;
+
+                if(!toDestroy.Contains(clonedPerfect))
+                {
+                    clonedPerfect = Instantiate(perfect, new Vector3(0, 0, 0), Quaternion.identity);
+                    toDestroy.Add(clonedPerfect);
+
+                    Invoke("showMixerBack", 1f);
+                }
             }
         }
     }
@@ -899,4 +932,138 @@ public class Stage2main : MonoBehaviour
         toDestroy.Add(clonedChocoMuffinWithWhipping);
     }
 
+    void showMixerBack()
+    {
+        isMinigame = false;
+        isMixer = true;
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        backRenderer.sprite = backGrounds[4];
+
+        clonedMilk = Instantiate(milk, new Vector3(-8.26f, -1.43f, 0), Quaternion.identity);
+        clonedMilk.transform.localScale = new Vector3(3.497254f, 2.942825f, 1);
+        toDestroy.Add(clonedMilk);
+        clonedIceBox = Instantiate(iceBox, new Vector3(-5.48f, -0.71f, 0), Quaternion.identity);
+        toDestroy.Add(clonedIceBox);
+        clonedYogurt = Instantiate(yogurt, new Vector3(6.79f, -0.99f, 0), Quaternion.identity);
+        toDestroy.Add(clonedYogurt);
+        clonedStrawberryCup = Instantiate(strawberryCup, new Vector3(5.13f, -3.34f, 0), Quaternion.identity);
+        toDestroy.Add(clonedStrawberryCup);
+        clonedMixer = Instantiate(mixer, new Vector3(0, -1.27f, 0), Quaternion.identity);
+        toDestroy.Add(clonedMixer);
+    }
+
+    void Mixing()
+    {
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+        Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+        RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            if(rayHit.collider.gameObject.tag.Equals("milk"))
+            {
+
+                if (!toDestroy.Contains(clonedFilledMilkForMixer))
+                {
+                    clonedFilledMilkForMixer = Instantiate(filledMilkForMixer, new Vector3(-0.0148f, -0.1353f, 0), Quaternion.identity);
+                    toDestroy.Add(clonedFilledMilkForMixer);
+                    checkMixerIngredients[0] = true;
+                }
+            }
+
+            if(rayHit.collider.gameObject.tag.Equals("iceBox"))
+            {
+                if(!toDestroy.Contains(clonedIce))
+                {
+                    clonedIce = Instantiate(ice, new Vector3(0.01f, 2.83f, 0), Quaternion.identity);
+                    toDestroy.Add(clonedIce);
+                    checkMixerIngredients[1] = true;
+                }    
+            }
+
+            if(rayHit.collider.gameObject.tag.Equals("strawberryCup"))
+            {
+                if (!toDestroy.Contains(clonedStrawberryBundle))
+                {
+                    clonedStrawberryBundle = Instantiate(strawberryBundle, new Vector3(-0.01f, 2.13f, 0), Quaternion.identity);
+                    clonedStrawberryBundle.transform.localEulerAngles = new Vector3(0, 0, 90f);
+                    toDestroy.Add(clonedStrawberryBundle);
+
+                    checkMixerIngredients[2] = true;
+                }
+            }
+
+            if(rayHit.collider.gameObject.tag.Equals("yogurt"))
+            {
+                if(!toDestroy.Contains(clonedFilledYogurt))
+                {
+                    clonedFilledYogurt = Instantiate(filledYogurt, new Vector3(-0.08f, 3.07f, 0), Quaternion.identity);
+                    clonedFilledYogurt.transform.localScale = new Vector3(0.13f, 0.16f, 0);
+                    toDestroy.Add(clonedFilledYogurt);
+
+                    checkMixerIngredients[3] = true;
+                }
+            }
+        }
+
+        if(checkMixerIngredients[1]) //얼음이동
+        {
+            clonedIce.transform.position
+                = Vector3.MoveTowards(clonedIce.transform.position, new Vector3(0.01f, 0.18f, 0), 2 * Time.deltaTime);
+        }
+
+        if(checkMixerIngredients[2]) //딸기 이동
+        {
+            clonedStrawberryBundle.transform.position
+                = Vector3.MoveTowards(clonedStrawberryBundle.transform.position, new Vector3(-0.01f, 0.24f, 0), 2 * Time.deltaTime);
+        }
+
+        if(checkMixerIngredients[3]) //요거트 이동
+        {
+            clonedFilledYogurt.transform.position
+                = Vector3.MoveTowards(clonedFilledYogurt.transform.position, new Vector3(0.13f, 1.31f, 0), 2 * Time.deltaTime);
+        }
+
+        if(checkAllMixer())
+        {
+            Invoke("delayAllMixer", 1f); //필요한가?
+
+            if (!toDestroy.Contains(clonedMixerLid))
+            {
+                Invoke("showMixerLid", 0.5f);
+            }
+        }
+        
+    }
+
+    bool checkAllMixer()
+    {
+        for(int i=0; i<checkMixerIngredients.Length; i++)
+        {
+            if (checkMixerIngredients[i] == false)
+                return false;
+        }
+        return true;
+    }
+
+    void delayAllMixer()
+    {
+        for (int i = 0; i < checkMixerIngredients.Length; i++)
+            checkMixerIngredients[i] = false;
+    }
+
+    void showMixerLid()
+    {
+        clonedMixerLid = Instantiate(mixerLid, new Vector3(-0.02f, 2.66f, 0), Quaternion.identity);
+        toDestroy.Add(clonedMixerLid);
+        CancelInvoke("showMixerLid");
+    }
 }
