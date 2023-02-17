@@ -128,6 +128,35 @@ public class Stage2main : MonoBehaviour
     GameObject clonedFilledYogurt;
     public GameObject mixerLid;
     GameObject clonedMixerLid;
+    public GameObject mixerButton;
+    GameObject clonedMixerButton;
+    public GameObject fullMixer;
+    GameObject clonedFullMixer;
+    public GameObject completeMixer;
+    GameObject clonedCompleteMixer;
+    public GameObject pinkCup;
+    GameObject clonedPinkCup;
+    public GameObject whipping;
+    GameObject clonedWhipping;
+    public GameObject whiteCream;
+    GameObject clonedWhiteCream;
+    public GameObject chocoSyrup;
+    GameObject clonedChocoSyrup;
+    public GameObject dottedLine;
+    GameObject clonedDottedLine;
+    public GameObject chocoLine;
+    GameObject clonedChocoLine;
+    public GameObject bell;
+    GameObject clonedBell;
+    public GameObject finishMuffin;
+    GameObject clonedFinishMuffin;
+    public GameObject finishDrink;
+    GameObject clonedFinishDrink;
+    public GameObject complete;
+    GameObject clonedComplete;
+
+
+    Animator MixerAnim;
 
     bool isMixing = false;
     bool isMuffinDough = false;
@@ -135,11 +164,14 @@ public class Stage2main : MonoBehaviour
     bool isMuffinWhipping = false;
     bool isMinigame = false;
     bool isMixer = false;
+    bool isDrink = false;
+    bool isDeliver = false;
 
     public bool[] checkIngredients = new bool[5]; //0:우유, 1:밀가루, 2:계란, 3:설탕, 4:버터
     public bool[] checkMuffinDough = new bool[2]; //0:핑크도우, 1:초코도우
     public bool[] checkMuffinWhipping = new bool[2]; //0:하얀 크림, 1: 치즈크림
     public bool[] checkMixerIngredients = new bool[4]; //0:우유, 1:얼음, 2:딸기, 3:요거트
+    public bool[] checkDrinkDeco = new bool[2]; //0:휘핑, 1: 초코시럽
 
     bool isPerfect = false;
     bool isButterReady = false;
@@ -148,6 +180,10 @@ public class Stage2main : MonoBehaviour
     bool isOvenReady = false;
     bool spinArrow = false;
     public bool changeMuffin = false;
+    bool canMixThings = false;
+    bool ChangeMixer = false;
+    bool canMoveDish = false;
+    bool canFinish = false;
 
     //GameObject[] randomDeco = new GameObject[5]; //딸기, 체리, 오렌지, 바나나
     List<GameObject> clonedItems = new List<GameObject>();
@@ -159,8 +195,7 @@ public class Stage2main : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //cooking = GameObject.Find("Cooking").GetComponent<>
-
+        //MixerAnim = fullMixer.GetComponent<Animator>();
         startButton.SetActive(false);
         showOrderBack();
     }
@@ -196,6 +231,16 @@ public class Stage2main : MonoBehaviour
         if(isMixer)
         {
             Mixing();
+        }
+
+        if(isDrink)
+        {
+            decorateDrink();
+        }
+
+        if(isDeliver)
+        {
+            deliver();
         }
     }
 
@@ -957,6 +1002,8 @@ public class Stage2main : MonoBehaviour
         toDestroy.Add(clonedStrawberryCup);
         clonedMixer = Instantiate(mixer, new Vector3(0, -1.27f, 0), Quaternion.identity);
         toDestroy.Add(clonedMixer);
+        clonedMixerButton = Instantiate(mixerButton, new Vector3(0.06f, -2.81f, 0), Quaternion.identity);
+        toDestroy.Add(clonedMixerButton);
     }
 
     void Mixing()
@@ -1012,6 +1059,43 @@ public class Stage2main : MonoBehaviour
                     checkMixerIngredients[3] = true;
                 }
             }
+
+            if (canMixThings)
+            {
+                if(rayHit.collider.gameObject.tag.Equals("bell")) //믹서버튼
+                {
+                    Destroy(clonedMixer);
+                    Destroy(clonedFilledYogurt);
+                    Destroy(clonedFilledMilkForMixer);
+                    Destroy(clonedIce);
+                    Destroy(clonedStrawberryBundle);
+                    Destroy(clonedMixerLid);
+                    Destroy(clonedMixerButton);
+
+                    if (!toDestroy.Contains(clonedFullMixer))
+                    {
+                        clonedFullMixer = Instantiate(fullMixer, new Vector3(0, -0.24f, 0), Quaternion.identity);
+                        toDestroy.Add(clonedFullMixer);
+                        ChangeMixer = true;
+                        MixerAnim = clonedFullMixer.GetComponent<Animator>();
+                        MixerAnim.enabled = true;
+                    }
+                }
+            }
+
+            if (ChangeMixer)
+            {
+                ChangeMixer = false;
+                if (!toDestroy.Contains(clonedCompleteMixer))
+                {
+                    Invoke("showCompleteMixer", 2f);
+
+                    if (!toDestroy.Contains(clonedPerfect))
+                    {
+                        Invoke("showPerfect", 2.5f);
+                    }
+                }
+            }
         }
 
         if(checkMixerIngredients[1]) //얼음이동
@@ -1039,6 +1123,7 @@ public class Stage2main : MonoBehaviour
             if (!toDestroy.Contains(clonedMixerLid))
             {
                 Invoke("showMixerLid", 0.5f);
+                canMixThings = true;
             }
         }
         
@@ -1066,4 +1151,206 @@ public class Stage2main : MonoBehaviour
         toDestroy.Add(clonedMixerLid);
         CancelInvoke("showMixerLid");
     }
+
+    void showPerfect()
+    {
+        //MixerAnim.enabled = false;
+        clonedPerfect = Instantiate(perfect, new Vector3(0, 0, 0), Quaternion.identity);
+        toDestroy.Add(clonedPerfect);
+
+        Invoke("showDrinkBack", 1f);
+    }
+
+    void showCompleteMixer()
+    {
+        Destroy(clonedFullMixer);
+        clonedCompleteMixer = Instantiate(completeMixer, new Vector3(0, -0.24f, 0), Quaternion.identity);
+        toDestroy.Add(clonedCompleteMixer);
+    }
+
+    void showDrinkBack()
+    {
+        isMixer = false;
+        isDrink = true;
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        backRenderer.sprite = backGrounds[5];
+
+        clonedPinkCup = Instantiate(pinkCup, new Vector3(0.67f, -0.29f, 0), Quaternion.identity);
+        toDestroy.Add(clonedPinkCup);
+
+        Invoke("showWhipping", 0.5f);
+    }
+
+    void showWhipping()
+    {
+        clonedWhipping = Instantiate(whipping, new Vector3(5.82f, 1.29f, 0), Quaternion.identity);
+        toDestroy.Add(clonedWhipping);
+    }
+
+    void decorateDrink()
+    {
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+        Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+        RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        if (rayHit.collider != null)
+        {
+            if(Input.GetMouseButton(0))
+            {
+                if (rayHit.collider.gameObject.tag.Equals("whipping"))
+                {
+                    Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                    Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+                    clonedWhipping.transform.position = objPosition;
+
+                    if (objPosition.x >= 0.31f && objPosition.x <= 3.79f
+                        && objPosition.y <= 0.12f && objPosition.y >= -4.31f)
+                    {
+                        if (!toDestroy.Contains(clonedWhiteCream))
+                        {
+                            clonedWhiteCream = Instantiate(whiteCream, new Vector3(0.05f, -0.31f, 0), Quaternion.identity);
+                            toDestroy.Add(clonedWhiteCream);
+
+                            Invoke("showChocoSyrup", 0.5f);
+                        }
+                    }
+                }
+
+                if(rayHit.collider.gameObject.tag.Equals("flour"))
+                {
+                    Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                    Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+                    clonedChocoSyrup.transform.position = objPosition;
+
+                    if(objPosition.x >= -3.35f && objPosition.x <= 1.22f
+                        && objPosition.y <= -0.1f && objPosition.y >= -4.58f)
+                    {
+                        Destroy(clonedDottedLine, 0.2f);
+                        if(!toDestroy.Contains(clonedChocoLine))
+                        {
+                            clonedChocoLine = Instantiate(chocoLine, new Vector3(-0.12f, -0.23f, 0), Quaternion.identity);
+                            toDestroy.Add(clonedChocoLine);
+
+                            Invoke("showJustPerfect", 0.8f);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void showChocoSyrup()
+    {
+        if(!toDestroy.Contains(clonedChocoSyrup))
+        {
+            clonedChocoSyrup = Instantiate(chocoSyrup, new Vector3(-6.22f, 0.24f, 0), Quaternion.identity);
+            toDestroy.Add(clonedChocoSyrup);
+        }
+
+        Invoke("showDottedLine", 1f);
+    }
+
+    void showDottedLine()
+    {
+        if(!toDestroy.Contains(dottedLine))
+        {
+            clonedDottedLine = Instantiate(dottedLine, new Vector3(0.11f, -0.26f, 0), Quaternion.identity);
+            toDestroy.Add(clonedDottedLine);
+        }
+    }
+
+    void showJustPerfect()
+    {
+        if(!toDestroy.Contains(clonedPerfect))
+        {
+            clonedPerfect = Instantiate(perfect, new Vector3(0, 0, 0), Quaternion.identity);
+            toDestroy.Add(clonedPerfect);
+        }
+
+        Invoke("showDeliverBack", 1f);
+    }
+
+    void showDeliverBack()
+    {
+        isDrink = false;
+        isDeliver = true;
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        backRenderer.sprite = backGrounds[6];
+
+        clonedBell = Instantiate(bell, new Vector3(-5.63f, 2.17f, 0), Quaternion.identity);
+        toDestroy.Add(clonedBell);
+
+        Invoke("showCompleteDish", 1f);
+    }
+
+    void deliver()
+    {
+        if(canMoveDish)
+        {
+            clonedFinishMuffin.transform.position
+                = Vector3.MoveTowards(clonedFinishMuffin.transform.position, new Vector3(-0.25f, 0.17f, 0), 3 * Time.deltaTime);
+            clonedFinishDrink.transform.position
+                = Vector3.MoveTowards(clonedFinishDrink.transform.position, new Vector3(5.85f, 0.36f, 0), 3 * Time.deltaTime);
+
+            canFinish = true;
+        }
+
+        if(canFinish)
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (rayHit.collider != null)
+            {
+                if (rayHit.collider.gameObject.tag.Equals("bell"))
+                {
+                    Invoke("showComplete", 1f);
+                }
+            }
+        }
+    }
+
+    void showCompleteDish()
+    {
+        if(!toDestroy.Contains(clonedFinishMuffin))
+        {
+            clonedFinishMuffin = Instantiate(finishMuffin, new Vector3(-0.25f, -5.28f, 0), Quaternion.identity);
+            toDestroy.Add(clonedFinishMuffin);
+        }
+
+        if(!toDestroy.Contains(clonedFinishDrink))
+        {
+            clonedFinishDrink = Instantiate(finishDrink, new Vector3(5.85f, -5.54f, 0), Quaternion.identity);
+        }
+
+        canMoveDish = true;
+    }
+
+    void showComplete()
+    {
+        if(!toDestroy.Contains(clonedComplete))
+        {
+            clonedComplete = Instantiate(complete, new Vector3(0, 0, 0), Quaternion.identity);
+            toDestroy.Add(clonedComplete);
+        }
+    }    
 }
