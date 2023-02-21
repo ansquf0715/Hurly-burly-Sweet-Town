@@ -2432,6 +2432,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1889422463}
   - component: {fileID: 1889422462}
+  - component: {fileID: 1889422464}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -2537,6 +2538,55 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1889422464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889422461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7f1aec28acd53d4fac82da1f644c3f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backGrounds:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  BackGround: {fileID: 0}
+  backRenderer: {fileID: 0}
+  blueList: {fileID: 0}
+  bluePlus: {fileID: 0}
+  bluePlusUI: {fileID: 0}
+  nextButton: {fileID: 0}
+  startButton: {fileID: 0}
+  slTimer: {fileID: 0}
+  maker: {fileID: 0}
+  CookingMenu: {fileID: 0}
+  perfect: {fileID: 0}
+  milk: {fileID: 0}
+  flour: {fileID: 0}
+  eggs: {fileID: 0}
+  asset1: {fileID: 0}
+  asset2: {fileID: 0}
+  bowl: {fileID: 0}
+  filledMilk: {fileID: 0}
+  filledFlour: {fileID: 0}
+  crackedEgg: {fileID: 0}
+  insideEgg: {fileID: 0}
+  milkButton: {fileID: 0}
+  flourButton: {fileID: 0}
+  eggButton: {fileID: 0}
+  whipper: {fileID: 0}
+  pan: {fileID: 0}
+  filledBowl: {fileID: 0}
+  dough: {fileID: 0}
+  thickDough: {fileID: 0}
+  strawberry: {fileID: 0}
+  dottedLine: {fileID: 0}
+  knife: {fileID: 0}
+  halfStrawberry: {fileID: 0}
 --- !u!1 &1936242237
 GameObject:
   m_ObjectHideFlags: 0
