@@ -89,6 +89,10 @@ public class Stage1Fix : MonoBehaviour
     int isLine = 0;
     int isKnife = 1;
 
+    bool needStrawberry = false;
+    bool needBanana = false;
+    bool needChocolate = false;
+
     float dragTime = 0;
 
     // Start is called before the first frame update
@@ -445,11 +449,52 @@ public class Stage1Fix : MonoBehaviour
         }
 
         backRenderer.sprite = backGrounds[2];
+
+
+        //조건문 달아서 배열에 나와야 하는 과일 담아두고 출력?
+        //showStrawberry();
+        Invoke("showStrawberry", 0.5f);
+        //Debug.Log("여기서부터 문제일까?");
+    }
+
+    void showStrawberry()
+    {
+
+        if (!toDestroy.Contains(clonedStrawberry1))
+        {
+            //Debug.Log("딸기1");
+            clonedStrawberry1 = Instantiate(strawberry, new Vector3(-1.7f, 0, 0), Quaternion.identity);
+            toDestroy.Add(clonedStrawberry1);
+        }
+        if (!toDestroy.Contains(clonedStrawberry2))
+        {
+            clonedStrawberry2 = Instantiate(strawberry, new Vector3(2.13f, 0, 0), Quaternion.identity);
+            clonedStrawberry2.transform.localEulerAngles = new Vector3(0, 0, 40);
+            toDestroy.Add(clonedStrawberry2);
+        }
+        //Debug.Log("딸기 몇개" + toDestroy.Count);
+
+        Invoke("delayLine", 0.5f);
+        needStrawberry = true;
+    }
+
+    void delayLine()
+    {
+        Debug.Log("isLine" + isLine);
+        isLine++;
     }
 
     void cutting()
     {
-        cuttingStrawberry();
+        if (needStrawberry) //딸기 자를 때
+        {
+            cuttingStrawberry();
+        }
+
+        if (!needBanana)
+        {
+            //Debug.Log("잘 넘어 오는지");
+        }
     }
 
     void cuttingStrawberry()
@@ -459,35 +504,26 @@ public class Stage1Fix : MonoBehaviour
         Ray2D ray = new Ray2D(touchPos, Vector2.zero);
         RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        if (!toDestroy.Contains(clonedStrawberry1))
+        if (isLine == 0) //첫번째 점선일 때
         {
-            clonedStrawberry1 = Instantiate(strawberry, new Vector3(-1.7f, 0, 0), Quaternion.identity);
-            toDestroy.Add(clonedStrawberry1);
-        }
-        if (!toDestroy.Contains(clonedStrawberry2))
-        {
-            clonedStrawberry2 = Instantiate(strawberry, new Vector3(2.13f, 0, 0), Quaternion.identity);
-            toDestroy.Add(clonedStrawberry2);
-            clonedStrawberry2.transform.localEulerAngles = new Vector3(0, 0, 40);
+            //isLine = 0;
+            if (!toDestroy.Contains(clonedDottedLine))
+            {
+                clonedDottedLine = Instantiate(dottedLine, new Vector3(-1.65f, -0.02f, 0), Quaternion.identity);
+                toDestroy.Add(clonedDottedLine);
+                clonedDottedLine.transform.localEulerAngles = new Vector3(0, 0, 45);
+            }
         }
 
         if (isLine == 1)
         {
-            isLine = 0;
-
-            clonedDottedLine = Instantiate(dottedLine, new Vector3(-1.65f, -0.02f, 0), Quaternion.identity);
-            toDestroy.Add(clonedDottedLine);
-            clonedDottedLine.transform.localEulerAngles = new Vector3(0, 0, 45);
-        }
-
-        if (isLine == 2)
-        {
-            isLine = 0;
-
-            clonedDottedLine = Instantiate(dottedLine, new Vector3(2.35f, 0.01f, 0), Quaternion.identity);
-            toDestroy.Add(clonedDottedLine);
-            clonedDottedLine.transform.localEulerAngles = new Vector3(0, 0, 85);
-            isKnife = 2;
+            if (!toDestroy.Contains(clonedDottedLine))
+            {
+                //Debug.Log("여기 안걸리나");
+                clonedDottedLine = Instantiate(dottedLine, new Vector3(2.35f, 0.01f, 0), Quaternion.identity);
+                toDestroy.Add(clonedDottedLine);
+                clonedDottedLine.transform.localEulerAngles = new Vector3(0, 0, 85);
+            }
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -496,16 +532,15 @@ public class Stage1Fix : MonoBehaviour
             {
                 if (rayHit.collider.gameObject.tag.Equals("dottedLine"))
                 {
-                    if (isKnife == 1)
+                    if (isLine == 1) //첫번째 점선일 때
                     {
-                        isKnife = 0;
-
                         clonedKnife = Instantiate(knife, new Vector3(0.27f, 0.01f, 0), Quaternion.identity);
                         toDestroy.Add(clonedKnife);
 
                         Destroy(clonedKnife, 1f);
 
                         Destroy(clonedDottedLine);
+                        toDestroy.Remove(clonedDottedLine);
                         Destroy(clonedStrawberry1);
 
                         if (!toDestroy.Contains(clonedHalfStrawberry))
@@ -513,17 +548,18 @@ public class Stage1Fix : MonoBehaviour
                             clonedHalfStrawberry = Instantiate(halfStrawberry, new Vector3(-1.7f, 0, 0), Quaternion.identity);
                             toDestroy.Add(clonedHalfStrawberry);
                         }
-                        isLine = 2;
+                        Invoke("delayLine", 0.5f);
                     }
 
-                    if (isKnife == 2)
+                    if (isLine == 2)
                     {
-                        isKnife = 0;
                         clonedKnife = Instantiate(knife, new Vector3(4.39f, -0.22f, 0), Quaternion.identity);
                         toDestroy.Add(clonedKnife);
+
                         Destroy(clonedKnife, 1f);
 
                         Destroy(clonedDottedLine);
+                        //toDestroy.Remove(clonedDottedLine);
                         Destroy(clonedStrawberry2);
 
                         if (!toDestroy.Contains(clonedHalfStrawberry2))
@@ -533,12 +569,20 @@ public class Stage1Fix : MonoBehaviour
                             toDestroy.Add(clonedHalfStrawberry2);
                         }
 
+                        Invoke("finishCutStrawberry", 1f);
                     }
                 }
-
             }
         }
 
-
+        //if (isLine > 2)
+        //    Invoke("finishCutStrawberry", 1f);
     }
+
+    void finishCutStrawberry()
+    {
+        Debug.Log("끝내라 딸기");
+        needStrawberry = false;
+    }
+
 }
