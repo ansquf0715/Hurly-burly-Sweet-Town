@@ -89,16 +89,22 @@ public class Stage1Fix : MonoBehaviour
     int isLine = 0;
     int isKnife = 1;
 
+    int cutStrawberryCount = 0; //맞게 잘랐는지
+    int cutBananaCount = 0;
+
     bool needStrawberry = false;
     bool needBanana = false;
     bool needChocolate = false;
 
     float dragTime = 0;
 
+    int[] menuList = new int[3]; //1:flavor 2~:topping
+
+
     // Start is called before the first frame update
     void Start()
     {
-        //orders = CSVReader.Read("order");
+        orders = CSVReader.Read("order");
 
         startButton.SetActive(false);
         blueList.SetActive(false);
@@ -126,6 +132,32 @@ public class Stage1Fix : MonoBehaviour
         {
             cutting();
         }
+    }
+
+    public void checkMenu()
+    {
+        int index = findIndex(GameObject.Find("GameSetting").GetComponent<GameNum>().StageNum,
+            GameObject.Find("GameSetting").GetComponent<GameNum>().OrderNum);
+
+        string flavor = orders[index]["Flavor"].ToString();
+        string topping = orders[index]["Topping"].ToString();
+
+        menuList[0] = int.Parse(flavor); //flavor
+        //menuList[1] = int
+
+    }
+
+    public int findIndex(int stage, int orderNum)
+    {
+        for (int i = 0; i < orders.Count; i++)
+        {
+            if (orders[i]["stage"].ToString() == stage.ToString()
+                && orders[i]["orderNum"].ToString() == orderNum.ToString())
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public void clickStart()
@@ -581,8 +613,136 @@ public class Stage1Fix : MonoBehaviour
 
     void finishCutStrawberry()
     {
-        Debug.Log("끝내라 딸기");
-        needStrawberry = false;
+        if (cutStrawberryCount == 2)
+        {
+            needStrawberry = false;
+            Debug.Log("strawberry count" + cutStrawberryCount);
+        }
+    }
+
+    void showBanana()
+    {
+        if (!toDestroy.Contains(clonedBanana))
+        {
+            clonedBanana = Instantiate(banana, new Vector3(0.31f, -0.33f, 0), Quaternion.identity);
+            toDestroy.Add(clonedBanana);
+        }
+
+        Invoke("showThreeLine", 0.5f);
+
+        isLine = 0;
+        Invoke("delayLine", 1.5f);
+
+        needBanana = true;
+    }
+
+    void cuttingBanana()
+    {
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+        Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+        RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        if (isLine == 1)
+        {
+            if (!toDestroy.Contains(clonedTempLine1))
+            {
+                clonedTempLine1 = Instantiate(dottedLine, new Vector3(-2, 0, 0), Quaternion.identity);
+                toDestroy.Add(clonedTempLine1);
+            }
+        }
+
+        if (isLine == 2)
+        {
+            if (!toDestroy.Contains(clonedTempLine2))
+            {
+                clonedTempLine2 = Instantiate(dottedLine, new Vector3(0, 0, 0), Quaternion.identity);
+                toDestroy.Add(clonedTempLine2);
+            }
+        }
+
+        if (isLine == 3)
+        {
+            if (!toDestroy.Contains(clonedTempLine3))
+            {
+                clonedTempLine3 = Instantiate(dottedLine, new Vector3(2, 0, 0), Quaternion.identity);
+                toDestroy.Add(clonedTempLine3);
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (rayHit.collider != null)
+            {
+                if (rayHit.collider.gameObject.tag.Equals("dottedLine"))
+                {
+                    if (isLine == 1)
+                    {
+                        clonedBackKnife = Instantiate(backKnife, new Vector3(-1.71f, -1.39f, 0), Quaternion.identity);
+
+                        Destroy(clonedBackKnife, 1f);
+
+                        Destroy(clonedTempLine1);
+                        //toDestroy.Remove(clonedDottedLine);
+
+                        cutBananaCount++;
+                        Invoke("delayLine", 0.5f);
+                    }
+
+                    if (isLine == 2)
+                    {
+                        clonedBackKnife = Instantiate(backKnife, new Vector3(0.52f, -1.39f, 0), Quaternion.identity);
+
+                        Destroy(clonedBackKnife, 1f);
+                        Destroy(clonedTempLine2);
+                        toDestroy.Remove(clonedTempLine1);
+
+                        cutBananaCount++;
+                        Invoke("delayLine", 0.5f);
+                    }
+
+                    if (isLine == 3)
+                    {
+                        clonedBackKnife = Instantiate(backKnife, new Vector3(2.59f, -1.2f, 0), Quaternion.identity);
+
+                        Destroy(clonedBackKnife, 1f);
+                        Destroy(clonedTempLine3);
+                        toDestroy.Remove(clonedTempLine2);
+
+                        Destroy(clonedBanana);
+                        toDestroy.Remove(clonedBanana);
+
+                        if (!toDestroy.Contains(clonedCutBanana))
+                        {
+                            clonedCutBanana = Instantiate(cutBanana, new Vector3(0.31f, -0.33f, 0), Quaternion.identity);
+                            toDestroy.Add(clonedCutBanana);
+                        }
+
+                        cutBananaCount++;
+                        Invoke("finishCutBanana", 1f);
+                    }
+                }
+            }
+        }
+    }
+
+    void showThreeLine()
+    {
+        clonedTempLine1 = Instantiate(dottedLine, new Vector3(-2, 0, 0), Quaternion.identity);
+        clonedTempLine2 = Instantiate(dottedLine, new Vector3(0, 0, 0), Quaternion.identity);
+        clonedTempLine3 = Instantiate(dottedLine, new Vector3(2, 0, 0), Quaternion.identity);
+
+        Destroy(clonedTempLine1, 0.5f);
+        Destroy(clonedTempLine2, 0.5f);
+        Destroy(clonedTempLine3, 0.5f);
+    }
+
+    void finishCutBanana()
+    {
+        if (cutBananaCount == 3)
+        {
+            needBanana = false;
+        }
     }
 
 }
