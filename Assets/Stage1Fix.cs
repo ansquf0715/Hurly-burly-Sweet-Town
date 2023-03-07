@@ -99,7 +99,7 @@ public class Stage1Fix : MonoBehaviour
     float dragTime = 0;
 
     int[] menuList = new int[3]; //1:flavor 2~:topping
-
+    public bool[] cutAllFruits = new bool[3];
 
     // Start is called before the first frame update
     void Start()
@@ -115,6 +115,8 @@ public class Stage1Fix : MonoBehaviour
         Invoke("showMaker", 1f);
         Invoke("showMenu", 1.5f);
         Invoke("showStart", 2f);
+
+        checkMenu();
     }
 
     // Update is called once per frame
@@ -143,8 +145,8 @@ public class Stage1Fix : MonoBehaviour
         string topping = orders[index]["Topping"].ToString();
 
         menuList[0] = int.Parse(flavor); //flavor
-        //menuList[1] = int
-
+        menuList[1] = int.Parse(topping.Substring(0, 1));
+        menuList[2] = int.Parse(topping.Substring(1, 1));
     }
 
     public int findIndex(int stage, int orderNum)
@@ -485,8 +487,26 @@ public class Stage1Fix : MonoBehaviour
 
         //조건문 달아서 배열에 나와야 하는 과일 담아두고 출력?
         //showStrawberry();
-        Invoke("showStrawberry", 0.5f);
+        //Invoke("showStrawberry", 0.5f);
         //Debug.Log("여기서부터 문제일까?");
+
+        chooseFlavorToCut();
+    }
+
+    void chooseFlavorToCut() //flavor 대로 자르기
+    {
+        switch (menuList[0])
+        {
+            case 0:
+                Invoke("showStrawberry", 0.5f);
+                break;
+            case 1:
+                Invoke("showBanana", 0.5f);
+                break;
+            case 2:
+                needChocolate = true;
+                break;
+        }
     }
 
     void showStrawberry()
