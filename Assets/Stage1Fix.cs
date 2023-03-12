@@ -971,6 +971,10 @@ public class Stage1Fix : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            //Debug.Log("menulist 0" + menuList[0]);
+            //Debug.Log("menulist 1" + menuList[1]);
+            //Debug.Log("menulist 2" + menuList[2]);
+
             if (rayHit.collider != null)
             {
                 if (rayHit.collider.gameObject.tag.Equals("whipping"))
@@ -984,64 +988,300 @@ public class Stage1Fix : MonoBehaviour
 
                 if (rayHit.collider.gameObject.tag.Equals("strawberryCup"))
                 {
-                    decoFruitCounts[0]++;
+                    decoClickedCounts[0]++;
 
                     if (menuList[0] == 1) //flavor == strawberry
                     {
-                        if (decoFruitCounts[0] == 1) //first clicked strawberry
+                        if (decoClickedCounts[0] == 1) //첫 번째 클릭
                         {
-                            GameObject temp;
-                            temp = Instantiate(eachStrawberry, new Vector3(-0.58f, 0.11f, 0), Quaternion.identity);
-                            //finishedPancakesDeco.Add(temp);
-                            toDestroy.Add(temp);
-                            EachStrawberrys.Add(temp);
+                            GameObject flavorStrawberry1;
+                            flavorStrawberry1 = Instantiate(eachStrawberry, new Vector3(-0.58f, 0.11f, 0), Quaternion.identity);
+                            finishedPancakesDeco.Add(flavorStrawberry1);
+                            EachStrawberrys.Add(flavorStrawberry1);
+                            toDestroy.Add(flavorStrawberry1);
 
-                            finishedPancakesDeco.Add(EachStrawberrys[0]);
-
-                            clonedFirstButton = Instantiate(firstButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
-                            Destroy(clonedFirstButton, 0.5f);
+                            showFlavorFirstButton();
                         }
-                        else if (decoFruitCounts[0] == 2) //second clicked strawberry
+
+                        if (decoClickedCounts[0] == 2) //두 번째 클릭
                         {
-                            GameObject temp;
+                            GameObject flavorStrawberry2;
                             SpriteRenderer sr = null;
 
-                            temp = Instantiate(strawberry, new Vector3(0.43f, 0.16f, 0), Quaternion.identity);
-                            temp.transform.localEulerAngles = new Vector3(0, 0, -90);
-                            temp.transform.localScale = new Vector3(0.15f, 0.15f, 1);
+                            flavorStrawberry2 = Instantiate(strawberry, new Vector3(0.43f, 0.16f, 0), Quaternion.identity);
+                            flavorStrawberry2.transform.localEulerAngles = new Vector3(0, 0, -90);
+                            flavorStrawberry2.transform.localScale = new Vector3(0.15f, 0.15f, 1);
 
-                            sr = temp.GetComponent<SpriteRenderer>();
+                            sr = flavorStrawberry2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 8;
 
-                            //finishedPancakesDeco.Add(temp);
-                            finishedPancakesDeco.Add(EachStrawberrys[1]);
-                            toDestroy.Add(temp);
-                            EachStrawberrys.Add(temp);
+                            finishedPancakesDeco.Add(flavorStrawberry2);
+                            EachStrawberrys.Add(flavorStrawberry2);
+                            toDestroy.Add(flavorStrawberry2);
 
-                            clonedSecondButton = Instantiate(secondButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
-                            Destroy(clonedSecondButton, 0.5f);
+                            showFlavorSecondButton();
                         }
-                        else if (decoFruitCounts[0] == 3)
+
+                        if (decoClickedCounts[0] == 3)
                         {
-                            GameObject temp;
-                            temp = Instantiate(eachStrawberry, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
-                            temp.transform.localEulerAngles = new Vector3(0, 0, -85.96f);
+                            GameObject flavorStrawberry3;
+                            flavorStrawberry3 = Instantiate(eachStrawberry, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
+                            flavorStrawberry3.transform.localEulerAngles = new Vector3(0, 0, -85.96f);
 
-                            //finishedPancakesDeco.Add(temp);
-                            EachStrawberrys.Add(temp);
-                            finishedPancakesDeco.Add(EachStrawberrys[2]);
-                            toDestroy.Add(temp);
+                            finishedPancakesDeco.Add(flavorStrawberry3);
+                            EachStrawberrys.Add(flavorStrawberry3);
+                            toDestroy.Add(flavorStrawberry3);
 
-                            EachStrawberrys[0].transform.position = new Vector3(-0.9f, 0.11f, 0);
-                            EachStrawberrys[1].transform.position = new Vector3(-0.07f, 0.18f, 0);
-
-                            clonedThirdButton = Instantiate(thirdButton, new Vector3(3.96f, 3.72f, 0), Quaternion.identity);
-                            Destroy(clonedThirdButton, 0.5f);
+                            showFlavorThirdButton();
                         }
                     }
 
+                    else if (menuList[1] == 2) //첫 번째 토핑이 딸기일 때
+                    {
+                        Debug.Log("걸?");
+                        if (decoClickedCounts[0] == 1) //첫 번째 클릭
+                        {
+                            GameObject toppingStrawberry1;
+                            toppingStrawberry1 = Instantiate(eachStrawberry, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingStrawberry1);
+                            EachStrawberrys.Add(toppingStrawberry1);
+                            toDestroy.Add(toppingStrawberry1);
+
+                            showTopping1FirstButton();
+                        }
+
+                        if (decoClickedCounts[0] == 2)
+                        {
+                            GameObject toppingStrawberry2;
+                            toppingStrawberry2 = Instantiate(strawberry, new Vector3(-0.76f, -0.57f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingStrawberry2);
+                            EachStrawberrys.Add(toppingStrawberry2);
+                            toDestroy.Add(toppingStrawberry2);
+
+                            showTopping1SecondButton();
+                        }
+
+                        if (decoClickedCounts[0] == 3)
+                        {
+                            GameObject toppingStrawberry3;
+                            toppingStrawberry3 = Instantiate(eachStrawberry, new Vector3(0.65f, -0.54f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingStrawberry3);
+                            EachStrawberrys.Add(toppingStrawberry3);
+                            toDestroy.Add(toppingStrawberry3);
+
+                            showTopping1ThirdButton();
+                        }
+                    }
+
+                    else if (menuList[2] == 2) //두 번째 토핑이 딸기일 때
+                    {
+                        if (decoClickedCounts[0] == 1)
+                        {
+                            GameObject toppingStrawberry1;
+                            toppingStrawberry1 = Instantiate(eachStrawberry, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingStrawberry1);
+                            EachStrawberrys.Add(toppingStrawberry1);
+                            toDestroy.Add(toppingStrawberry1);
+
+                            showTopping2FirstButton();
+                        }
+                        if (decoClickedCounts[0] == 2)
+                        {
+                            GameObject toppingStrawberry2;
+                            toppingStrawberry2 = Instantiate(strawberry, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingStrawberry2);
+                            EachStrawberrys.Add(toppingStrawberry2);
+                            toDestroy.Add(toppingStrawberry2);
+
+                            showTopping2SecondButton();
+                        }
+                        if (decoClickedCounts[0] == 3)
+                        {
+                            GameObject toppingStrawberry3;
+                            toppingStrawberry3 = Instantiate(eachStrawberry, new Vector3(-0.21f, -0.45f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingStrawberry3);
+                            EachStrawberrys.Add(toppingStrawberry3);
+                            toDestroy.Add(toppingStrawberry3);
+
+                            showTopping2ThirdButton();
+                        }
+                    }
+                }
+
+                if (rayHit.collider.gameObject.tag.Equals("bananaCup"))
+                {
+                    decoClickedCounts[1]++;
+
+                    if (menuList[0] == 1) //flavor == banana
+                    {
+                        if (decoClickedCounts[1] == 1)
+                        {
+                            GameObject flavorBanana1;
+                            flavorBanana1 = Instantiate(eachBanana, new Vector3(-0.58f, 0.11f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(flavorBanana1);
+                            EachBananas.Add(flavorBanana1);
+                            toDestroy.Add(flavorBanana1);
+
+                            showFlavorFirstButton();
+                        }
+                        if (decoClickedCounts[1] == 2)
+                        {
+                            GameObject flavorBanana2;
+                            flavorBanana2 = Instantiate(eachBanana, new Vector3(0.43f, 0.16f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(flavorBanana2);
+                            EachBananas.Add(flavorBanana2);
+                            toDestroy.Add(flavorBanana2);
+
+                            showFlavorSecondButton();
+                        }
+                        if (decoClickedCounts[1] == 3)
+                        {
+                            GameObject flavorBanana3;
+                            flavorBanana3 = Instantiate(eachBanana, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(flavorBanana3);
+                            EachBananas.Add(flavorBanana3);
+                            toDestroy.Add(flavorBanana3);
+
+                            showFlavorThirdButton();
+                        }
+                    }
+                    else if (menuList[1] == 1) //토핑1 바나나
+                    {
+                        if (decoClickedCounts[1] == 1)
+                        {
+                            GameObject toppingBanana1;
+                            toppingBanana1 = Instantiate(eachBanana, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingBanana1);
+                            EachBananas.Add(toppingBanana1);
+                            toDestroy.Add(toppingBanana1);
+
+                            showTopping1FirstButton();
+                        }
+                        if (decoClickedCounts[1] == 2)
+                        {
+                            GameObject toppingBanana2;
+                            toppingBanana2 = Instantiate(eachBanana, new Vector3(-0.76f, -0.57f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingBanana2);
+                            EachBananas.Add(toppingBanana2);
+                            toDestroy.Add(toppingBanana2);
+
+                            showTopping1SecondButton();
+                        }
+                        if (decoClickedCounts[1] == 3)
+                        {
+                            GameObject toppingBanana3;
+                            toppingBanana3 = Instantiate(eachBanana, new Vector3(0.65f, -0.54f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingBanana3);
+                            EachBananas.Add(toppingBanana3);
+                            toDestroy.Add(toppingBanana3);
+
+                            showTopping1ThirdButton();
+                        }
+                    }
+                    else if (menuList[1] == 2) //토핑2 바나나
+                    {
+                        if (decoClickedCounts[1] == 1)
+                        {
+                            GameObject toppingBanana1;
+                            toppingBanana1 = Instantiate(eachBanana, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingBanana1);
+                            EachBananas.Add(toppingBanana1);
+                            toDestroy.Add(toppingBanana1);
+
+                            showTopping2FirstButton();
+                        }
+                        if (decoClickedCounts[1] == 2)
+                        {
+                            GameObject toppingBanana2;
+                            toppingBanana2 = Instantiate(eachBanana, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingBanana2);
+                            EachBananas.Add(toppingBanana2);
+                            toDestroy.Add(toppingBanana2);
+
+                            showTopping2SecondButton();
+                        }
+                        if (decoClickedCounts[1] == 3)
+                        {
+                            GameObject toppingBanana3;
+                            toppingBanana3 = Instantiate(eachBanana, new Vector3(-0.21f, -0.45f, 0), Quaternion.identity);
+
+                            finishedPancakesDeco.Add(toppingBanana3);
+                            EachBananas.Add(toppingBanana3);
+                            toDestroy.Add(toppingBanana3);
+
+                            showTopping2ThirdButton();
+                        }
+                    }
                 }
             }
         }
+    }
+
+    void showFlavorFirstButton()
+    {
+        clonedFirstButton = Instantiate(firstButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
+        Destroy(clonedFirstButton, 0.5f);
+    }
+
+    void showFlavorSecondButton()
+    {
+        clonedSecondButton = Instantiate(secondButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
+        Destroy(clonedSecondButton, 0.5f);
+    }
+
+    void showFlavorThirdButton()
+    {
+        clonedThirdButton = Instantiate(thirdButton, new Vector3(3.96f, 3.72f, 0), Quaternion.identity);
+        Destroy(clonedThirdButton, 0.5f);
+    }
+
+    void showTopping1FirstButton()
+    {
+        clonedFirstButton = Instantiate(firstButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
+        Destroy(clonedFirstButton, 0.5f);
+    }
+
+    void showTopping1SecondButton()
+    {
+        clonedSecondButton = Instantiate(secondButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
+        Destroy(clonedSecondButton, 0.5f);
+    }
+
+    void showTopping1ThirdButton()
+    {
+        clonedThirdButton = Instantiate(thirdButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
+        Destroy(clonedThirdButton, 0.5f);
+    }
+
+    void showTopping2FirstButton()
+    {
+        clonedFirstButton = Instantiate(firstButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
+        Destroy(clonedFirstButton, 0.5f);
+    }
+
+    void showTopping2SecondButton()
+    {
+        clonedSecondButton = Instantiate(secondButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
+        Destroy(clonedSecondButton, 0.5f);
+    }
+
+    void showTopping2ThirdButton()
+    {
+        clonedThirdButton = Instantiate(thirdButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
+        Destroy(clonedThirdButton, 0.5f);
     }
 }
