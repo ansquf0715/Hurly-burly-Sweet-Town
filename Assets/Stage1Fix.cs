@@ -971,10 +971,6 @@ public class Stage1Fix : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            //Debug.Log("menulist 0" + menuList[0]);
-            //Debug.Log("menulist 1" + menuList[1]);
-            //Debug.Log("menulist 2" + menuList[2]);
-
             if (rayHit.collider != null)
             {
                 if (rayHit.collider.gameObject.tag.Equals("whipping"))
@@ -983,21 +979,34 @@ public class Stage1Fix : MonoBehaviour
                     {
                         clonedWhipped = Instantiate(whipped, new Vector3(0, 0, 0), Quaternion.identity);
                         toDestroy.Add(clonedWhipped);
+
+                        whippingRenderer = clonedWhipped.GetComponent<SpriteRenderer>();
+                        originalColor = whippingRenderer.color;
+                        whippingRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0);
+
+                        StartCoroutine(FadeInRoutine());
                     }
                 }
 
                 if (rayHit.collider.gameObject.tag.Equals("strawberryCup"))
                 {
                     decoClickedCounts[0]++;
-
-                    if (menuList[0] == 1) //flavor == strawberry
+                    //Debug.Log("decoclickedcounts[0]" + decoClickedCounts[0]);
+                    if (menuList[0] == 0) //flavor == strawberry
                     {
                         if (decoClickedCounts[0] == 1) //첫 번째 클릭
                         {
                             GameObject flavorStrawberry1;
+                            SpriteRenderer sr = null;
+
                             flavorStrawberry1 = Instantiate(eachStrawberry, new Vector3(-0.58f, 0.11f, 0), Quaternion.identity);
-                            finishedPancakesDeco.Add(flavorStrawberry1);
+                            sr = flavorStrawberry1.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 6;
+
+                            //finishedPancakesDeco.Add(flavorStrawberry1);
                             EachStrawberrys.Add(flavorStrawberry1);
+                            //eachStrawberryPos.Add(flavorStrawberry1.transform.position);
+
                             toDestroy.Add(flavorStrawberry1);
 
                             showFlavorFirstButton();
@@ -1013,9 +1022,13 @@ public class Stage1Fix : MonoBehaviour
                             flavorStrawberry2.transform.localScale = new Vector3(0.15f, 0.15f, 1);
 
                             sr = flavorStrawberry2.GetComponent<SpriteRenderer>();
-                            sr.sortingOrder = 8;
+                            sr.sortingOrder = 6;
 
-                            finishedPancakesDeco.Add(flavorStrawberry2);
+                            EachStrawberrys[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
+                            //eachStrawberryPos[0] = EachStrawberrys[0].transform.position;
+                            //eachStrawberryPos.Add(flavorStrawberry2.transform.position);
+
+                            //finishedPancakesDeco.Add(flavorStrawberry2);
                             EachStrawberrys.Add(flavorStrawberry2);
                             toDestroy.Add(flavorStrawberry2);
 
@@ -1025,10 +1038,26 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[0] == 3)
                         {
                             GameObject flavorStrawberry3;
+                            SpriteRenderer sr = null;
+
                             flavorStrawberry3 = Instantiate(eachStrawberry, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
                             flavorStrawberry3.transform.localEulerAngles = new Vector3(0, 0, -85.96f);
+                            sr = flavorStrawberry3.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 6;
 
-                            finishedPancakesDeco.Add(flavorStrawberry3);
+                            //EachStrawberrys[0].transform.position = new Vector3(-0.9f, 0.11f, 0);
+                            //EachStrawberrys[1].transform.position = new Vector3(-0.07f, 0.18f, 0);
+
+                            EachStrawberrys[0].transform.position = new Vector3(-0.9f, 0.11f, 0);
+                            //eachStrawberryPos[0] = EachStrawberrys[0].transform.position;
+
+                            EachStrawberrys[1].transform.position = new Vector3(-0.07f, 0.18f, 0);
+                            //eachStrawberryPos[1] = EachStrawberrys[1].transform.position;
+
+
+
+                            //eachStrawberryPos.Add(flavorStrawberry3.transform.position);
+                            //finishedPancakesDeco.Add(flavorStrawberry3);
                             EachStrawberrys.Add(flavorStrawberry3);
                             toDestroy.Add(flavorStrawberry3);
 
@@ -1038,13 +1067,18 @@ public class Stage1Fix : MonoBehaviour
 
                     else if (menuList[1] == 2) //첫 번째 토핑이 딸기일 때
                     {
-                        Debug.Log("걸?");
+                        //Debug.Log("걸?");
                         if (decoClickedCounts[0] == 1) //첫 번째 클릭
                         {
                             GameObject toppingStrawberry1;
-                            toppingStrawberry1 = Instantiate(eachStrawberry, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingStrawberry1);
+                            toppingStrawberry1 = Instantiate(eachStrawberry, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
+                            sr = toppingStrawberry1.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 5;
+
+                            //eachStrawberryPos.Add(toppingStrawberry1.transform.position);
+                            //finishedPancakesDeco.Add(toppingStrawberry1);
                             EachStrawberrys.Add(toppingStrawberry1);
                             toDestroy.Add(toppingStrawberry1);
 
@@ -1054,9 +1088,16 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[0] == 2)
                         {
                             GameObject toppingStrawberry2;
-                            toppingStrawberry2 = Instantiate(strawberry, new Vector3(-0.76f, -0.57f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingStrawberry2);
+                            toppingStrawberry2 = Instantiate(strawberry, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
+                            toppingStrawberry2.transform.localScale = new Vector3(0.15f, 0.15f, 1);
+
+                            sr = toppingStrawberry2.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 5;
+
+                            //eachStrawberryPos.Add(toppingStrawberry2.transform.position);
+                            //finishedPancakesDeco.Add(toppingStrawberry2);
                             EachStrawberrys.Add(toppingStrawberry2);
                             toDestroy.Add(toppingStrawberry2);
 
@@ -1066,9 +1107,17 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[0] == 3)
                         {
                             GameObject toppingStrawberry3;
-                            toppingStrawberry3 = Instantiate(eachStrawberry, new Vector3(0.65f, -0.54f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingStrawberry3);
+                            toppingStrawberry3 = Instantiate(eachStrawberry, new Vector3(-0.21f, -0.8f, 0), Quaternion.identity);
+                            sr = toppingStrawberry3.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 5;
+
+                            //EachStrawberrys[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
+                            //EachStrawberrys[1].transform.position = new Vector3(0.7f, -0.27f, 0);
+
+                            //eachStrawberryPos.Add(toppingStrawberry3.transform.position);
+                            //finishedPancakesDeco.Add(toppingStrawberry3);
                             EachStrawberrys.Add(toppingStrawberry3);
                             toDestroy.Add(toppingStrawberry3);
 
@@ -1081,9 +1130,14 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[0] == 1)
                         {
                             GameObject toppingStrawberry1;
-                            toppingStrawberry1 = Instantiate(eachStrawberry, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingStrawberry1);
+                            toppingStrawberry1 = Instantiate(eachStrawberry, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
+                            sr = toppingStrawberry1.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 4;
+
+                            //eachStrawberryPos.Add(toppingStrawberry1.transform.position);
+                            //finishedPancakesDeco.Add(toppingStrawberry1);
                             EachStrawberrys.Add(toppingStrawberry1);
                             toDestroy.Add(toppingStrawberry1);
 
@@ -1092,9 +1146,15 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[0] == 2)
                         {
                             GameObject toppingStrawberry2;
-                            toppingStrawberry2 = Instantiate(strawberry, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingStrawberry2);
+                            toppingStrawberry2 = Instantiate(strawberry, new Vector3(-0.76f, -0.57f, 0), Quaternion.identity);
+                            toppingStrawberry2.transform.localScale = new Vector3(0.15f, 0.15f, 1);
+                            sr = toppingStrawberry2.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 4;
+
+                            //eachStrawberryPos.Add(toppingStrawberry2.transform.position);
+                            //finishedPancakesDeco.Add(toppingStrawberry2);
                             EachStrawberrys.Add(toppingStrawberry2);
                             toDestroy.Add(toppingStrawberry2);
 
@@ -1103,9 +1163,16 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[0] == 3)
                         {
                             GameObject toppingStrawberry3;
-                            toppingStrawberry3 = Instantiate(eachStrawberry, new Vector3(-0.21f, -0.45f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingStrawberry3);
+                            toppingStrawberry3 = Instantiate(eachStrawberry, new Vector3(0.65f, -0.54f, 0), Quaternion.identity);
+                            sr = toppingStrawberry3.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 4;
+
+                            //EachBlueberrys[1].transform.position = new Vector3(1.03f, 0.67f, 0);
+
+                            //eachStrawberryPos.Add(toppingStrawberry3.transform.position);
+                            //finishedPancakesDeco.Add(toppingStrawberry3);
                             EachStrawberrys.Add(toppingStrawberry3);
                             toDestroy.Add(toppingStrawberry3);
 
@@ -1123,9 +1190,14 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[1] == 1)
                         {
                             GameObject flavorBanana1;
-                            flavorBanana1 = Instantiate(eachBanana, new Vector3(-0.58f, 0.11f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(flavorBanana1);
+                            flavorBanana1 = Instantiate(eachBanana, new Vector3(-0.58f, 0.11f, 0), Quaternion.identity);
+                            sr = flavorBanana1.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 6;
+
+                            //eachBananasPos.Add(flavorBanana1.transform.position);
+                            //finishedPancakesDeco.Add(flavorBanana1);
                             EachBananas.Add(flavorBanana1);
                             toDestroy.Add(flavorBanana1);
 
@@ -1134,9 +1206,15 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[1] == 2)
                         {
                             GameObject flavorBanana2;
-                            flavorBanana2 = Instantiate(eachBanana, new Vector3(0.43f, 0.16f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(flavorBanana2);
+                            flavorBanana2 = Instantiate(eachBanana, new Vector3(0.43f, 0.16f, 0), Quaternion.identity);
+                            sr = flavorBanana2.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 6;
+                            //EachBananas[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
+
+                            //eachBananasPos.Add(flavorBanana2.transform.position);
+                            //finishedPancakesDeco.Add(flavorBanana2);
                             EachBananas.Add(flavorBanana2);
                             toDestroy.Add(flavorBanana2);
 
@@ -1145,23 +1223,39 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[1] == 3)
                         {
                             GameObject flavorBanana3;
-                            flavorBanana3 = Instantiate(eachBanana, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(flavorBanana3);
+                            flavorBanana3 = Instantiate(eachBanana, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
+                            sr = flavorBanana3.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 6;
+
+                            EachBananas[0].transform.position = new Vector3(-0.9f, 0.11f, 0);
+                            //eachBananasPos[0] = EachBananas[0].transform.position;
+
+                            EachBananas[1].transform.position = new Vector3(-0.07f, 0.18f, 0);
+                            //eachBananasPos[1] = EachBananas[1].transform.position;
+
+                            //eachBananasPos.Add(flavorBanana3.transform.position);
+                            //finishedPancakesDeco.Add(flavorBanana3);
                             EachBananas.Add(flavorBanana3);
                             toDestroy.Add(flavorBanana3);
 
                             showFlavorThirdButton();
                         }
                     }
-                    else if (menuList[1] == 1) //토핑1 바나나
+                    else if (menuList[1] == 0) //토핑1 바나나
                     {
                         if (decoClickedCounts[1] == 1)
                         {
                             GameObject toppingBanana1;
-                            toppingBanana1 = Instantiate(eachBanana, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingBanana1);
+                            toppingBanana1 = Instantiate(eachBanana, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
+                            sr = toppingBanana1.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 5;
+
+                            //eachBananasPos.Add(toppingBanana1.transform.position);
+                            //finishedPancakesDeco.Add(toppingBanana1);
                             EachBananas.Add(toppingBanana1);
                             toDestroy.Add(toppingBanana1);
 
@@ -1170,9 +1264,14 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[1] == 2)
                         {
                             GameObject toppingBanana2;
-                            toppingBanana2 = Instantiate(eachBanana, new Vector3(-0.76f, -0.57f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingBanana2);
+                            toppingBanana2 = Instantiate(eachBanana, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
+                            sr = toppingBanana2.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 5;
+
+                            //eachBananasPos.Add(toppingBanana2.transform.position);
+                            //finishedPancakesDeco.Add(toppingBanana2);
                             EachBananas.Add(toppingBanana2);
                             toDestroy.Add(toppingBanana2);
 
@@ -1181,23 +1280,36 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[1] == 3)
                         {
                             GameObject toppingBanana3;
-                            toppingBanana3 = Instantiate(eachBanana, new Vector3(0.65f, -0.54f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingBanana3);
+                            toppingBanana3 = Instantiate(eachBanana, new Vector3(-0.21f, -0.8f, 0), Quaternion.identity);
+                            sr = toppingBanana3.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 5;
+
+                            //EachBananas[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
+                            //EachBananas[1].transform.position = new Vector3(0.7f, -0.27f, 0);
+
+                            //eachBananasPos.Add(toppingBanana3.transform.position);
+                            //finishedPancakesDeco.Add(toppingBanana3);
                             EachBananas.Add(toppingBanana3);
                             toDestroy.Add(toppingBanana3);
 
                             showTopping1ThirdButton();
                         }
                     }
-                    else if (menuList[1] == 2) //토핑2 바나나
+                    else if (menuList[2] == 0) //토핑2 바나나
                     {
                         if (decoClickedCounts[1] == 1)
                         {
                             GameObject toppingBanana1;
-                            toppingBanana1 = Instantiate(eachBanana, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingBanana1);
+                            toppingBanana1 = Instantiate(eachBanana, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
+                            sr = toppingBanana1.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 4;
+
+                            //eachBananasPos.Add(toppingBanana1.transform.position);
+                            //finishedPancakesDeco.Add(toppingBanana1);
                             EachBananas.Add(toppingBanana1);
                             toDestroy.Add(toppingBanana1);
 
@@ -1206,9 +1318,14 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[1] == 2)
                         {
                             GameObject toppingBanana2;
-                            toppingBanana2 = Instantiate(eachBanana, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingBanana2);
+                            toppingBanana2 = Instantiate(eachBanana, new Vector3(-0.76f, -0.57f, 0), Quaternion.identity);
+                            sr = toppingBanana2.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 4;
+
+                            //eachBananasPos.Add(toppingBanana2.transform.position);
+                            //finishedPancakesDeco.Add(toppingBanana2);
                             EachBananas.Add(toppingBanana2);
                             toDestroy.Add(toppingBanana2);
 
@@ -1217,9 +1334,16 @@ public class Stage1Fix : MonoBehaviour
                         if (decoClickedCounts[1] == 3)
                         {
                             GameObject toppingBanana3;
-                            toppingBanana3 = Instantiate(eachBanana, new Vector3(-0.21f, -0.45f, 0), Quaternion.identity);
+                            SpriteRenderer sr = null;
 
-                            finishedPancakesDeco.Add(toppingBanana3);
+                            toppingBanana3 = Instantiate(eachBanana, new Vector3(0.65f, -0.54f, 0), Quaternion.identity);
+                            sr = toppingBanana3.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 4;
+
+                            //EachBananas[1].transform.position = new Vector3(1.03f, 0.67f, 0);
+
+                            //eachBananasPos.Add(toppingBanana3.transform.position);
+                            //finishedPancakesDeco.Add(toppingBanana3);
                             EachBananas.Add(toppingBanana3);
                             toDestroy.Add(toppingBanana3);
 
@@ -1227,8 +1351,198 @@ public class Stage1Fix : MonoBehaviour
                         }
                     }
                 }
+                if (rayHit.collider.gameObject.tag.Equals("blueberryCup"))
+                {
+                    decoClickedCounts[2]++;
+
+                    if (menuList[1] == 1) //토핑1 블루베리
+                    {
+                        if (decoClickedCounts[2] == 1)
+                        {
+                            GameObject toppingBlueberry1;
+                            SpriteRenderer sr = null;
+
+                            toppingBlueberry1 = Instantiate(eachBlueberry, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
+                            sr = toppingBlueberry1.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 5;
+
+                            //eachBlueberryPos.Add(toppingBlueberry1.transform.position);
+                            //finishedPancakesDeco.Add(toppingBlueberry1);
+                            EachBlueberrys.Add(toppingBlueberry1);
+                            toDestroy.Add(toppingBlueberry1);
+
+                            showTopping1FirstButton();
+                        }
+                        if (decoClickedCounts[2] == 2)
+                        {
+                            GameObject toppingBlueberry2;
+                            SpriteRenderer sr = null;
+
+                            toppingBlueberry2 = Instantiate(eachBlueberry, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
+                            sr = toppingBlueberry2.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 5;
+
+                            //eachBlueberryPos.Add(toppingBlueberry2.transform.position);
+                            //finishedPancakesDeco.Add(toppingBlueberry2);
+                            EachBlueberrys.Add(toppingBlueberry2);
+                            toDestroy.Add(toppingBlueberry2);
+
+                            showTopping1SecondButton();
+                        }
+                        if (decoClickedCounts[2] == 3)
+                        {
+                            GameObject toppingBlueberry3;
+                            SpriteRenderer sr = null;
+
+                            toppingBlueberry3 = Instantiate(eachBlueberry, new Vector3(-0.21f, -0.8f, 0), Quaternion.identity);
+                            sr = toppingBlueberry3.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 5;
+
+                            //EachBlueberrys[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
+                            //EachBlueberrys[1].transform.position = new Vector3(0.7f, -0.27f, 0);
+
+                            //eachBlueberryPos.Add(toppingBlueberry3.transform.position);
+                            //finishedPancakesDeco.Add(toppingBlueberry3);
+                            EachBlueberrys.Add(toppingBlueberry3);
+                            toDestroy.Add(toppingBlueberry3);
+
+                            showTopping1ThirdButton();
+                        }
+                    }
+                    else if (menuList[2] == 1) //토핑2 블루베리
+                    {
+                        if (decoClickedCounts[2] == 1)
+                        {
+                            GameObject toppingBlueberry1;
+                            SpriteRenderer sr = null;
+
+                            toppingBlueberry1 = Instantiate(eachBlueberry, new Vector3(-1.05f, 0.63f, 0), Quaternion.identity);
+                            sr = toppingBlueberry1.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 4;
+
+                            //eachBlueberryPos.Add(toppingBlueberry1.transform.position);
+                            //finishedPancakesDeco.Add(toppingBlueberry1);
+                            EachBlueberrys.Add(toppingBlueberry1);
+                            toDestroy.Add(toppingBlueberry1);
+
+                            showTopping2FirstButton();
+                        }
+                        if (decoClickedCounts[2] == 2)
+                        {
+                            GameObject toppingBlueberry2;
+                            SpriteRenderer sr = null;
+
+                            toppingBlueberry2 = Instantiate(eachBlueberry, new Vector3(0.87f, 0.42f, 0), Quaternion.identity);
+                            sr = toppingBlueberry2.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 4;
+
+                            //eachBlueberryPos.Add(toppingBlueberry2.transform.position);
+                            //finishedPancakesDeco.Add(toppingBlueberry2);
+                            EachBlueberrys.Add(toppingBlueberry2);
+                            toDestroy.Add(toppingBlueberry2);
+
+                            showTopping2SecondButton();
+                        }
+                        if (decoClickedCounts[2] == 3)
+                        {
+                            GameObject toppingBlueberry3;
+                            SpriteRenderer sr = null;
+
+                            toppingBlueberry3 = Instantiate(eachBlueberry, new Vector3(-0.05f, -0.87f, 0), Quaternion.identity);
+                            sr = toppingBlueberry3.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 4;
+
+                            EachBlueberrys[1].transform.position = new Vector3(1.03f, 0.67f, 0);
+                            //eachBlueberryPos[1] = EachBlueberrys[1].transform.position;
+
+                            //eachBlueberryPos.Add(toppingBlueberry3.transform.position);
+                            //finishedPancakesDeco.Add(toppingBlueberry3);
+                            EachBlueberrys.Add(toppingBlueberry3);
+                            toDestroy.Add(toppingBlueberry3);
+
+                            showTopping2ThirdButton();
+                        }
+                    }
+                }
+                if (rayHit.collider.gameObject.tag.Equals("chocolateCup"))
+                {
+                    decoClickedCounts[3]++;
+                    if (menuList[0] == 2) //flavor == chocolate
+                    {
+                        if (decoClickedCounts[3] == 1)
+                        {
+                            GameObject flavorChocolate1;
+                            SpriteRenderer sr = null;
+
+                            flavorChocolate1 = Instantiate(eachLeftChocolate, new Vector3(-0.58f, 0.11f, 0), Quaternion.identity);
+                            sr = flavorChocolate1.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 6;
+
+                            //eachChocosPos.Add(flavorChocolate1.transform.position);
+                            //finishedPancakesDeco.Add(flavorChocolate1);
+                            EachChocos.Add(flavorChocolate1);
+                            toDestroy.Add(flavorChocolate1);
+
+                            showFlavorFirstButton();
+                        }
+                        if (decoClickedCounts[3] == 2)
+                        {
+                            GameObject flavorChocolate2;
+                            SpriteRenderer sr = null;
+
+                            flavorChocolate2 = Instantiate(eachRightChocolate, new Vector3(0.43f, 0.16f, 0), Quaternion.identity);
+                            sr = flavorChocolate2.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 6;
+
+
+                            EachChocos[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
+                            //eachChocosPos[0] = EachChocos[0].transform.position;
+
+                            //eachChocosPos.Add(flavorChocolate2.transform.position);
+                            //finishedPancakesDeco.Add(flavorChocolate2);
+                            EachChocos.Add(flavorChocolate2);
+                            toDestroy.Add(flavorChocolate2);
+
+                            showFlavorSecondButton();
+                        }
+                        if (decoClickedCounts[3] == 3)
+                        {
+                            GameObject flavorChocolate3;
+                            SpriteRenderer sr = null;
+
+                            flavorChocolate3 = Instantiate(eachLeftChocolate, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
+                            sr = flavorChocolate3.GetComponent<SpriteRenderer>();
+                            sr.sortingOrder = 6;
+
+                            EachChocos[0].transform.position = new Vector3(-1.15f, 0.25f, 0);
+                            //eachChocosPos[0] = EachChocos[0].transform.position;
+                            EachChocos[1].transform.position = new Vector3(-0.21f, 0.3f, 0.54f);
+                            //eachChocosPos[1] = EachChocos[1].transform.position;
+
+                            //eachChocosPos.Add(flavorChocolate3.transform.position);
+                            //finishedPancakesDeco.Add(flavorChocolate3);
+                            EachChocos.Add(flavorChocolate3);
+                            toDestroy.Add(flavorChocolate3);
+
+                            showFlavorThirdButton();
+                        }
+                    }
+                }
             }
         }
+    }
+
+    IEnumerator FadeInRoutine()
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < fadeTime)
+        {
+            float alpha = Mathf.Lerp(0, 1, elapsedTime / fadeTime);
+            whippingRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        whippingRenderer.color = originalColor;
     }
 
     void showFlavorFirstButton()
@@ -1283,5 +1597,35 @@ public class Stage1Fix : MonoBehaviour
     {
         clonedThirdButton = Instantiate(thirdButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
         Destroy(clonedThirdButton, 0.5f);
+    }
+
+    public void showCoffeeMachineBack()
+    {
+        isDecoratingBack = false;
+        isCoffeeMachineBack = true;
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        backRenderer.sprite = backGrounds[4];
+        nextButton.SetActive(false);
+
+        if (!toDestroy.Contains(clonedGreenButton))
+        {
+            clonedGreenButton = Instantiate(greenButton, new Vector3(-1.86f, 3.78f, 0), Quaternion.identity);
+            toDestroy.Add(clonedGreenButton);
+        }
+
+        if (!toDestroy.Contains(clonedGreenButton2))
+        {
+            clonedGreenButton2 = Instantiate(greenButton, new Vector3(2.97f, 3.78f, 0), Quaternion.identity);
+            toDestroy.Add(clonedGreenButton2);
+            clonedGreenButton2.gameObject.tag = "greenButton2";
+        }
+
     }
 }
