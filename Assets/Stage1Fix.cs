@@ -1545,58 +1545,116 @@ public class Stage1Fix : MonoBehaviour
         whippingRenderer.color = originalColor;
     }
 
+
     void showFlavorFirstButton()
     {
-        clonedFirstButton = Instantiate(firstButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
-        Destroy(clonedFirstButton, 0.5f);
+        if (!toDestroy.Contains(clonedFirstButton))
+        {
+            clonedFirstButton = Instantiate(firstButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
+            toDestroy.Add(clonedFirstButton);
+            Destroy(clonedFirstButton, 0.5f);
+            //Invoke("removeButton1", 0.5f);
+        }
     }
 
     void showFlavorSecondButton()
     {
-        clonedSecondButton = Instantiate(secondButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
-        Destroy(clonedSecondButton, 0.5f);
+        if (!toDestroy.Contains(clonedSecondButton))
+        {
+            clonedSecondButton = Instantiate(secondButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
+            toDestroy.Add(clonedSecondButton);
+            Destroy(clonedSecondButton, 0.5f);
+            //Invoke("removeButton2", 0.5f);
+        }
     }
 
     void showFlavorThirdButton()
     {
-        clonedThirdButton = Instantiate(thirdButton, new Vector3(3.96f, 3.72f, 0), Quaternion.identity);
-        Destroy(clonedThirdButton, 0.5f);
+        if (!toDestroy.Contains(clonedThirdButton))
+        {
+            clonedThirdButton = Instantiate(thirdButton, new Vector3(-3.96f, 3.72f, 0), Quaternion.identity);
+            toDestroy.Add(clonedThirdButton);
+            Destroy(clonedThirdButton, 0.5f);
+            //Invoke("removeButton3", 0.5f);
+        }
     }
 
     void showTopping1FirstButton()
     {
-        clonedFirstButton = Instantiate(firstButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
-        Destroy(clonedFirstButton, 0.5f);
+        if (!toDestroy.Contains(clonedFirstButton2))
+        {
+            clonedFirstButton2 = Instantiate(firstButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
+            toDestroy.Add(clonedFirstButton2);
+            Destroy(clonedFirstButton2, 0.5f);
+        }
     }
 
     void showTopping1SecondButton()
     {
-        clonedSecondButton = Instantiate(secondButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
-        Destroy(clonedSecondButton, 0.5f);
+        if (!toDestroy.Contains(clonedSecondButton2))
+        {
+            clonedSecondButton2 = Instantiate(secondButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
+            toDestroy.Add(clonedSecondButton2);
+            Destroy(clonedSecondButton2, 0.5f);
+        }
     }
 
     void showTopping1ThirdButton()
     {
-        clonedThirdButton = Instantiate(thirdButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
-        Destroy(clonedThirdButton, 0.5f);
+        if (!toDestroy.Contains(clonedThirdButton2))
+        {
+            clonedThirdButton2 = Instantiate(thirdButton, new Vector3(-4.12f, -0.51f, 0), Quaternion.identity);
+            toDestroy.Add(clonedThirdButton2);
+            Destroy(clonedThirdButton2, 0.5f);
+        }
     }
 
     void showTopping2FirstButton()
     {
-        clonedFirstButton = Instantiate(firstButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
-        Destroy(clonedFirstButton, 0.5f);
+        SpriteRenderer sr = null;
+
+        if (!toDestroy.Contains(clonedOppositeFirstButton))
+        {
+            clonedOppositeFirstButton = Instantiate(oppositeFirstButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
+            sr = clonedOppositeFirstButton.GetComponent<SpriteRenderer>();
+            sr.sortingOrder = 5;
+
+            toDestroy.Add(clonedOppositeFirstButton);
+            Destroy(clonedOppositeFirstButton, 0.5f);
+            //Invoke("removeOppositeButton1", 0.5f);
+        }
     }
 
     void showTopping2SecondButton()
     {
-        clonedSecondButton = Instantiate(secondButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
-        Destroy(clonedSecondButton, 0.5f);
+        SpriteRenderer sr = null;
+
+        if (!toDestroy.Contains(clonedOppositeSecondButton))
+        {
+            clonedOppositeSecondButton = Instantiate(oppositeSecondButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
+            sr = clonedOppositeSecondButton.GetComponent<SpriteRenderer>();
+            sr.sortingOrder = 5;
+
+            toDestroy.Add(clonedOppositeSecondButton);
+            Destroy(clonedOppositeSecondButton, 0.5f);
+            //Invoke("removeOppositeButton2", 0.5f);
+        }
     }
 
     void showTopping2ThirdButton()
     {
-        clonedThirdButton = Instantiate(thirdButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
-        Destroy(clonedThirdButton, 0.5f);
+        SpriteRenderer sr = null;
+
+        if (!toDestroy.Contains(clonedOppositeThirdButton))
+        {
+            clonedOppositeThirdButton = Instantiate(oppositeThirdButton, new Vector3(5.03f, -0.34f, 0), Quaternion.identity);
+            sr = clonedOppositeThirdButton.GetComponent<SpriteRenderer>();
+            sr.sortingOrder = 5;
+
+            toDestroy.Add(clonedOppositeThirdButton);
+            Destroy(clonedOppositeThirdButton, 0.5f);
+            //Invoke("removeOppositeButton3", 0.5f);
+        }
     }
 
     public void showCoffeeMachineBack()
@@ -1627,5 +1685,259 @@ public class Stage1Fix : MonoBehaviour
             clonedGreenButton2.gameObject.tag = "greenButton2";
         }
 
+        Invoke("showCups", 1f);
+    }
+
+    void showCups()
+    {
+        if (!toDestroy.Contains(clonedWhiteCup))
+        {
+            clonedWhiteCup = Instantiate(whiteCup, new Vector3(-1.58f, -1.3f, 0), Quaternion.identity);
+            toDestroy.Add(clonedWhiteCup);
+        }
+
+        if (!toDestroy.Contains(clonedKettle))
+        {
+            clonedKettle = Instantiate(kettle, new Vector3(1.53f, -0.61f, 0), Quaternion.identity);
+            toDestroy.Add(clonedKettle);
+        }
+    }
+
+    void makeCoffee()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (rayHit.collider != null)
+            {
+                if (rayHit.collider.gameObject.tag.Equals("greenButton"))
+                {
+                    if (!toDestroy.Contains(clonedDropCoffee))
+                    {
+                        clonedDropCoffee = Instantiate(dropCoffee, new Vector3(-1.69f, 1.68f, 0), Quaternion.identity);
+                        toDestroy.Add(clonedDropCoffee);
+
+                        Destroy(clonedDropCoffee, 1f);
+                    }
+                    checkLiquid[0] = true;
+                }
+
+                if (rayHit.collider.gameObject.tag.Equals("greenButton2"))
+                {
+                    if (!toDestroy.Contains(clonedDropMilk))
+                    {
+                        clonedDropMilk = Instantiate(dropMilk, new Vector3(1.4412f, 1.6f, 0), Quaternion.identity);
+                        toDestroy.Add(clonedDropMilk);
+
+                        Destroy(clonedDropMilk, 1f);
+                    }
+                    checkLiquid[1] = true;
+                }
+            }
+        }
+        if (checkLiquid[0] && checkLiquid[1])
+        {
+            checkLiquid[0] = false;
+            checkLiquid[1] = false;
+
+            Invoke("showLatteArt", 2f);
+        }
+    }
+
+    void showLatteArt()
+    {
+        isCoffeeMachineBack = false;
+        isLatteArt = true;
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        backRenderer.sprite = backGrounds[5];
+
+        if (!toDestroy.Contains(clonedTopWhiteCup))
+        {
+            clonedTopWhiteCup = Instantiate(topWhiteCup, new Vector3(-2.98f, 0.13f, 0), Quaternion.identity);
+            toDestroy.Add(clonedTopWhiteCup);
+        }
+
+        Invoke("showKettle", 1f);
+    }
+
+    void showKettle()
+    {
+        if (!toDestroy.Contains(clonedKettle))
+        {
+            clonedKettle = Instantiate(kettle, new Vector3(4.23f, -0.18f, 0), Quaternion.identity);
+            clonedKettle.transform.localScale = new Vector3(0.26f, 0.26f, 1);
+
+            toDestroy.Add(clonedKettle);
+        }
+
+        Invoke("showHeart", 0.5f);
+    }
+
+    void showHeart()
+    {
+        if (!toDestroy.Contains(clonedHeart))
+        {
+            clonedHeart = Instantiate(heart, new Vector3(-3.59f, -0.26f, 0), Quaternion.identity);
+            toDestroy.Add(clonedHeart);
+
+            lineRenderer = clonedHeart.GetComponent<LineRenderer>();
+            lineRenderer.positionCount = 0;
+
+            StartCoroutine(BlinkCoroutine());
+        }
+    }
+
+    IEnumerator BlinkCoroutine()
+    {
+        float startTime = Time.time;
+
+        while (Time.time - startTime < blinkDuration)
+        {
+            clonedHeart.SetActive(false);
+            yield return new WaitForSeconds(0.1f);
+            clonedHeart.SetActive(true);
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    void doLatteArt()
+    {
+        //if(Input.GetMouseButton(0))
+        //{
+        //    Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //    Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+        //    Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+        //    RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        //    if(rayHit.collider != null)
+        //    {
+        //        if(rayHit.collider.gameObject.tag.Equals("kettle"))
+        //        {
+        //            Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        //            Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        //            clonedKettle.transform.position = objPosition;
+        //        }
+        //    }
+        //}
+
+        checkKettleHeart();
+    }
+
+    void checkKettleHeart()
+    {
+        bool isHeart = true;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+            if (hit.collider != null)
+            {
+                if (hit.collider.gameObject.tag.Equals("kettle"))
+                {
+                    isKettleDragging = true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            isKettleDragging = false;
+            lineRenderer.positionCount = 0;
+
+            for (int i = 0; i < kettlePoints.Count; i++)
+            {
+                Vector2 p = new Vector2(kettlePoints[i].x, kettlePoints[i].y);
+                Vector2 hp = heartPoints[i];
+                float distance = Vector3.Distance(heartPoints[i], kettlePoints[i]);
+
+                //너무 많이 떨어져 있는 경우에만 not a heart 출력
+                if (distance > accuracyThreshold)
+                {
+                    isHeart = false;
+                    break;
+                }
+                //else
+                //{
+                //    Debug.Log("not a heart");
+                //    break;
+                //}
+            }
+        }
+
+        if (isHeart)
+        {
+
+        }
+        else if (isHeart == false)
+        {
+            Debug.Log("not a heart");
+        }
+
+        if (isKettleDragging)
+        {
+            Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            Vector3 dragPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            dragPosition.z = 0f;
+            clonedKettle.transform.position = dragPosition;
+
+            if (dragPosition.x >= -2.487374 && dragPosition.x <= 1.63
+                && dragPosition.y >= -5.3 && dragPosition.y <= -1.29)
+            {
+                //Debug.Log("kettle points" + dragPosition);
+                kettlePoints.Add(dragPosition);
+            }
+        }
+
+        if (isKettleDragging)
+        {
+            //Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            //Vector3 dragPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //dragPosition.z = 0f;
+            //clonedKettle.transform.position = dragPosition;
+
+            //if(dragPosition.x >= -2.487374 && dragPosition.x <= 1.63
+            //    && dragPosition.y >= -5.3 && dragPosition.y <= -1.29)
+            //{
+            //    //draw line
+            //    lineRenderer.positionCount++;
+            //    //Debug.Log("line renderer position count" + lineRenderer.positionCount);
+            //    lineRenderer.SetPosition(lineRenderer.positionCount - 1, dragPosition);
+
+            //    if(!hasReachedPosition)
+            //    {
+            //        dragStartPos = clonedKettle.transform.position;
+            //        hasReachedPosition = true;
+            //    }
+
+            //    //Debug.Log("drag start pos" + dragStartPos);
+
+            //    float distance = Vector3.Distance(dragStartPos, dragPosition);
+            //    float angle = Vector3.Angle(dragStartPos - kettle.transform.position, dragPosition - kettle.transform.position);
+            //    Debug.Log("distance " + distance);
+            //    Debug.Log("angle " + angle);
+
+            //    if (distance < 2f && angle > 150f && angle < 210f)
+            //    {
+            //        Debug.Log("distance");
+            //        float distanceToTarget = Vector3.Distance(kettle.transform.position, targetLocation.position);
+            //        if (distanceToTarget / distance < accuracyThreshold)
+            //        {
+            //            Debug.Log("하트 그렸다");
+            //        }
+            //    }
+            //}
+        }
     }
 }
