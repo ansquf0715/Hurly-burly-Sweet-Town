@@ -1861,39 +1861,27 @@ public class Stage1Fix : MonoBehaviour
 
     void checkKettleHeart()
     {
-        bool isHeart = true;
-
         if (Input.GetMouseButtonDown(0))
         {
-            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            isKettleDragging = true;
 
-            if (hit.collider != null)
-            {
-                if (hit.collider.gameObject.tag.Equals("kettle"))
-                {
-                    isKettleDragging = true;
+            GameObject go = Instantiate(linePrefab);
+            lr = go.GetComponent<LineRenderer>();
+            lineCol = go.GetComponent<EdgeCollider2D>();
+            lr.useWorldSpace = true;
 
-                    lr.positionCount = 1;
-                    lr.SetPosition(0, kettlePoints[0]);
-                }
-            }
+            Vector2 mousePos = new Vector2(Input.mousePosition.x * Camera.main.aspect, Input.mousePosition.y);
+            Vector3 dragPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            kettlePoints.Add(dragPos);
+
+            lr.positionCount = 1;
+            lr.SetPosition(0, kettlePoints[0]);
         }
         else if (Input.GetMouseButtonUp(0))
         {
             isKettleDragging = false;
             kettlePoints.Clear();
         }
-
-        if (isHeart)
-        {
-
-        }
-        else if (isHeart == false)
-        {
-            Debug.Log("not a heart");
-        }
-
-
         if (isKettleDragging)
         {
             //kettle 옮기는 코드
@@ -1902,19 +1890,44 @@ public class Stage1Fix : MonoBehaviour
             dragPosition.z = 0f;
             clonedKettle.transform.position = dragPosition;
 
-            //하트 근처에 가면
             if (dragPosition.x >= -2.487374 && dragPosition.x <= 1.63
                 && dragPosition.y >= -5.3 && dragPosition.y <= -1.29)
             {
-                if (Vector2.Distance(kettlePoints[kettlePoints.Count - 1], dragPosition) > 0.1f)
+                //Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                pos.x -= 3.17f;
+                pos.y += 3.15f;
+
+                if (Vector2.Distance(kettlePoints[kettlePoints.Count - 1], pos) > 0.1f)
                 {
-                    //Debug.Log("kettle points" + dragPosition);
-                    kettlePoints.Add(dragPosition);
+                    kettlePoints.Add(pos);
                     lr.positionCount++;
-                    lr.SetPosition(lr.positionCount - 1, dragPosition);
-                    heartCol.points = kettlePoints.ToArray();
+                    lr.SetPosition(lr.positionCount - 1, pos);
+                    lineCol.points = kettlePoints.ToArray();
                 }
             }
+
+            //if (dragPosition.x >= -2.487374 && dragPosition.x <= 1.63
+            //    && dragPosition.y >= -5.3 && dragPosition.y <= -1.29)
+            //{
+            //    Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //    if (Vector2.Distance(kettlePoints[kettlePoints.Count - 1], pos) > 0.1f)
+            //    {
+            //        kettlePoints.Add(pos);
+            //        lr.positionCount++;
+            //        lr.SetPosition(lr.positionCount - 1, pos);
+            //        lineCol.points = kettlePoints.ToArray();
+            //    }
+            //}
+
+            //Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //if (Vector2.Distance(kettlePoints[kettlePoints.Count - 1], pos) > 0.1f)
+            //{
+            //    kettlePoints.Add(pos);
+            //    lr.positionCount++;
+            //    lr.SetPosition(lr.positionCount - 1, pos);
+            //    lineCol.points = kettlePoints.ToArray();
+            //}
         }
     }
 }
