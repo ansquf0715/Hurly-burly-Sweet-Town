@@ -1930,4 +1930,67 @@ public class Stage1Fix : MonoBehaviour
             //}
         }
     }
+
+    void checkKettleHeart()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            isKettleDragging = true;
+
+            Vector2 mousePos = new Vector2(Input.mousePosition.x * Camera.main.aspect, Input.mousePosition.y);
+            Vector3 dragPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            isKettleInsideSquare = true;
+            kettlePoints.Clear();
+
+            //if (dragPos.x >= -2.487374 && dragPos.x <= 1.63
+            //    && dragPos.y >= -5.3 && dragPos.y <= -1.29)
+            //{
+            //    isKettleInsideSquare = true;
+            //    kettlePoints.Clear();
+            //}
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            isKettleDragging = false;
+            isKettleInsideSquare = false;
+            kettlePoints.Clear();
+        }
+        if (isKettleDragging)
+        {
+            Vector3 dragPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            dragPosition.z = 0f;
+            clonedKettle.transform.position = dragPosition;
+
+            if (dragPosition.x >= -2.487374 && dragPosition.x <= 1.63
+                && dragPosition.y >= -5.3 && dragPosition.y <= -1.29)
+            {
+                Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                pos.x -= 3.17f;
+                pos.y += 3.15f;
+
+                if (kettlePoints.Count == 0)
+                {
+                    GameObject go = Instantiate(linePrefab, new Vector2(pos.x, pos.y), Quaternion.identity);
+                    Debug.Log("go pos x" + go.transform.position.x);
+                    Debug.Log("go pos y" + go.transform.position.y);
+                    lr = go.GetComponent<LineRenderer>();
+                    lineCol = go.GetComponent<EdgeCollider2D>();
+                    lr.useWorldSpace = true;
+                    kettlePoints.Add(pos);
+                    lr.positionCount++;
+                    lr.SetPosition(lr.positionCount - 1, pos);
+                    lineCol.points = kettlePoints.ToArray();
+                }
+                else
+                {
+                    kettlePoints.Add(pos);
+                    lr.positionCount++;
+                    lr.SetPosition(lr.positionCount - 1, pos);
+                    lineCol.points = kettlePoints.ToArray();
+                }
+            }
+        }
+    }
+
 }
