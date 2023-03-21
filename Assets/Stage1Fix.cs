@@ -1815,6 +1815,13 @@ public class Stage1Fix : MonoBehaviour
             clonedHeart.transform.localScale = new Vector3(0.6f, 0.6f, 1);
             toDestroy.Add(clonedHeart);
 
+            heartLineLenderer = clonedHeart.GetComponent<LineRenderer>();
+
+            for (int i = 0; i < heartLineLenderer.positionCount; i++)
+            {
+                heartPositions.Add(heartLineLenderer.GetPosition(i));
+            }
+
             lineRenderer = clonedHeart.GetComponent<LineRenderer>();
             lineRenderer.positionCount = 0;
 
