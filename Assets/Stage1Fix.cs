@@ -1813,18 +1813,34 @@ public class Stage1Fix : MonoBehaviour
         {
             clonedHeart = Instantiate(heart, new Vector3(-3.59f, -0.26f, 0), Quaternion.identity);
             clonedHeart.transform.localScale = new Vector3(0.6f, 0.6f, 1);
-            toDestroy.Add(clonedHeart);
 
             heartLineLenderer = clonedHeart.GetComponent<LineRenderer>();
 
             for (int i = 0; i < heartLineLenderer.positionCount; i++)
             {
-                heartPositions.Add(heartLineLenderer.GetPosition(i));
+                Vector3 temp = heartLineLenderer.GetPosition(i);
+                temp.z = 0f; // Set z value to 0
+
+                temp.x = Mathf.Round(temp.x * 100f) / 100f; // Round x value to 2 decimal places
+                temp.y = Mathf.Round(temp.y * 100f) / 100f; // Round y value to 2 decimal places
+
+                heartPositions.Add(temp);
             }
 
-            lineRenderer = clonedHeart.GetComponent<LineRenderer>();
-            lineRenderer.positionCount = 0;
+            Vector3 pointToFind = new Vector3(-3.65f, 0.57f, 0f); // Set z value to 0
+            bool pointExists = heartPositions.Contains(pointToFind);
 
+            if (pointExists)
+            {
+                Debug.Log("Point exists in heart position list.");
+            }
+            else
+                Debug.Log("no");
+
+            //Debug.Log("heart positions" + heartPositions.Count);
+            //Debug.Log("heartposition1" + heartPositions[0]);
+
+            toDestroy.Add(clonedHeart);
             StartCoroutine(BlinkCoroutine());
         }
     }
@@ -1936,24 +1952,7 @@ public class Stage1Fix : MonoBehaviour
 
         Debug.Log("commonCount" + commonCount);
 
-        //float temp = ((float)commonCount / heartPositions.Count) * 0.8f;
 
-        //Debug.Log("temp " + temp);
-        //float temp80 = temp * (80 / 100);
-
-        //if (commonCount >= temp)
-        //    Debug.Log("정확도 이상");
-        //else
-        //    Debug.Log("정확도 80 이하");
-
-        //float commonPercentage = ((float)commonCount / heartPositions.Count) * 100;
-
-        //if (commonPercentage >= 30.0f)
-        //{
-        //    Debug.Log("정확도 80 이상");
-        //}
-        //else
-        //    Debug.Log("정확도 80 이하");
     }
 
 
