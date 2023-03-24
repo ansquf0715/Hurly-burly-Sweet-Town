@@ -1936,23 +1936,28 @@ public class Stage1Fix : MonoBehaviour
 
     void checkLineRendererPoints()
     {
-        int commonCount = 0;
+        //Vector3[] points = lr.GetPositions();
+        Vector3[] points = new Vector3[drawnPositions.Count];
 
-        for (int i = 0; i < heartPositions.Count; i++)
+        for (int i = 0; i < drawnPositions.Count; i++)
         {
-            for (int j = 0; j < drawnPositions.Count; j++)
-            {
-                if (heartPositions[i] == drawnPositions[j])
-                {
-                    commonCount++;
-                    break;
-                }
-            }
+            points[i] = drawnPositions[i];
         }
 
-        Debug.Log("commonCount" + commonCount);
 
+        float area = 0f;
 
+        for (int i = 0; i < points.Length; i++)
+        {
+            int j = (i + 1) % points.Length;
+            area += points[i].x * points[j].y;
+            area -= points[j].x * points[i].y;
+        }
+
+        area *= 0.5f;
+        area = Mathf.Abs(area);
+
+        Debug.Log("Area: " + area);
     }
 
 
