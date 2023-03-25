@@ -1860,11 +1860,6 @@ public class Stage1Fix : MonoBehaviour
 
     void doLatteArt()
     {
-        checkKettleHeart();
-    }
-
-    void checkKettleHeart()
-    {
         if (Input.GetMouseButtonDown(0))
         {
             isKettleDragging = true;
@@ -1874,24 +1869,33 @@ public class Stage1Fix : MonoBehaviour
 
             isKettleInsideSquare = true;
             kettlePoints.Clear();
-
-            //if (dragPos.x >= -2.487374 && dragPos.x <= 1.63
-            //    && dragPos.y >= -5.3 && dragPos.y <= -1.29)
-            //{
-            //    isKettleInsideSquare = true;
-            //    kettlePoints.Clear();
-            //}
         }
         else if (Input.GetMouseButtonUp(0))
         {
             isKettleDragging = false;
             isKettleInsideSquare = false;
 
-            checkLineRendererPoints();
+            lr.loop = true;
 
-            //Debug.Log("draw position count " + drawnPositions.Count);
-            //Debug.Log("posiiton 1" + drawnPositions[0]);
-            //kettlePoints.Clear();
+            //checkLineRendererPoints();
+
+            if (checkLineRendererPoints()) //하트를 그렸으면
+            {
+                Invoke("showHeartCoffee", 0.5f);
+
+                Invoke("showPerfect", 2.5f);
+            }
+            else if (!checkLineRendererPoints())
+            {
+                if (!toDestroy.Contains(clonedTryAgain))
+                {
+                    clonedTryAgain = Instantiate(tryAgain, new Vector3(0, 0, 0), Quaternion.identity);
+                    toDestroy.Add(clonedTryAgain);
+
+                    Invoke("hideTryAgain", 1.5f);
+                }
+            }
+
         }
         if (isKettleDragging)
         {
@@ -1908,35 +1912,78 @@ public class Stage1Fix : MonoBehaviour
 
                 if (kettlePoints.Count == 0)
                 {
-                    GameObject go = Instantiate(linePrefab, new Vector2(pos.x, pos.y), Quaternion.identity);
-                    //Debug.Log("go pos x" + go.transform.position.x);
-                    //Debug.Log("go pos y" + go.transform.position.y);
-                    lr = go.GetComponent<LineRenderer>();
-                    lineCol = go.GetComponent<EdgeCollider2D>();
+                    //GameObject go = Instantiate(linePrefab, new Vector2(pos.x, pos.y), Quaternion.identity);
+                    if (!toDestroy.Contains(clonedLinePrefab))
+                    {
+                        clonedLinePrefab = Instantiate(linePrefab, new Vector2(pos.x, pos.y), Quaternion.identity);
+                        toDestroy.Add(clonedLinePrefab);
+                    }
+
+                    //lr = go.GetComponent<LineRenderer>();
+                    //lineCol = go.GetComponent<EdgeCollider2D>();
+                    //lr.useWorldSpace = true;
+                    //lr.sortingOrder = 4;
+
+                    lr = clonedLinePrefab.GetComponent<LineRenderer>();
+                    lineCol = clonedLinePrefab.GetComponent<EdgeCollider2D>();
                     lr.useWorldSpace = true;
+                    lr.sortingOrder = 4;
+
                     kettlePoints.Add(pos);
                     lr.positionCount++;
                     lr.SetPosition(lr.positionCount - 1, pos);
                     lineCol.points = kettlePoints.ToArray();
 
-                    drawnPositions.Add(pos);
+                    //drawnPositions.Add(pos);
+
+                    Vector3 temp = new Vector3(Mathf.Round(pos.x * 100) / 100, Mathf.Round(pos.y * 100) / 100, 0);
+                    drawnPositions.Add(temp);
                 }
                 else
                 {
                     kettlePoints.Add(pos);
                     lr.positionCount++;
+                    lr.sortingOrder = 4;
                     lr.SetPosition(lr.positionCount - 1, pos);
                     lineCol.points = kettlePoints.ToArray();
 
-                    drawnPositions.Add(pos);
+                    //drawnPositions.Add(pos);
+
+                    Vector3 temp = new Vector3(Mathf.Round(pos.x * 100) / 100, Mathf.Round(pos.y * 100) / 100, 0);
+                    drawnPositions.Add(temp);
                 }
             }
         }
     }
 
-    void checkLineRendererPoints()
+    void showHeartCoffee()
     {
-        //Vector3[] points = lr.GetPositions();
+        if (!toDestroy.Contains(clonedHeartCoffee))
+        {
+            Destroy(clonedTopWhiteCup);
+            Destroy(clonedLinePrefab);
+            Destroy(clonedHeart);
+
+            clonedHeartCoffee = Instantiate(heartCoffee, new Vector3(-3.4105f, -0.0157f, 0), Quaternion.identity);
+            toDestroy.Add(clonedHeartCoffee);
+        }
+    }
+
+
+    void hideTryAgain()
+    {
+        toDestroy.Remove(clonedTryAgain);
+        Destroy(clonedTryAgain);
+        Destroy(clonedLinePrefab);
+
+        kettlePoints.Clear();
+        Debug.Log("kettle point count " + kettlePoints.Count);
+        toDestroy.Remove(clonedLinePrefab);
+
+    }
+
+    bool checkLineRendererPoints()
+    {
         Vector3[] points = new Vector3[drawnPositions.Count];
 
         for (int i = 0; i < drawnPositions.Count; i++)
@@ -1944,21 +1991,132 @@ public class Stage1Fix : MonoBehaviour
             points[i] = drawnPositions[i];
         }
 
+        Bounds bounds = GetBounds(points);
+        Collider2D[] overlaps = Physics2D.OverlapAreaAll(bounds.min, bounds.max);
 
-        float area = 0f;
+        Collider2D heartCol = clonedHeart.GetComponent<Collider2D>();
 
-        for (int i = 0; i < points.Length; i++)
+        float overlapPercentage = 0f;
+        foreach (Collider2D overlap in overlaps)
         {
-            int j = (i + 1) % points.Length;
-            area += points[i].x * points[j].y;
-            area -= points[j].x * points[i].y;
+            if (overlap.gameObject.CompareTag("heart"))
+            {
+                overlapPercentage = CalculateOverlapPercentage(lr, overlap);
+                break;
+            }
         }
 
-        area *= 0.5f;
-        area = Mathf.Abs(area);
+        //Debug.Log("heartCol" + heartCol);
+        //Debug.Log("overlapPercentage" + overlapPercentage);
 
-        Debug.Log("Area: " + area);
+        if (overlapPercentage > 0.8f)
+        {
+            //Debug.Log("Shape overlaps with heart prefab by more than 80%!");
+            return true;
+        }
+        else
+        {
+            //Debug.Log("Shape does not overlap with heart prefab enough");
+            return false;
+        }
     }
 
+    Bounds GetBounds(Vector3[] points)
+    {
+        float minX = float.MaxValue;
+        float minY = float.MaxValue;
+        float maxX = float.MinValue;
+        float maxY = float.MinValue;
+
+        foreach (Vector3 point in points)
+        {
+            if (point.x < minX) minX = point.x;
+            if (point.y < minY) minY = point.y;
+            if (point.x < maxX) maxX = point.x;
+            if (point.y > maxY) maxY = point.y;
+        }
+
+        return new Bounds(new Vector3((minX + maxX) / 2, (minY + maxY) / 2, 0), new Vector3(maxX - minX, maxY - minY, 1));
+    }
+
+    float CalculateOverlapArea(Bounds bounds)
+    {
+        Collider2D[] overlaps = Physics2D.OverlapAreaAll(bounds.min, bounds.max);
+        float overlapArea = 0f;
+
+        foreach (Collider2D overlap in overlaps)
+        {
+            //Debug.Log("overlap detected with " + overlap.gameObject.name);
+
+            if (overlap.gameObject.CompareTag("heart"))
+            {
+                Collider2D heartCollider = overlap.gameObject.GetComponent<Collider2D>();
+
+                //Debug.Log("bounds" + bounds);
+                //Debug.Log("heartCollider bounds" + heartCollider.bounds);
+
+                Camera mainCamera = Camera.main;
+                if (GeometryUtility.TestPlanesAABB(GeometryUtility.CalculateFrustumPlanes(mainCamera), heartCollider.bounds))
+                {
+                    overlapArea += OverlapArea(bounds, heartCollider.bounds);
+                }
+            }
+        }
+        return overlapArea;
+    }
+
+    Bounds CalculateBounds(LineRenderer lineRenderer)
+    {
+        Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+
+        for (int i = 0; i < lineRenderer.positionCount; i++)
+        {
+            Vector3 point = lineRenderer.GetPosition(i);
+            min = Vector3.Min(min, point);
+            max = Vector3.Max(max, point);
+        }
+
+        Vector3 center = (min + max) / 2f;
+        Vector3 size = max - min;
+
+        return new Bounds(center, size);
+    }
+
+    float CalculateOverlapPercentage(LineRenderer lr, Collider2D heartCollider)
+    {
+        Bounds lineBounds = CalculateBounds(lr);
+        Bounds heartBounds = heartCollider.bounds;
+
+        if (!lineBounds.Intersects(heartBounds))
+        {
+            return 0f;
+        }
+
+        Bounds overlap = lineBounds;
+        overlap.Intersects(heartBounds);
+
+        float overlapArea = OverlapArea(overlap, heartBounds);
+        float heartArea = heartBounds.size.x * heartBounds.size.y;
+
+        float overlapPercentage = overlapArea / heartArea;
+
+        return overlapPercentage;
+    }
+
+    float OverlapArea(Bounds bounds1, Bounds bounds2)
+    {
+        float xMin = Mathf.Max(bounds1.min.x, bounds2.min.x);
+        float yMin = Mathf.Max(bounds1.min.y, bounds2.min.y);
+        float xMax = Mathf.Min(bounds1.max.x, bounds2.max.x);
+        float yMax = Mathf.Min(bounds1.max.y, bounds2.max.y);
+
+        if (xMax > xMin && yMax > yMin)
+        {
+            return (xMax - xMin) * (yMax - yMin);
+        }
+
+        return 0f;
+    }
 
 }
