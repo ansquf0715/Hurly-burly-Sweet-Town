@@ -1014,7 +1014,6 @@ public class Stage1Fix : MonoBehaviour
                 if (rayHit.collider.gameObject.tag.Equals("strawberryCup"))
                 {
                     decoClickedCounts[0]++;
-                    //Debug.Log("decoclickedcounts[0]" + decoClickedCounts[0]);
                     if (menuList[0] == 0) //flavor == strawberry
                     {
                         if (decoClickedCounts[0] == 1) //첫 번째 클릭
@@ -1026,12 +1025,15 @@ public class Stage1Fix : MonoBehaviour
                             sr = flavorStrawberry1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
 
-                            //finishedPancakesDeco.Add(flavorStrawberry1);
-                            EachStrawberrys.Add(flavorStrawberry1);
-                            //eachStrawberryPos.Add(flavorStrawberry1.transform.position);
+                            showStrawberryList.Add(flavorStrawberry1);
+
+                            var newData = new decoratingFruitsData(eachStrawberry,
+                                flavorStrawberry1.transform.position, flavorStrawberry1.transform.rotation,
+                                decoratingFruitsData.FruitType.Strawberry, 6, 1, 0, 0, 0,
+                                flavorStrawberry1.transform.localScale);
+                            decoFruitsList.Add(newData);
 
                             toDestroy.Add(flavorStrawberry1);
-
                             showFlavorFirstButton();
                         }
 
@@ -1043,18 +1045,20 @@ public class Stage1Fix : MonoBehaviour
                             flavorStrawberry2 = Instantiate(strawberry, new Vector3(0.43f, 0.16f, 0), Quaternion.identity);
                             flavorStrawberry2.transform.localEulerAngles = new Vector3(0, 0, -90);
                             flavorStrawberry2.transform.localScale = new Vector3(0.15f, 0.15f, 1);
+                            Vector3 instantiatedScale = new Vector3(0.15f, 0.15f, 1);
 
                             sr = flavorStrawberry2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
 
-                            EachStrawberrys[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
-                            //eachStrawberryPos[0] = EachStrawberrys[0].transform.position;
-                            //eachStrawberryPos.Add(flavorStrawberry2.transform.position);
+                            showStrawberryList.Add(flavorStrawberry2);
 
-                            //finishedPancakesDeco.Add(flavorStrawberry2);
-                            EachStrawberrys.Add(flavorStrawberry2);
+                            var newData = new decoratingFruitsData(strawberry,
+                                flavorStrawberry2.transform.position, flavorStrawberry2.transform.rotation,
+                                decoratingFruitsData.FruitType.Strawberry, 6, 2, 0, 0, 0,
+                                instantiatedScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(flavorStrawberry2);
-
                             showFlavorSecondButton();
                         }
 
@@ -1063,25 +1067,37 @@ public class Stage1Fix : MonoBehaviour
                             GameObject flavorStrawberry3;
                             SpriteRenderer sr = null;
 
-                            flavorStrawberry3 = Instantiate(eachStrawberry, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
+                            flavorStrawberry3 = Instantiate(eachStrawberry, new Vector3(0.9f, 0.2f, 0), Quaternion.identity);
                             flavorStrawberry3.transform.localEulerAngles = new Vector3(0, 0, -85.96f);
                             sr = flavorStrawberry3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
 
-                            //EachStrawberrys[0].transform.position = new Vector3(-0.9f, 0.11f, 0);
-                            //EachStrawberrys[1].transform.position = new Vector3(-0.07f, 0.18f, 0);
+                            showStrawberryList.Add(flavorStrawberry3);
+                            showStrawberryList[0].transform.position = new Vector3(-1.04f, 0.11f, 0);
+                            showStrawberryList[1].transform.position = new Vector3(-0.03f, 0.16f, 0);
 
-                            EachStrawberrys[0].transform.position = new Vector3(-0.9f, 0.11f, 0);
-                            //eachStrawberryPos[0] = EachStrawberrys[0].transform.position;
+                            var newData = new decoratingFruitsData(eachStrawberry,
+                                flavorStrawberry3.transform.position, flavorStrawberry3.transform.rotation,
+                                decoratingFruitsData.FruitType.Strawberry, 6, 3, 0, 0, 0,
+                                flavorStrawberry3.transform.localScale);
+                            decoFruitsList.Add(newData);
 
-                            EachStrawberrys[1].transform.position = new Vector3(-0.07f, 0.18f, 0);
-                            //eachStrawberryPos[1] = EachStrawberrys[1].transform.position;
 
+                            foreach (decoratingFruitsData data in decoFruitsList)
+                            {
+                                if (data.Type == decoratingFruitsData.FruitType.Strawberry &&
+                                    data.StrawberryNumber == 1)
+                                {
+                                    data.Position = new Vector3(-1.04f, 0.11f, 0);
+                                }
 
+                                if (data.Type == decoratingFruitsData.FruitType.Strawberry &&
+                                    data.StrawberryNumber == 2)
+                                {
+                                    data.Position = new Vector3(-0.03f, 0.16f, 0);
+                                }
+                            }
 
-                            //eachStrawberryPos.Add(flavorStrawberry3.transform.position);
-                            //finishedPancakesDeco.Add(flavorStrawberry3);
-                            EachStrawberrys.Add(flavorStrawberry3);
                             toDestroy.Add(flavorStrawberry3);
 
                             showFlavorThirdButton();
@@ -1099,10 +1115,14 @@ public class Stage1Fix : MonoBehaviour
                             toppingStrawberry1 = Instantiate(eachStrawberry, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
                             sr = toppingStrawberry1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
+                            showStrawberryList.Add(toppingStrawberry1);
 
-                            //eachStrawberryPos.Add(toppingStrawberry1.transform.position);
-                            //finishedPancakesDeco.Add(toppingStrawberry1);
-                            EachStrawberrys.Add(toppingStrawberry1);
+                            var newData = new decoratingFruitsData(eachStrawberry,
+                                toppingStrawberry1.transform.position, toppingStrawberry1.transform.rotation,
+                                decoratingFruitsData.FruitType.Strawberry, 5, 1, 0, 0, 0,
+                                toppingStrawberry1.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingStrawberry1);
 
                             showTopping1FirstButton();
@@ -1115,13 +1135,18 @@ public class Stage1Fix : MonoBehaviour
 
                             toppingStrawberry2 = Instantiate(strawberry, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
                             toppingStrawberry2.transform.localScale = new Vector3(0.15f, 0.15f, 1);
+                            Vector3 instantiatedScale = new Vector3(0.15f, 0.15f, 1);
 
                             sr = toppingStrawberry2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
+                            showStrawberryList.Add(toppingStrawberry2);
 
-                            //eachStrawberryPos.Add(toppingStrawberry2.transform.position);
-                            //finishedPancakesDeco.Add(toppingStrawberry2);
-                            EachStrawberrys.Add(toppingStrawberry2);
+                            var newData = new decoratingFruitsData(strawberry,
+                                toppingStrawberry2.transform.position, toppingStrawberry2.transform.rotation,
+                                decoratingFruitsData.FruitType.Strawberry, 5, 2, 0, 0, 0,
+                                instantiatedScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingStrawberry2);
 
                             showTopping1SecondButton();
@@ -1136,12 +1161,31 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingStrawberry3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
 
-                            //EachStrawberrys[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
-                            //EachStrawberrys[1].transform.position = new Vector3(0.7f, -0.27f, 0);
+                            showStrawberryList.Add(toppingStrawberry3);
+                            showStrawberryList[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
+                            showStrawberryList[1].transform.position = new Vector3(0.7f, -0.27f, 0);
 
-                            //eachStrawberryPos.Add(toppingStrawberry3.transform.position);
-                            //finishedPancakesDeco.Add(toppingStrawberry3);
-                            EachStrawberrys.Add(toppingStrawberry3);
+                            var newData = new decoratingFruitsData(eachStrawberry,
+                                toppingStrawberry3.transform.position, toppingStrawberry3.transform.rotation,
+                                decoratingFruitsData.FruitType.Strawberry, 5, 3, 0, 0, 0,
+                                toppingStrawberry3.transform.localScale);
+                            decoFruitsList.Add(newData);
+
+                            foreach (decoratingFruitsData data in decoFruitsList)
+                            {
+                                if (data.Type == decoratingFruitsData.FruitType.Strawberry &&
+                                    data.StrawberryNumber == 1)
+                                {
+                                    data.Position = new Vector3(-1.16f, -0.3f, 0);
+                                }
+
+                                else if (data.Type == decoratingFruitsData.FruitType.Strawberry &&
+                                    data.StrawberryNumber == 2)
+                                {
+                                    data.Position = new Vector3(0.7f, -0.27f, 0);
+                                }
+                            }
+
                             toDestroy.Add(toppingStrawberry3);
 
                             showTopping1ThirdButton();
@@ -1159,9 +1203,12 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingStrawberry1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
 
-                            //eachStrawberryPos.Add(toppingStrawberry1.transform.position);
-                            //finishedPancakesDeco.Add(toppingStrawberry1);
-                            EachStrawberrys.Add(toppingStrawberry1);
+                            var newData = new decoratingFruitsData(eachStrawberry,
+                                toppingStrawberry1.transform.position, toppingStrawberry1.transform.rotation,
+                                decoratingFruitsData.FruitType.Strawberry, 4, 1, 0, 0, 0,
+                                toppingStrawberry1.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingStrawberry1);
 
                             showTopping2FirstButton();
@@ -1173,12 +1220,16 @@ public class Stage1Fix : MonoBehaviour
 
                             toppingStrawberry2 = Instantiate(strawberry, new Vector3(-0.76f, -0.57f, 0), Quaternion.identity);
                             toppingStrawberry2.transform.localScale = new Vector3(0.15f, 0.15f, 1);
+                            Vector3 instantiatedScale = new Vector3(0.15f, 0.15f, 1);
                             sr = toppingStrawberry2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
 
-                            //eachStrawberryPos.Add(toppingStrawberry2.transform.position);
-                            //finishedPancakesDeco.Add(toppingStrawberry2);
-                            EachStrawberrys.Add(toppingStrawberry2);
+                            var newData = new decoratingFruitsData(strawberry,
+                                toppingStrawberry2.transform.position, toppingStrawberry2.transform.rotation,
+                                decoratingFruitsData.FruitType.Strawberry, 4, 2, 0, 0, 0,
+                                instantiatedScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingStrawberry2);
 
                             showTopping2SecondButton();
@@ -1192,11 +1243,23 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingStrawberry3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
 
-                            //EachBlueberrys[1].transform.position = new Vector3(1.03f, 0.67f, 0);
 
-                            //eachStrawberryPos.Add(toppingStrawberry3.transform.position);
-                            //finishedPancakesDeco.Add(toppingStrawberry3);
-                            EachStrawberrys.Add(toppingStrawberry3);
+
+                            var newData = new decoratingFruitsData(eachStrawberry,
+                                toppingStrawberry3.transform.position, toppingStrawberry3.transform.rotation,
+                                decoratingFruitsData.FruitType.Strawberry, 4, 3, 0, 0, 0,
+                                toppingStrawberry3.transform.localScale);
+                            decoFruitsList.Add(newData);
+
+                            foreach (decoratingFruitsData data in decoFruitsList)
+                            {
+                                if (data.Type == decoratingFruitsData.FruitType.Strawberry &&
+                                    data.StrawberryNumber == 1)
+                                {
+                                    data.Position = new Vector3(1.03f, 0.67f, 0);
+                                }
+                            }
+
                             toDestroy.Add(toppingStrawberry3);
 
                             showTopping2ThirdButton();
@@ -1219,9 +1282,12 @@ public class Stage1Fix : MonoBehaviour
                             sr = flavorBanana1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
 
-                            //eachBananasPos.Add(flavorBanana1.transform.position);
-                            //finishedPancakesDeco.Add(flavorBanana1);
-                            EachBananas.Add(flavorBanana1);
+                            var newData = new decoratingFruitsData(eachBanana,
+                                flavorBanana1.transform.position, flavorBanana1.transform.rotation,
+                                decoratingFruitsData.FruitType.Banana, 6, 0, 1, 0, 0,
+                                flavorBanana1.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(flavorBanana1);
 
                             showFlavorFirstButton();
@@ -1236,9 +1302,21 @@ public class Stage1Fix : MonoBehaviour
                             sr.sortingOrder = 6;
                             //EachBananas[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
 
-                            //eachBananasPos.Add(flavorBanana2.transform.position);
-                            //finishedPancakesDeco.Add(flavorBanana2);
-                            EachBananas.Add(flavorBanana2);
+                            var newData = new decoratingFruitsData(eachBanana,
+                                flavorBanana2.transform.position, flavorBanana2.transform.rotation,
+                                decoratingFruitsData.FruitType.Banana, 6, 0, 2, 0, 0,
+                                flavorBanana2.transform.localScale);
+                            decoFruitsList.Add(newData);
+
+                            foreach (decoratingFruitsData data in decoFruitsList)
+                            {
+                                if (data.Type == decoratingFruitsData.FruitType.Banana &&
+                                    data.BananaNumber == 1)
+                                {
+                                    data.Position = new Vector3(-0.78f, 0.25f, 0);
+                                }
+                            }
+
                             toDestroy.Add(flavorBanana2);
 
                             showFlavorSecondButton();
@@ -1252,15 +1330,27 @@ public class Stage1Fix : MonoBehaviour
                             sr = flavorBanana3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
 
-                            EachBananas[0].transform.position = new Vector3(-0.9f, 0.11f, 0);
-                            //eachBananasPos[0] = EachBananas[0].transform.position;
+                            var newData = new decoratingFruitsData(eachBanana,
+                                flavorBanana3.transform.position, flavorBanana3.transform.rotation,
+                                decoratingFruitsData.FruitType.Banana, 6, 0, 3, 0, 0,
+                                flavorBanana3.transform.localScale);
+                            decoFruitsList.Add(newData);
 
-                            EachBananas[1].transform.position = new Vector3(-0.07f, 0.18f, 0);
-                            //eachBananasPos[1] = EachBananas[1].transform.position;
+                            foreach (decoratingFruitsData data in decoFruitsList)
+                            {
+                                if (data.Type == decoratingFruitsData.FruitType.Banana &&
+                                    data.BananaNumber == 1)
+                                {
+                                    data.Position = new Vector3(-0.9f, 0.11f, 0);
+                                }
 
-                            //eachBananasPos.Add(flavorBanana3.transform.position);
-                            //finishedPancakesDeco.Add(flavorBanana3);
-                            EachBananas.Add(flavorBanana3);
+                                if (data.Type == decoratingFruitsData.FruitType.Banana &&
+                                    data.BananaNumber == 2)
+                                {
+                                    data.Position = new Vector3(-0.07f, 0.18f, 0);
+                                }
+                            }
+
                             toDestroy.Add(flavorBanana3);
 
                             showFlavorThirdButton();
@@ -1277,9 +1367,12 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingBanana1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
 
-                            //eachBananasPos.Add(toppingBanana1.transform.position);
-                            //finishedPancakesDeco.Add(toppingBanana1);
-                            EachBananas.Add(toppingBanana1);
+                            var newData = new decoratingFruitsData(eachBanana,
+                                toppingBanana1.transform.position, toppingBanana1.transform.rotation,
+                                decoratingFruitsData.FruitType.Banana, 5, 0, 1, 0, 0,
+                                toppingBanana1.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingBanana1);
 
                             showTopping1FirstButton();
@@ -1293,9 +1386,12 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingBanana2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
 
-                            //eachBananasPos.Add(toppingBanana2.transform.position);
-                            //finishedPancakesDeco.Add(toppingBanana2);
-                            EachBananas.Add(toppingBanana2);
+                            var newData = new decoratingFruitsData(eachBanana,
+                                toppingBanana2.transform.position, toppingBanana2.transform.rotation,
+                                decoratingFruitsData.FruitType.Banana, 5, 0, 2, 0, 0,
+                                toppingBanana2.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingBanana2);
 
                             showTopping1SecondButton();
@@ -1312,9 +1408,12 @@ public class Stage1Fix : MonoBehaviour
                             //EachBananas[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
                             //EachBananas[1].transform.position = new Vector3(0.7f, -0.27f, 0);
 
-                            //eachBananasPos.Add(toppingBanana3.transform.position);
-                            //finishedPancakesDeco.Add(toppingBanana3);
-                            EachBananas.Add(toppingBanana3);
+                            var newData = new decoratingFruitsData(eachBanana,
+                                toppingBanana3.transform.position, toppingBanana3.transform.rotation,
+                                decoratingFruitsData.FruitType.Banana, 5, 0, 3, 0, 0,
+                                toppingBanana3.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingBanana3);
 
                             showTopping1ThirdButton();
@@ -1331,9 +1430,12 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingBanana1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
 
-                            //eachBananasPos.Add(toppingBanana1.transform.position);
-                            //finishedPancakesDeco.Add(toppingBanana1);
-                            EachBananas.Add(toppingBanana1);
+                            var newData = new decoratingFruitsData(eachBanana,
+                                toppingBanana1.transform.position, toppingBanana1.transform.rotation,
+                                decoratingFruitsData.FruitType.Banana, 4, 0, 1, 0, 0,
+                                toppingBanana1.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingBanana1);
 
                             showTopping2FirstButton();
@@ -1347,9 +1449,12 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingBanana2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
 
-                            //eachBananasPos.Add(toppingBanana2.transform.position);
-                            //finishedPancakesDeco.Add(toppingBanana2);
-                            EachBananas.Add(toppingBanana2);
+                            var newData = new decoratingFruitsData(eachBanana,
+                                toppingBanana2.transform.position, toppingBanana2.transform.rotation,
+                                decoratingFruitsData.FruitType.Banana, 4, 0, 2, 0, 0,
+                                toppingBanana2.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingBanana2);
 
                             showTopping2SecondButton();
@@ -1365,9 +1470,12 @@ public class Stage1Fix : MonoBehaviour
 
                             //EachBananas[1].transform.position = new Vector3(1.03f, 0.67f, 0);
 
-                            //eachBananasPos.Add(toppingBanana3.transform.position);
-                            //finishedPancakesDeco.Add(toppingBanana3);
-                            EachBananas.Add(toppingBanana3);
+                            var newData = new decoratingFruitsData(eachBanana,
+                                toppingBanana3.transform.position, toppingBanana3.transform.rotation,
+                                decoratingFruitsData.FruitType.Banana, 4, 0, 3, 0, 0,
+                                toppingBanana3.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingBanana3);
 
                             showTopping2ThirdButton();
@@ -1389,9 +1497,12 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingBlueberry1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
 
-                            //eachBlueberryPos.Add(toppingBlueberry1.transform.position);
-                            //finishedPancakesDeco.Add(toppingBlueberry1);
-                            EachBlueberrys.Add(toppingBlueberry1);
+                            var newData = new decoratingFruitsData(eachBlueberry,
+                                toppingBlueberry1.transform.position, toppingBlueberry1.transform.rotation,
+                                decoratingFruitsData.FruitType.Blueberry, 5, 0, 0, 1, 0,
+                                toppingBlueberry1.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingBlueberry1);
 
                             showTopping1FirstButton();
@@ -1405,11 +1516,13 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingBlueberry2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
 
-                            //eachBlueberryPos.Add(toppingBlueberry2.transform.position);
-                            //finishedPancakesDeco.Add(toppingBlueberry2);
-                            EachBlueberrys.Add(toppingBlueberry2);
-                            toDestroy.Add(toppingBlueberry2);
+                            var newData = new decoratingFruitsData(eachBlueberry,
+                                toppingBlueberry2.transform.position, toppingBlueberry2.transform.rotation,
+                                decoratingFruitsData.FruitType.Blueberry, 5, 0, 0, 2, 0,
+                                toppingBlueberry2.transform.localScale);
+                            decoFruitsList.Add(newData);
 
+                            toDestroy.Add(toppingBlueberry2);
                             showTopping1SecondButton();
                         }
                         if (decoClickedCounts[2] == 3)
@@ -1424,9 +1537,12 @@ public class Stage1Fix : MonoBehaviour
                             //EachBlueberrys[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
                             //EachBlueberrys[1].transform.position = new Vector3(0.7f, -0.27f, 0);
 
-                            //eachBlueberryPos.Add(toppingBlueberry3.transform.position);
-                            //finishedPancakesDeco.Add(toppingBlueberry3);
-                            EachBlueberrys.Add(toppingBlueberry3);
+                            var newData = new decoratingFruitsData(eachBlueberry,
+                                toppingBlueberry3.transform.position, toppingBlueberry3.transform.rotation,
+                                decoratingFruitsData.FruitType.Blueberry, 5, 0, 0, 3, 0,
+                                toppingBlueberry3.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingBlueberry3);
 
                             showTopping1ThirdButton();
@@ -1443,9 +1559,12 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingBlueberry1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
 
-                            //eachBlueberryPos.Add(toppingBlueberry1.transform.position);
-                            //finishedPancakesDeco.Add(toppingBlueberry1);
-                            EachBlueberrys.Add(toppingBlueberry1);
+                            var newData = new decoratingFruitsData(eachBlueberry,
+                                toppingBlueberry1.transform.position, toppingBlueberry1.transform.rotation,
+                                decoratingFruitsData.FruitType.Blueberry, 4, 0, 0, 1, 0,
+                                toppingBlueberry1.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingBlueberry1);
 
                             showTopping2FirstButton();
@@ -1459,9 +1578,12 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingBlueberry2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
 
-                            //eachBlueberryPos.Add(toppingBlueberry2.transform.position);
-                            //finishedPancakesDeco.Add(toppingBlueberry2);
-                            EachBlueberrys.Add(toppingBlueberry2);
+                            var newData = new decoratingFruitsData(eachBlueberry,
+                                toppingBlueberry2.transform.position, toppingBlueberry2.transform.rotation,
+                                decoratingFruitsData.FruitType.Blueberry, 4, 0, 0, 2, 0,
+                                toppingBlueberry2.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(toppingBlueberry2);
 
                             showTopping2SecondButton();
@@ -1475,12 +1597,21 @@ public class Stage1Fix : MonoBehaviour
                             sr = toppingBlueberry3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
 
-                            EachBlueberrys[1].transform.position = new Vector3(1.03f, 0.67f, 0);
-                            //eachBlueberryPos[1] = EachBlueberrys[1].transform.position;
+                            var newData = new decoratingFruitsData(eachBlueberry,
+                                toppingBlueberry3.transform.position, toppingBlueberry3.transform.rotation,
+                                decoratingFruitsData.FruitType.Blueberry, 4, 0, 0, 3, 0,
+                                toppingBlueberry3.transform.localScale);
+                            decoFruitsList.Add(newData);
 
-                            //eachBlueberryPos.Add(toppingBlueberry3.transform.position);
-                            //finishedPancakesDeco.Add(toppingBlueberry3);
-                            EachBlueberrys.Add(toppingBlueberry3);
+                            foreach (decoratingFruitsData data in decoFruitsList)
+                            {
+                                if (data.Type == decoratingFruitsData.FruitType.Blueberry &&
+                                    data.BlueberryNumber == 1)
+                                {
+                                    data.Position = new Vector3(1.03f, 0.67f, 0);
+                                }
+                            }
+
                             toDestroy.Add(toppingBlueberry3);
 
                             showTopping2ThirdButton();
@@ -1501,9 +1632,12 @@ public class Stage1Fix : MonoBehaviour
                             sr = flavorChocolate1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
 
-                            //eachChocosPos.Add(flavorChocolate1.transform.position);
-                            //finishedPancakesDeco.Add(flavorChocolate1);
-                            EachChocos.Add(flavorChocolate1);
+                            var newData = new decoratingFruitsData(eachLeftChocolate,
+                                flavorChocolate1.transform.position, flavorChocolate1.transform.rotation,
+                                decoratingFruitsData.FruitType.Chocolate, 6, 0, 0, 0, 1,
+                                flavorChocolate1.transform.localScale);
+                            decoFruitsList.Add(newData);
+
                             toDestroy.Add(flavorChocolate1);
 
                             showFlavorFirstButton();
@@ -1517,13 +1651,21 @@ public class Stage1Fix : MonoBehaviour
                             sr = flavorChocolate2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
 
+                            var newData = new decoratingFruitsData(eachRightChocolate,
+                                flavorChocolate2.transform.position, flavorChocolate2.transform.rotation,
+                                decoratingFruitsData.FruitType.Chocolate, 6, 0, 0, 0, 2,
+                                flavorChocolate2.transform.localScale);
+                            decoFruitsList.Add(newData);
 
-                            EachChocos[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
-                            //eachChocosPos[0] = EachChocos[0].transform.position;
+                            foreach (decoratingFruitsData data in decoFruitsList)
+                            {
+                                if (data.Type == decoratingFruitsData.FruitType.Chocolate &&
+                                    data.ChocolateNumber == 1)
+                                {
+                                    data.Position = new Vector3(-0.78f, 0.25f, 0);
+                                }
+                            }
 
-                            //eachChocosPos.Add(flavorChocolate2.transform.position);
-                            //finishedPancakesDeco.Add(flavorChocolate2);
-                            EachChocos.Add(flavorChocolate2);
                             toDestroy.Add(flavorChocolate2);
 
                             showFlavorSecondButton();
@@ -1537,16 +1679,28 @@ public class Stage1Fix : MonoBehaviour
                             sr = flavorChocolate3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
 
-                            EachChocos[0].transform.position = new Vector3(-1.15f, 0.25f, 0);
-                            //eachChocosPos[0] = EachChocos[0].transform.position;
-                            EachChocos[1].transform.position = new Vector3(-0.21f, 0.3f, 0.54f);
-                            //eachChocosPos[1] = EachChocos[1].transform.position;
+                            var newData = new decoratingFruitsData(eachLeftChocolate,
+                                flavorChocolate3.transform.position, flavorChocolate3.transform.rotation,
+                                decoratingFruitsData.FruitType.Chocolate, 6, 0, 0, 0, 3,
+                                flavorChocolate3.transform.localScale);
+                            decoFruitsList.Add(newData);
 
-                            //eachChocosPos.Add(flavorChocolate3.transform.position);
-                            //finishedPancakesDeco.Add(flavorChocolate3);
-                            EachChocos.Add(flavorChocolate3);
+                            foreach (decoratingFruitsData data in decoFruitsList)
+                            {
+                                if (data.Type == decoratingFruitsData.FruitType.Chocolate &&
+                                    data.ChocolateNumber == 1)
+                                {
+                                    data.Position = new Vector3(-1.15f, 0.25f, 0);
+                                }
+
+                                if (data.Type == decoratingFruitsData.FruitType.Chocolate &&
+                                    data.ChocolateNumber == 2)
+                                {
+                                    data.Position = new Vector3(-0.21f, 0.3f, 0.54f);
+                                }
+                            }
+
                             toDestroy.Add(flavorChocolate3);
-
                             showFlavorThirdButton();
                         }
                     }
@@ -1919,11 +2073,6 @@ public class Stage1Fix : MonoBehaviour
                         toDestroy.Add(clonedLinePrefab);
                     }
 
-                    //lr = go.GetComponent<LineRenderer>();
-                    //lineCol = go.GetComponent<EdgeCollider2D>();
-                    //lr.useWorldSpace = true;
-                    //lr.sortingOrder = 4;
-
                     lr = clonedLinePrefab.GetComponent<LineRenderer>();
                     lineCol = clonedLinePrefab.GetComponent<EdgeCollider2D>();
                     lr.useWorldSpace = true;
@@ -1933,8 +2082,6 @@ public class Stage1Fix : MonoBehaviour
                     lr.positionCount++;
                     lr.SetPosition(lr.positionCount - 1, pos);
                     lineCol.points = kettlePoints.ToArray();
-
-                    //drawnPositions.Add(pos);
 
                     Vector3 temp = new Vector3(Mathf.Round(pos.x * 100) / 100, Mathf.Round(pos.y * 100) / 100, 0);
                     drawnPositions.Add(temp);
@@ -1946,8 +2093,6 @@ public class Stage1Fix : MonoBehaviour
                     lr.sortingOrder = 4;
                     lr.SetPosition(lr.positionCount - 1, pos);
                     lineCol.points = kettlePoints.ToArray();
-
-                    //drawnPositions.Add(pos);
 
                     Vector3 temp = new Vector3(Mathf.Round(pos.x * 100) / 100, Mathf.Round(pos.y * 100) / 100, 0);
                     drawnPositions.Add(temp);
@@ -2006,17 +2151,12 @@ public class Stage1Fix : MonoBehaviour
             }
         }
 
-        //Debug.Log("heartCol" + heartCol);
-        //Debug.Log("overlapPercentage" + overlapPercentage);
-
         if (overlapPercentage > 0.8f)
         {
-            //Debug.Log("Shape overlaps with heart prefab by more than 80%!");
             return true;
         }
         else
         {
-            //Debug.Log("Shape does not overlap with heart prefab enough");
             return false;
         }
     }
@@ -2037,32 +2177,6 @@ public class Stage1Fix : MonoBehaviour
         }
 
         return new Bounds(new Vector3((minX + maxX) / 2, (minY + maxY) / 2, 0), new Vector3(maxX - minX, maxY - minY, 1));
-    }
-
-    float CalculateOverlapArea(Bounds bounds)
-    {
-        Collider2D[] overlaps = Physics2D.OverlapAreaAll(bounds.min, bounds.max);
-        float overlapArea = 0f;
-
-        foreach (Collider2D overlap in overlaps)
-        {
-            //Debug.Log("overlap detected with " + overlap.gameObject.name);
-
-            if (overlap.gameObject.CompareTag("heart"))
-            {
-                Collider2D heartCollider = overlap.gameObject.GetComponent<Collider2D>();
-
-                //Debug.Log("bounds" + bounds);
-                //Debug.Log("heartCollider bounds" + heartCollider.bounds);
-
-                Camera mainCamera = Camera.main;
-                if (GeometryUtility.TestPlanesAABB(GeometryUtility.CalculateFrustumPlanes(mainCamera), heartCollider.bounds))
-                {
-                    overlapArea += OverlapArea(bounds, heartCollider.bounds);
-                }
-            }
-        }
-        return overlapArea;
     }
 
     Bounds CalculateBounds(LineRenderer lineRenderer)
