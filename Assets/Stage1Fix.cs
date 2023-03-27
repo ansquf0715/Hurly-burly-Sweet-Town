@@ -4,10 +4,62 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
-public class Stage1Fix : MonoBehaviour
+public class decoratingFruitsData
 {
+    public GameObject Prefab { get; set; }
+    public Vector3 Position { get; set; }
+    public Quaternion Rotation { get; set; }
+    public int SortingOrder { get; set; }
+    public FruitType Type { get; set; }
+    public int StrawberryNumber { get; set; }
+    public Vector3 Scale { get; set; }
+    public int BananaNumber { get; set; }
+    public int BlueberryNumber { get; set; }
+    public int ChocolateNumber { get; set; }
 
+    public enum FruitType
+    {
+        Strawberry,
+        Banana,
+        Blueberry,
+        Chocolate
+    }
+
+    public decoratingFruitsData(GameObject prefab, Vector3 position, Quaternion rotation,
+        FruitType type, int sortingOrder = -1,
+        int strawberryNumber = 0, int bananaNumber = 0, int blueberryNumber = 0, int chocolateNumber = 0,
+        Vector3? scale = null)
+    {
+        Prefab = prefab;
+        Position = position;
+        Rotation = rotation;
+        Type = type;
+        SortingOrder = sortingOrder;
+        StrawberryNumber = strawberryNumber;
+        BananaNumber = bananaNumber;
+        BlueberryNumber = blueberryNumber;
+        ChocolateNumber = chocolateNumber;
+        Scale = scale ?? prefab.transform.localScale;
+    }
+
+    public void Instantiate()
+    {
+        GameObject instantiatedPrefab = UnityEngine.Object.Instantiate(Prefab);
+        instantiatedPrefab.transform.position = Position;
+        instantiatedPrefab.transform.localRotation = Rotation;
+        instantiatedPrefab.transform.localScale = Scale;
+        if (SortingOrder != -1)
+        {
+            SpriteRenderer sr = instantiatedPrefab.GetComponent<SpriteRenderer>();
+            sr.sortingOrder = SortingOrder;
+        }
+    }
+}
+
+public class CookingEdit : MonoBehaviour
+{
     public Sprite[] backGrounds = new Sprite[3];
     public GameObject BackGround;
     public SpriteRenderer backRenderer;
@@ -22,6 +74,9 @@ public class Stage1Fix : MonoBehaviour
     public GameObject startButton;
     public Slider slTimer;
 
+    public GameObject cookingMenu;
+    GameObject clonedCookingMenu;
+
     public GameObject maker;
     //GameObject clonedMaker;
     public GameObject CookingMenu;
@@ -29,6 +84,8 @@ public class Stage1Fix : MonoBehaviour
 
     public GameObject perfect;
     GameObject clonedPerfect;
+    public GameObject tryAgain;
+    GameObject clonedTryAgain;
 
     public GameObject milk;
     GameObject clonedMilk;
@@ -37,9 +94,7 @@ public class Stage1Fix : MonoBehaviour
     public GameObject eggs;
     GameObject clonedEggs;
     public GameObject asset1;
-    //GameObject clonedAsset1;
     public GameObject asset2;
-    //GameObject clonedAsset2;
     public GameObject bowl;
     GameObject clonedBowl;
     public GameObject filledMilk;
@@ -79,9 +134,104 @@ public class Stage1Fix : MonoBehaviour
     GameObject clonedHalfStrawberry;
     GameObject clonedHalfStrawberry2;
 
+    public GameObject banana;
+    GameObject clonedBanana;
+    public GameObject backKnife;
+    GameObject clonedBackKnife;
+    public GameObject cutBanana;
+    GameObject clonedCutBanana;
+
+    GameObject clonedTempLine1;
+    GameObject clonedTempLine2;
+    GameObject clonedTempLine3;
+
+    public GameObject chocolate;
+    GameObject clonedChocolate;
+    public GameObject cutChocolate;
+    GameObject clonedCutChocolate;
+
+    public GameObject decoRecipe;
+    GameObject clonedDecoRecipe;
+    public GameObject pancakes;
+    GameObject clonedPancakes;
+    public GameObject strawberryCup;
+    GameObject clonedStrawberryCup;
+    public GameObject blueberryCup;
+    GameObject clonedBlueberryCup;
+    public GameObject bananaCup;
+    GameObject clonedBananaCup;
+    public GameObject chocolateCup;
+    GameObject clonedChocolateCup;
+    public GameObject whipping;
+    GameObject clonedWhipping;
+
+    public GameObject whipped;
+    GameObject clonedWhipped;
+    public GameObject eachStrawberry;
+    GameObject clonedEachStrawberry;
+    public GameObject eachBlueberry;
+    GameObject clonedEachBlueberry;
+    public GameObject eachBanana;
+    GameObject clonedEachBanana;
+    public GameObject eachLeftChocolate;
+    GameObject clonedEachLeftChocolate;
+    public GameObject eachRightChocolate;
+    GameObject clonedEachRightChocolate;
+
+    public GameObject firstButton;
+    GameObject clonedFirstButton;
+    GameObject clonedFirstButton2;
+    public GameObject secondButton;
+    GameObject clonedSecondButton;
+    GameObject clonedSecondButton2;
+    public GameObject thirdButton;
+    GameObject clonedThirdButton;
+    GameObject clonedThirdButton2;
+
+    public GameObject oppositeFirstButton;
+    GameObject clonedOppositeFirstButton;
+    public GameObject oppositeSecondButton;
+    GameObject clonedOppositeSecondButton;
+    public GameObject oppositeThirdButton;
+    GameObject clonedOppositeThirdButton;
+
+    public GameObject greenButton;
+    GameObject clonedGreenButton;
+    GameObject clonedGreenButton2;
+
+    public GameObject whiteCup;
+    GameObject clonedWhiteCup;
+    public GameObject dropCoffee;
+    GameObject clonedDropCoffee;
+    public GameObject kettle;
+    GameObject clonedKettle;
+    public GameObject dropMilk;
+    GameObject clonedDropMilk;
+
+    public GameObject topWhiteCup;
+    GameObject clonedTopWhiteCup;
+    public GameObject heart;
+    GameObject clonedHeart;
+    public GameObject heartCoffee;
+    GameObject clonedHeartCoffee;
+
+    public GameObject syrup;
+    GameObject clonedSyrup;
+    public GameObject leaf;
+    GameObject clonedLeaf;
+    public GameObject bell;
+    GameObject clonedBell;
+
+    public GameObject complete;
+    GameObject clonedComplete;
+
     bool isBowlBack = false;
     bool isInductionBack = false;
     bool isCuttingBoardBack = false;
+    bool isDecoratingBack = false;
+    bool isCoffeeMachineBack = false;
+    bool isLatteArt = false;
+    bool isFinishBack = false;
 
     bool[] checkIngredients = new bool[3]; //1:milk, 2:flour, 3:egg
     int pancakeCount = 0;
@@ -89,8 +239,10 @@ public class Stage1Fix : MonoBehaviour
     int isLine = 0;
     int isKnife = 1;
 
+    int cutCount = 0;
     int cutStrawberryCount = 0; //맞게 잘랐는지
     int cutBananaCount = 0;
+    int cutChocolateCount = 0;
 
     bool needStrawberry = false;
     bool needBanana = false;
@@ -102,27 +254,31 @@ public class Stage1Fix : MonoBehaviour
     Color originalColor;
     float blinkDuration = 1f;
 
+    public GameObject linePrefab;
+    GameObject clonedLinePrefab;
     LineRenderer lr;
-    EdgeCollider2D heartCol;
+    EdgeCollider2D lineCol;
     List<Vector2> kettlePoints = new List<Vector2>();
     bool isKettleDragging = false;
+    bool isKettleInsideSquare = false;
+    LineRenderer heartLineLenderer;
+    List<Vector3> heartPositions = new List<Vector3>();
+    List<Vector3> drawnPositions = new List<Vector3>();
+    float overlapThreshold = 0.8f; //하트 그리기 정확도 80프로
 
-    int[] menuList = new int[3]; //1:flavor 2~:topping
+    public int[] menuList = new int[3]; //1:flavor 2~:topping
     public bool[] cutAllFruits = new bool[3];
     public int[] decoFruitCounts = new int[4]; //0:strawberry, 1:banana, 2:blueberry, 3:chocolate
     //List<GameObject> finishedPancakesDeco = new List<GameObject>();
     public int[] decoClickedCounts = new int[4];
     public bool[] checkLiquid = new bool[2]; //0:coffee, 1:milk
 
-    List<GameObject> EachStrawberrys = new List<GameObject>();
-    List<GameObject> EachBlueberrys = new List<GameObject>();
-    List<GameObject> EachBananas = new List<GameObject>();
-    List<GameObject> EachChocos = new List<GameObject>();
+    public List<decoratingFruitsData> decoFruitsList = new List<decoratingFruitsData>();
 
-    List<Vector3> eachStrawberryPos = new List<Vector3>();
-    List<Vector3> eachBlueberryPos = new List<Vector3>();
-    List<Vector3> eachBananasPos = new List<Vector3>();
-    List<Vector3> eachChocosPos = new List<Vector3>();
+    List<GameObject> showStrawberryList = new List<GameObject>();
+    List<GameObject> showBananaList = new List<GameObject>();
+    List<GameObject> showBlueberryList = new List<GameObject>();
+    List<GameObject> showChocolateList = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -134,6 +290,7 @@ public class Stage1Fix : MonoBehaviour
         bluePlus.SetActive(false);
         slTimer.gameObject.SetActive(false);
         nextButton.SetActive(false);
+
 
         Invoke("showMaker", 1f);
         Invoke("showMenu", 1.5f);
@@ -157,6 +314,22 @@ public class Stage1Fix : MonoBehaviour
         {
             cutting();
         }
+        if (isDecoratingBack)
+        {
+            decorating();
+        }
+        if (isCoffeeMachineBack)
+        {
+            makeCoffee();
+        }
+        if (isLatteArt)
+        {
+            doLatteArt();
+        }
+        if (isFinishBack)
+        {
+            deliver();
+        }
     }
 
     public void checkMenu()
@@ -167,9 +340,16 @@ public class Stage1Fix : MonoBehaviour
         string flavor = orders[index]["Flavor"].ToString();
         string topping = orders[index]["Topping"].ToString();
 
+        //Debug.Log("flavor" + flavor);
+        //Debug.Log("topping" + topping);
+
         menuList[0] = int.Parse(flavor); //flavor
         menuList[1] = int.Parse(topping.Substring(0, 1));
         menuList[2] = int.Parse(topping.Substring(1, 1));
+
+        //Debug.Log("menu[0]" + menuList[0]);
+        //Debug.Log("menu[1]" + menuList[1]);
+        //Debug.Log("menu[2]" + menuList[2]);
     }
 
     public int findIndex(int stage, int orderNum)
@@ -201,17 +381,11 @@ public class Stage1Fix : MonoBehaviour
 
     void showMaker()
     {
-        //clonedMaker = Instantiate(maker, new Vector3(3.820f, -1.48f, 0), Quaternion.identity);
-        //toDestroy.Add(clonedMaker);
-
         toDestroy.Add(Instantiate(maker, new Vector3(3.820f, -1.48f, 0), Quaternion.identity));
     }
 
     void showMenu()
     {
-        //clonedCookingMenu = Instantiate(CookingMenu, new Vector3(440, 510, 0), Quaternion.identity, GameObject.Find("Canvas").transform);
-        //toDestroy.Add(clonedCookingMenu);
-
         toDestroy.Add(Instantiate(CookingMenu, new Vector3(440, 510, 0), Quaternion.identity, GameObject.Find("Canvas").transform));
     }
 
@@ -466,6 +640,7 @@ public class Stage1Fix : MonoBehaviour
 
         if (pancakeCount >= 2)
         {
+            pancakeCount = 0;
             Invoke("showPerfect", 2f);
             Invoke("showCuttingBoardBack", 3f);
         }
@@ -507,12 +682,6 @@ public class Stage1Fix : MonoBehaviour
 
         backRenderer.sprite = backGrounds[2];
 
-
-        //조건문 달아서 배열에 나와야 하는 과일 담아두고 출력?
-        //showStrawberry();
-        //Invoke("showStrawberry", 0.5f);
-        //Debug.Log("여기서부터 문제일까?");
-
         chooseFlavorToCut();
     }
 
@@ -527,13 +696,44 @@ public class Stage1Fix : MonoBehaviour
                 Invoke("showBanana", 0.5f);
                 break;
             case 2:
-                needChocolate = true;
+                Invoke("showChocolate", 0.5f);
+                break;
+        }
+    }
+
+    void chooseToppingToCut(int pick)
+    {
+        switch (pick)
+        {
+            case 0:
+                Invoke("showBanana", 0.5f);
+                break;
+            case 1: //여기 수정
+                //needChocolate = true;
+                cutCount++;
+
+                if (cutCount == 3)
+                {
+                    Invoke("showPerfect", 0.5f);
+                    Invoke("showDecoratingBack", 1.2f);
+                }
+                else if (cutCount != 3)
+                    chooseToppingToCut(menuList[2]);
+                break;
+            case 2:
+                Invoke("showStrawberry", 0.5f);
                 break;
         }
     }
 
     void showStrawberry()
     {
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
 
         if (!toDestroy.Contains(clonedStrawberry1))
         {
@@ -547,15 +747,15 @@ public class Stage1Fix : MonoBehaviour
             clonedStrawberry2.transform.localEulerAngles = new Vector3(0, 0, 40);
             toDestroy.Add(clonedStrawberry2);
         }
-        //Debug.Log("딸기 몇개" + toDestroy.Count);
 
+        isLine = 0;
+        //Debug.Log("isline" + isLine);
         Invoke("delayLine", 0.5f);
         needStrawberry = true;
     }
 
     void delayLine()
     {
-        Debug.Log("isLine" + isLine);
         isLine++;
     }
 
@@ -566,9 +766,20 @@ public class Stage1Fix : MonoBehaviour
             cuttingStrawberry();
         }
 
-        if (!needBanana)
+        if (needBanana)
         {
-            //Debug.Log("잘 넘어 오는지");
+            cuttingBanana();
+        }
+
+        if (needChocolate)
+        {
+            cuttingChocolate();
+        }
+
+        if (cutCount == 3)
+        {
+            Invoke("showPerfect", 0.5f);
+            Invoke("showDecoratingBack", 1.2f);
         }
     }
 
@@ -579,7 +790,8 @@ public class Stage1Fix : MonoBehaviour
         Ray2D ray = new Ray2D(touchPos, Vector2.zero);
         RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        if (isLine == 0) //첫번째 점선일 때
+
+        if (isLine == 1) //첫번째 점선일 때
         {
             //isLine = 0;
             if (!toDestroy.Contains(clonedDottedLine))
@@ -590,14 +802,14 @@ public class Stage1Fix : MonoBehaviour
             }
         }
 
-        if (isLine == 1)
+        if (isLine == 2)
         {
-            if (!toDestroy.Contains(clonedDottedLine))
+            if (!toDestroy.Contains(clonedTempLine2))
             {
                 //Debug.Log("여기 안걸리나");
-                clonedDottedLine = Instantiate(dottedLine, new Vector3(2.35f, 0.01f, 0), Quaternion.identity);
-                toDestroy.Add(clonedDottedLine);
-                clonedDottedLine.transform.localEulerAngles = new Vector3(0, 0, 85);
+                clonedTempLine2 = Instantiate(dottedLine, new Vector3(2.35f, 0.01f, 0), Quaternion.identity);
+                toDestroy.Add(clonedTempLine2);
+                clonedTempLine2.transform.localEulerAngles = new Vector3(0, 0, 85);
             }
         }
 
@@ -609,13 +821,18 @@ public class Stage1Fix : MonoBehaviour
                 {
                     if (isLine == 1) //첫번째 점선일 때
                     {
-                        clonedKnife = Instantiate(knife, new Vector3(0.27f, 0.01f, 0), Quaternion.identity);
-                        toDestroy.Add(clonedKnife);
+                        if (!toDestroy.Contains(clonedKnife))
+                        {
+                            clonedKnife = Instantiate(knife, new Vector3(0.27f, 0.01f, 0), Quaternion.identity);
+                            toDestroy.Add(clonedKnife);
+                        }
+
 
                         Destroy(clonedKnife, 1f);
+                        toDestroy.Remove(clonedKnife);
 
                         Destroy(clonedDottedLine);
-                        toDestroy.Remove(clonedDottedLine);
+                        //toDestroy.Remove(clonedDottedLine);
                         Destroy(clonedStrawberry1);
 
                         if (!toDestroy.Contains(clonedHalfStrawberry))
@@ -623,17 +840,26 @@ public class Stage1Fix : MonoBehaviour
                             clonedHalfStrawberry = Instantiate(halfStrawberry, new Vector3(-1.7f, 0, 0), Quaternion.identity);
                             toDestroy.Add(clonedHalfStrawberry);
                         }
+
+                        cutStrawberryCount++;
+                        //Debug.Log("isLine" + isLine);
                         Invoke("delayLine", 0.5f);
+                        //isLine++;
                     }
 
                     if (isLine == 2)
                     {
-                        clonedKnife = Instantiate(knife, new Vector3(4.39f, -0.22f, 0), Quaternion.identity);
-                        toDestroy.Add(clonedKnife);
+                        if (!toDestroy.Contains(clonedKnife))
+                        {
+                            clonedKnife = Instantiate(knife, new Vector3(4.39f, -0.22f, 0), Quaternion.identity);
+                            toDestroy.Add(clonedKnife);
+                        }
+
 
                         Destroy(clonedKnife, 1f);
+                        toDestroy.Remove(clonedKnife);
 
-                        Destroy(clonedDottedLine);
+                        Destroy(clonedTempLine2);
                         //toDestroy.Remove(clonedDottedLine);
                         Destroy(clonedStrawberry2);
 
@@ -644,6 +870,7 @@ public class Stage1Fix : MonoBehaviour
                             toDestroy.Add(clonedHalfStrawberry2);
                         }
 
+                        cutStrawberryCount++;
                         Invoke("finishCutStrawberry", 1f);
                     }
                 }
@@ -656,15 +883,37 @@ public class Stage1Fix : MonoBehaviour
 
     void finishCutStrawberry()
     {
+        cutCount++;
+
         if (cutStrawberryCount == 2)
         {
             needStrawberry = false;
-            Debug.Log("strawberry count" + cutStrawberryCount);
+            isLine = 0;
+            Destroy(clonedHalfStrawberry, 0.5f);
+            Destroy(clonedHalfStrawberry2, 0.5f);
+
+            if (cutCount == 1)
+            {
+                //Debug.Log("여기 되나?" +menuList[1]); //여기 바나나로 안넘어가짐;
+                chooseToppingToCut(menuList[1]);
+            }
+            else if (cutCount == 2)
+            {
+                chooseToppingToCut(menuList[2]);
+            }
+
         }
     }
 
     void showBanana()
     {
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
         if (!toDestroy.Contains(clonedBanana))
         {
             clonedBanana = Instantiate(banana, new Vector3(0.31f, -0.33f, 0), Quaternion.identity);
@@ -721,9 +970,14 @@ public class Stage1Fix : MonoBehaviour
                 {
                     if (isLine == 1)
                     {
-                        clonedBackKnife = Instantiate(backKnife, new Vector3(-1.71f, -1.39f, 0), Quaternion.identity);
+                        if (!toDestroy.Contains(clonedBackKnife))
+                        {
+                            clonedBackKnife = Instantiate(backKnife, new Vector3(-1.71f, -1.39f, 0), Quaternion.identity);
+                            toDestroy.Add(clonedBackKnife);
+                        }
 
                         Destroy(clonedBackKnife, 1f);
+                        toDestroy.Remove(clonedBackKnife);
 
                         Destroy(clonedTempLine1);
                         //toDestroy.Remove(clonedDottedLine);
@@ -734,9 +988,15 @@ public class Stage1Fix : MonoBehaviour
 
                     if (isLine == 2)
                     {
-                        clonedBackKnife = Instantiate(backKnife, new Vector3(0.52f, -1.39f, 0), Quaternion.identity);
+                        if (!toDestroy.Contains(clonedBackKnife))
+                        {
+                            clonedBackKnife = Instantiate(backKnife, new Vector3(0.52f, -1.39f, 0), Quaternion.identity);
+                            toDestroy.Add(clonedBackKnife);
+                        }
 
                         Destroy(clonedBackKnife, 1f);
+                        toDestroy.Remove(clonedBackKnife);
+
                         Destroy(clonedTempLine2);
                         toDestroy.Remove(clonedTempLine1);
 
@@ -746,9 +1006,15 @@ public class Stage1Fix : MonoBehaviour
 
                     if (isLine == 3)
                     {
-                        clonedBackKnife = Instantiate(backKnife, new Vector3(2.59f, -1.2f, 0), Quaternion.identity);
+                        if (!toDestroy.Contains(clonedBackKnife))
+                        {
+                            clonedBackKnife = Instantiate(backKnife, new Vector3(2.59f, -1.2f, 0), Quaternion.identity);
+                            toDestroy.Add(clonedBackKnife);
+                        }
 
                         Destroy(clonedBackKnife, 1f);
+                        toDestroy.Remove(clonedBackKnife);
+
                         Destroy(clonedTempLine3);
                         toDestroy.Remove(clonedTempLine2);
 
@@ -782,10 +1048,9 @@ public class Stage1Fix : MonoBehaviour
 
     void finishCutBanana()
     {
+        cutCount++;
         if (cutBananaCount == 3)
         {
-            cutCount++;
-
             needBanana = false;
             Destroy(clonedCutBanana, 0.5f);
             isLine = 0;
@@ -803,6 +1068,13 @@ public class Stage1Fix : MonoBehaviour
 
     void showChocolate()
     {
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
         if (!toDestroy.Contains(clonedChocolate))
         {
             clonedChocolate = Instantiate(chocolate, new Vector3(0.14f, -0.49f, 0), Quaternion.identity);
@@ -843,12 +1115,17 @@ public class Stage1Fix : MonoBehaviour
                 {
                     if (isLine == 1)
                     {
-                        clonedKnife = Instantiate(knife, new Vector3(1.932142f, -0.5250874f, 0), Quaternion.identity);
-                        toDestroy.Add(clonedKnife);
+                        if (!toDestroy.Contains(clonedKnife))
+                        {
+                            clonedKnife = Instantiate(knife, new Vector3(1.932142f, -0.5250874f, 0), Quaternion.identity);
+                            toDestroy.Add(clonedKnife);
+                        }
 
                         Destroy(clonedKnife, 1f);
+                        toDestroy.Remove(clonedKnife);
 
                         Destroy(clonedDottedLine);
+                        //toDestroy.Remove(clonedDottedLine);
                         Destroy(clonedChocolate);
 
                         if (!toDestroy.Contains(clonedCutChocolate))
@@ -950,6 +1227,7 @@ public class Stage1Fix : MonoBehaviour
         }
 
         backRenderer.sprite = backGrounds[3];
+        nextButton.SetActive(true);
 
         if (!toDestroy.Contains(clonedPancakes))
         {
@@ -1202,6 +1480,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingStrawberry1 = Instantiate(eachStrawberry, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
                             sr = toppingStrawberry1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
+                            showStrawberryList.Add(toppingStrawberry1);
 
                             var newData = new decoratingFruitsData(eachStrawberry,
                                 toppingStrawberry1.transform.position, toppingStrawberry1.transform.rotation,
@@ -1223,6 +1502,7 @@ public class Stage1Fix : MonoBehaviour
                             Vector3 instantiatedScale = new Vector3(0.15f, 0.15f, 1);
                             sr = toppingStrawberry2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
+                            showStrawberryList.Add(toppingStrawberry2);
 
                             var newData = new decoratingFruitsData(strawberry,
                                 toppingStrawberry2.transform.position, toppingStrawberry2.transform.rotation,
@@ -1242,8 +1522,8 @@ public class Stage1Fix : MonoBehaviour
                             toppingStrawberry3 = Instantiate(eachStrawberry, new Vector3(0.65f, -0.54f, 0), Quaternion.identity);
                             sr = toppingStrawberry3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
-
-
+                            showStrawberryList.Add(toppingStrawberry3);
+                            showStrawberryList[0].transform.position = new Vector3(1.03f, 0.67f, 0);
 
                             var newData = new decoratingFruitsData(eachStrawberry,
                                 toppingStrawberry3.transform.position, toppingStrawberry3.transform.rotation,
@@ -1281,6 +1561,7 @@ public class Stage1Fix : MonoBehaviour
                             flavorBanana1 = Instantiate(eachBanana, new Vector3(-0.58f, 0.11f, 0), Quaternion.identity);
                             sr = flavorBanana1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
+                            showBananaList.Add(flavorBanana1);
 
                             var newData = new decoratingFruitsData(eachBanana,
                                 flavorBanana1.transform.position, flavorBanana1.transform.rotation,
@@ -1300,7 +1581,8 @@ public class Stage1Fix : MonoBehaviour
                             flavorBanana2 = Instantiate(eachBanana, new Vector3(0.43f, 0.16f, 0), Quaternion.identity);
                             sr = flavorBanana2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
-                            //EachBananas[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
+                            showBananaList.Add(flavorBanana2);
+                            showBananaList[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
 
                             var newData = new decoratingFruitsData(eachBanana,
                                 flavorBanana2.transform.position, flavorBanana2.transform.rotation,
@@ -1329,6 +1611,9 @@ public class Stage1Fix : MonoBehaviour
                             flavorBanana3 = Instantiate(eachBanana, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
                             sr = flavorBanana3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
+                            showBananaList.Add(flavorBanana3);
+                            showBananaList[0].transform.position = new Vector3(-0.9f, 0.11f, 0);
+                            showBananaList[1].transform.position = new Vector3(-0.07f, 0.18f, 0);
 
                             var newData = new decoratingFruitsData(eachBanana,
                                 flavorBanana3.transform.position, flavorBanana3.transform.rotation,
@@ -1366,6 +1651,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBanana1 = Instantiate(eachBanana, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
                             sr = toppingBanana1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
+                            showBananaList.Add(toppingBanana1);
 
                             var newData = new decoratingFruitsData(eachBanana,
                                 toppingBanana1.transform.position, toppingBanana1.transform.rotation,
@@ -1385,6 +1671,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBanana2 = Instantiate(eachBanana, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
                             sr = toppingBanana2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
+                            showBananaList.Add(toppingBanana2);
 
                             var newData = new decoratingFruitsData(eachBanana,
                                 toppingBanana2.transform.position, toppingBanana2.transform.rotation,
@@ -1404,6 +1691,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBanana3 = Instantiate(eachBanana, new Vector3(-0.21f, -0.8f, 0), Quaternion.identity);
                             sr = toppingBanana3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
+                            showBananaList.Add(toppingBanana3);
 
                             //EachBananas[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
                             //EachBananas[1].transform.position = new Vector3(0.7f, -0.27f, 0);
@@ -1429,6 +1717,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBanana1 = Instantiate(eachBanana, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
                             sr = toppingBanana1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
+                            showBananaList.Add(toppingBanana1);
 
                             var newData = new decoratingFruitsData(eachBanana,
                                 toppingBanana1.transform.position, toppingBanana1.transform.rotation,
@@ -1448,6 +1737,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBanana2 = Instantiate(eachBanana, new Vector3(-0.76f, -0.57f, 0), Quaternion.identity);
                             sr = toppingBanana2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
+                            showBananaList.Add(toppingBanana2);
 
                             var newData = new decoratingFruitsData(eachBanana,
                                 toppingBanana2.transform.position, toppingBanana2.transform.rotation,
@@ -1467,6 +1757,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBanana3 = Instantiate(eachBanana, new Vector3(0.65f, -0.54f, 0), Quaternion.identity);
                             sr = toppingBanana3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
+                            showBananaList.Add(toppingBanana3);
 
                             //EachBananas[1].transform.position = new Vector3(1.03f, 0.67f, 0);
 
@@ -1496,6 +1787,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBlueberry1 = Instantiate(eachBlueberry, new Vector3(-0.91f, 0.47f, 0), Quaternion.identity);
                             sr = toppingBlueberry1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
+                            showBlueberryList.Add(toppingBlueberry1);
 
                             var newData = new decoratingFruitsData(eachBlueberry,
                                 toppingBlueberry1.transform.position, toppingBlueberry1.transform.rotation,
@@ -1515,6 +1807,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBlueberry2 = Instantiate(eachBlueberry, new Vector3(0.65f, 0.7f, 0), Quaternion.identity);
                             sr = toppingBlueberry2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
+                            showBlueberryList.Add(toppingBlueberry2);
 
                             var newData = new decoratingFruitsData(eachBlueberry,
                                 toppingBlueberry2.transform.position, toppingBlueberry2.transform.rotation,
@@ -1533,6 +1826,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBlueberry3 = Instantiate(eachBlueberry, new Vector3(-0.21f, -0.8f, 0), Quaternion.identity);
                             sr = toppingBlueberry3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 5;
+                            showBlueberryList.Add(toppingBlueberry3);
 
                             //EachBlueberrys[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
                             //EachBlueberrys[1].transform.position = new Vector3(0.7f, -0.27f, 0);
@@ -1558,6 +1852,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBlueberry1 = Instantiate(eachBlueberry, new Vector3(-1.05f, 0.63f, 0), Quaternion.identity);
                             sr = toppingBlueberry1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
+                            showBlueberryList.Add(toppingBlueberry1);
 
                             var newData = new decoratingFruitsData(eachBlueberry,
                                 toppingBlueberry1.transform.position, toppingBlueberry1.transform.rotation,
@@ -1577,6 +1872,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBlueberry2 = Instantiate(eachBlueberry, new Vector3(0.87f, 0.42f, 0), Quaternion.identity);
                             sr = toppingBlueberry2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
+                            showBlueberryList.Add(toppingBlueberry2);
 
                             var newData = new decoratingFruitsData(eachBlueberry,
                                 toppingBlueberry2.transform.position, toppingBlueberry2.transform.rotation,
@@ -1596,6 +1892,7 @@ public class Stage1Fix : MonoBehaviour
                             toppingBlueberry3 = Instantiate(eachBlueberry, new Vector3(-0.05f, -0.87f, 0), Quaternion.identity);
                             sr = toppingBlueberry3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
+                            showBlueberryList.Add(toppingBlueberry3);
 
                             var newData = new decoratingFruitsData(eachBlueberry,
                                 toppingBlueberry3.transform.position, toppingBlueberry3.transform.rotation,
@@ -1631,6 +1928,7 @@ public class Stage1Fix : MonoBehaviour
                             flavorChocolate1 = Instantiate(eachLeftChocolate, new Vector3(-0.58f, 0.11f, 0), Quaternion.identity);
                             sr = flavorChocolate1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
+                            showChocolateList.Add(flavorChocolate1);
 
                             var newData = new decoratingFruitsData(eachLeftChocolate,
                                 flavorChocolate1.transform.position, flavorChocolate1.transform.rotation,
@@ -1650,6 +1948,8 @@ public class Stage1Fix : MonoBehaviour
                             flavorChocolate2 = Instantiate(eachRightChocolate, new Vector3(0.43f, 0.16f, 0), Quaternion.identity);
                             sr = flavorChocolate2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
+                            showChocolateList.Add(flavorChocolate2);
+                            showChocolateList[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
 
                             var newData = new decoratingFruitsData(eachRightChocolate,
                                 flavorChocolate2.transform.position, flavorChocolate2.transform.rotation,
@@ -1678,6 +1978,9 @@ public class Stage1Fix : MonoBehaviour
                             flavorChocolate3 = Instantiate(eachLeftChocolate, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
                             sr = flavorChocolate3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
+                            showChocolateList.Add(flavorChocolate3);
+                            showChocolateList[0].transform.position = new Vector3(-1.15f, 0.25f, 0);
+                            showChocolateList[1].transform.position = new Vector3(-0.21f, 0.3f, 0.54f);
 
                             var newData = new decoratingFruitsData(eachLeftChocolate,
                                 flavorChocolate3.transform.position, flavorChocolate3.transform.rotation,
@@ -1721,7 +2024,6 @@ public class Stage1Fix : MonoBehaviour
         }
         whippingRenderer.color = originalColor;
     }
-
 
     void showFlavorFirstButton()
     {
@@ -1875,7 +2177,7 @@ public class Stage1Fix : MonoBehaviour
 
         if (!toDestroy.Contains(clonedKettle))
         {
-            clonedKettle = Instantiate(kettle, new Vector3(1.53f, -0.61f, 0), Quaternion.identity);
+            clonedKettle = Instantiate(kettle, new Vector3(1.55f, -0.51f, 0), Quaternion.identity);
             toDestroy.Add(clonedKettle);
         }
     }
@@ -1952,7 +2254,7 @@ public class Stage1Fix : MonoBehaviour
     {
         if (!toDestroy.Contains(clonedKettle))
         {
-            clonedKettle = Instantiate(kettle, new Vector3(4.23f, -0.18f, 0), Quaternion.identity);
+            clonedKettle = Instantiate(kettle, new Vector3(4.89f, 0.02f, 0), Quaternion.identity);
             clonedKettle.transform.localScale = new Vector3(0.26f, 0.26f, 1);
 
             toDestroy.Add(clonedKettle);
@@ -1969,30 +2271,6 @@ public class Stage1Fix : MonoBehaviour
             clonedHeart.transform.localScale = new Vector3(0.6f, 0.6f, 1);
 
             heartLineLenderer = clonedHeart.GetComponent<LineRenderer>();
-
-            for (int i = 0; i < heartLineLenderer.positionCount; i++)
-            {
-                Vector3 temp = heartLineLenderer.GetPosition(i);
-                temp.z = 0f; // Set z value to 0
-
-                temp.x = Mathf.Round(temp.x * 100f) / 100f; // Round x value to 2 decimal places
-                temp.y = Mathf.Round(temp.y * 100f) / 100f; // Round y value to 2 decimal places
-
-                heartPositions.Add(temp);
-            }
-
-            Vector3 pointToFind = new Vector3(-3.65f, 0.57f, 0f); // Set z value to 0
-            bool pointExists = heartPositions.Contains(pointToFind);
-
-            if (pointExists)
-            {
-                Debug.Log("Point exists in heart position list.");
-            }
-            else
-                Debug.Log("no");
-
-            //Debug.Log("heart positions" + heartPositions.Count);
-            //Debug.Log("heartposition1" + heartPositions[0]);
 
             toDestroy.Add(clonedHeart);
             StartCoroutine(BlinkCoroutine());
@@ -2031,13 +2309,13 @@ public class Stage1Fix : MonoBehaviour
 
             lr.loop = true;
 
-            //checkLineRendererPoints();
-
             if (checkLineRendererPoints()) //하트를 그렸으면
             {
                 Invoke("showHeartCoffee", 0.5f);
 
                 Invoke("showPerfect", 2.5f);
+
+                Invoke("showFinishBack", 4.5f);
             }
             else if (!checkLineRendererPoints())
             {
@@ -2083,6 +2361,8 @@ public class Stage1Fix : MonoBehaviour
                     lr.SetPosition(lr.positionCount - 1, pos);
                     lineCol.points = kettlePoints.ToArray();
 
+                    //drawnPositions.Add(pos);
+
                     Vector3 temp = new Vector3(Mathf.Round(pos.x * 100) / 100, Mathf.Round(pos.y * 100) / 100, 0);
                     drawnPositions.Add(temp);
                 }
@@ -2093,6 +2373,8 @@ public class Stage1Fix : MonoBehaviour
                     lr.sortingOrder = 4;
                     lr.SetPosition(lr.positionCount - 1, pos);
                     lineCol.points = kettlePoints.ToArray();
+
+                    //drawnPositions.Add(pos);
 
                     Vector3 temp = new Vector3(Mathf.Round(pos.x * 100) / 100, Mathf.Round(pos.y * 100) / 100, 0);
                     drawnPositions.Add(temp);
@@ -2151,12 +2433,17 @@ public class Stage1Fix : MonoBehaviour
             }
         }
 
+        //Debug.Log("heartCol" + heartCol);
+        //Debug.Log("overlapPercentage" + overlapPercentage);
+
         if (overlapPercentage > 0.8f)
         {
+            //Debug.Log("Shape overlaps with heart prefab by more than 80%!");
             return true;
         }
         else
         {
+            //Debug.Log("Shape does not overlap with heart prefab enough");
             return false;
         }
     }
@@ -2231,6 +2518,175 @@ public class Stage1Fix : MonoBehaviour
         }
 
         return 0f;
+    }
+
+    void showFinishBack()
+    {
+        isLatteArt = false;
+        isFinishBack = true;
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        backRenderer.sprite = backGrounds[6];
+
+        if (!toDestroy.Contains(clonedBell))
+        {
+            clonedBell = Instantiate(bell, new Vector3(-5.65f, 2.27f, 0), Quaternion.identity);
+            toDestroy.Add(clonedBell);
+        }
+
+        Invoke("showCompleteCoffee", 1f);
+        Invoke("showCompletePancakes", 1f);
+    }
+
+    void showCompleteCoffee()
+    {
+        if (!toDestroy.Contains(clonedHeartCoffee))
+        {
+            clonedHeartCoffee = Instantiate(heartCoffee, new Vector3(5.9f, 1.62f, 0), Quaternion.identity);
+            clonedHeartCoffee.transform.localScale = new Vector3(1f, 1f, 1f);
+            toDestroy.Add(clonedHeartCoffee);
+        }
+    }
+
+    void showCompletePancakes()
+    {
+        if (!toDestroy.Contains(clonedPancakes))
+        {
+            clonedPancakes = Instantiate(pancakes, new Vector3(0f, -0.09f, 0f), Quaternion.identity);
+            clonedPancakes.transform.localScale = new Vector3(0.16f, 0.16f, 1);
+
+            toDestroy.Add(clonedPancakes);
+        }
+
+        if (!toDestroy.Contains(clonedWhipped))
+        {
+            clonedWhipped = Instantiate(whipped, new Vector3(-0.07f, 0f, 0), Quaternion.identity);
+            clonedWhipped.transform.localScale = new Vector3(1.1f, 1.1f, 0);
+
+            toDestroy.Add(clonedWhipped);
+        }
+
+        if (!toDestroy.Contains(clonedSyrup))
+        {
+            clonedSyrup = Instantiate(syrup, new Vector3(-0.16f, -0.03f, 0), Quaternion.identity);
+            toDestroy.Add(clonedSyrup);
+        }
+
+        if (!toDestroy.Contains(clonedLeaf))
+        {
+            clonedLeaf = Instantiate(leaf, new Vector3(-0.14f, 0.04f, 0), Quaternion.identity);
+            toDestroy.Add(clonedLeaf);
+        }
+
+        foreach (decoratingFruitsData data in decoFruitsList)
+        {
+            data.Instantiate();
+        }
+    }
+
+    void deliver()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (rayHit.collider != null)
+            {
+                if (rayHit.collider.gameObject.tag.Equals("bell"))
+                {
+                    Invoke("showComplete", 0.5f);
+                    Debug.Log(checkDecoCount());
+                }
+            }
+        }
+    }
+
+    void showComplete()
+    {
+        clonedComplete = Instantiate(complete, new Vector3(0, 0, 0), Quaternion.identity);
+
+        GameObject.Find("GameSetting").GetComponent<GameNum>().OrderNum++;
+        if (GameObject.Find("GameSetting").GetComponent<GameNum>().OrderNum == 3)
+        {
+            if (GameObject.Find("GameSetting").GetComponent<GameNum>().StageNum == 2)
+            {
+                Invoke("LoadEndingScene", 1f);
+            }
+            GameObject.Find("GameSetting").GetComponent<GameNum>().StageNum++;
+            GameObject.Find("GameSetting").GetComponent<GameNum>().OrderNum = 0;
+        }
+        Invoke("LoadStage1Scene", 1f);
+
+    }
+
+    void LoadStage1Scene()
+    {
+        SceneManager.LoadScene("Stage1");
+    }
+    void LoadEndingScene()
+    {
+        SceneManager.LoadScene("Ending");
+    }
+    bool checkDecoCount()
+    {
+        switch (menuList[0]) //check flavor count
+        {
+            case 0:
+                if (showStrawberryList.Count != 2)
+                    return false;
+                break;
+            case 1:
+                if (showBananaList.Count != 2)
+                    return false;
+                break;
+            case 2:
+                if (showChocolateList.Count != 2)
+                    return false;
+                break;
+        }
+
+        switch (menuList[1]) //check topping1 count
+        {
+            case 0:
+                if (showBananaList.Count != 3)
+                    return false;
+                break;
+            case 1:
+                if (showBlueberryList.Count != 3)
+                    return false;
+                break;
+            case 2:
+                if (showStrawberryList.Count != 3)
+                    return false;
+                break;
+        }
+
+        switch (menuList[2]) //check topping2 count
+        {
+            case 0:
+                if (showBananaList.Count != 3)
+                    return false;
+                break;
+            case 1:
+                if (showBlueberryList.Count != 3)
+                    return false;
+                break;
+            case 2:
+                if (showStrawberryList.Count != 3)
+                    return false;
+                break;
+        }
+
+        return true;
     }
 
 }
