@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class bakingEdit : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class bakingEdit : MonoBehaviour
     public int[] menuList = new int[7];
 
     public GameObject startButton;
+    public TextMeshProUGUI minigameDirectionText;
 
     public GameObject perfect;
     GameObject clonedPerfect;
@@ -108,29 +110,67 @@ public class bakingEdit : MonoBehaviour
     GameObject clonedRedButton;
     public GameObject warning;
     GameObject clonedWarning;
+
     public GameObject greyMuffinTray;
     GameObject clonedGreyMuffinTray;
-
     public GameObject chocoMuffinBread;
     GameObject clonedChocoMuffinBread;
     public GameObject redMuffinBread;
     GameObject clonedRedMuffinBread;
+    public GameObject vanillaMuffinBread;
+    GameObject clonedVanillaMuffinBread;
 
+    GameObject clonedLeftBread;
+    GameObject clonedRightBread;
+
+    public GameObject whiteSharpCream;
+    GameObject clonedWhiteSharpCream;
+    public GameObject cheeseSharpCream;
+    GameObject clonedCheeseSharpCream;
+    public GameObject chocoSharpCream;
+    GameObject clonedChocoSharpCream;
+
+    GameObject clonedLeftCream;
+    GameObject clonedRightCream;
+
+    public GameObject miniGameTitle;
+    GameObject clonedMiniGameTitle;
+    public GameObject miniGameDirection;
+    GameObject clonedMiniGameDirection;
+
+    public GameObject chocoMilkMuffin;
+    GameObject clonedChocoMilkMuffin;
+    public GameObject pinkCheeseMuffin;
+    GameObject clonedPinkCheeseMuffin;
+
+    GameObject clonedCupcake;
+
+    //public GameObject chocoMuffinWithWhipping;
+    //GameObject clonedChocoMuffinWithWhipping;
+    //public GameObject cherryMuffin;
+    //GameObject clonedCherryMuffin;
 
     bool isMixing = false;
     bool isMuffinDough = false;
     bool isBaking = false;
+    bool isWhipping = false;
+    bool isMiniGame = false;
 
     public bool[] checkMixingIngredients = new bool[5]; //0:milk, 1:flour, 2:egg, 3:sugar, 4:butter
     public bool[] checkDoughReady = new bool[2]; //0:left tray, 1:right tray
+    public bool[] checkMuffinWhipping = new bool[2]; //0:left cream, 1: right cream
 
     bool isButterReady = false;
     bool isOvenReady = false;
     bool spinArrow = false;
+    bool stopRoastingButton = false;
+    Vector3 roastingButtonStartingPos = new Vector3(-3.001f, -3.328f, 0);
 
     Vector3 targetPos = new Vector3(2.78f, -3.328f, 0);
     Vector2 objPos = new Vector2(-5.27f, -2.48f);
     public Vector2 nowPos;
+
+    public bool clearMiniGame = false;
 
     // Start is called before the first frame update
     void Start()
@@ -138,6 +178,10 @@ public class bakingEdit : MonoBehaviour
         orders = CSVReader.Read("order");
 
         startButton.SetActive(false);
+
+        GameObject Direction = minigameDirectionText.gameObject;
+        Direction.SetActive(false);
+
         showOrderBack();
 
         checkMenu();
@@ -159,6 +203,16 @@ public class bakingEdit : MonoBehaviour
         if (isBaking)
         {
             Baking();
+        }
+
+        if (isWhipping)
+        {
+            BreadWhipping();
+        }
+
+        if (isMiniGame)
+        {
+            miniGame();
         }
     }
 
@@ -279,7 +333,7 @@ public class bakingEdit : MonoBehaviour
             sr.sortingOrder = 3;
         }
 
-        Invoke("showBowl", 1f);
+        Invoke("showBowl", 0.5f);
     }
 
     void showBowl()
@@ -767,13 +821,15 @@ public class bakingEdit : MonoBehaviour
             toDestroy.RemoveAt(0);
         }
 
-        backRenderer.sprite = backGrounds[1];
+        backRenderer.sprite = backGrounds[0];
 
-        if (!toDestroy.Contains(clonedClosedOven))
-        {
-            clonedClosedOven = Instantiate(closedOven, new Vector3(0, -0.56f, 0), Quaternion.identity);
-            toDestroy.Add(clonedClosedOven);
-        }
+        clonedClosedOven = Instantiate(closedOven, new Vector3(0, -0.56f, 0), Quaternion.identity);
+
+        //if (!toDestroy.Contains(clonedClosedOven))
+        //{
+        //    clonedClosedOven = Instantiate(closedOven, new Vector3(0, -0.56f, 0), Quaternion.identity);
+        //    toDestroy.Add(clonedClosedOven);
+        //}
 
         if (!toDestroy.Contains(clonedOvenSwitch))
         {
@@ -784,12 +840,11 @@ public class bakingEdit : MonoBehaviour
 
     void Baking()
     {
+
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
         Ray2D ray = new Ray2D(touchPos, Vector2.zero);
         RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
-
-        bool stopRoastingButton = false;
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -802,7 +857,9 @@ public class bakingEdit : MonoBehaviour
                     if (!toDestroy.Contains(clonedOpenedOven))
                     {
                         clonedOpenedOven = Instantiate(openedOven, new Vector3(0, -0.56f, 0), Quaternion.identity);
-                        //쓰나?
+
+                        clonedOvenSwitch.transform.position = new Vector3(-3.84f, 2.67f, 0);
+
                         toDestroy.Add(clonedOpenedOven);
                     }
 
@@ -817,76 +874,57 @@ public class bakingEdit : MonoBehaviour
                     {
                         clonedTray = Instantiate(chooseFilledTray(), new Vector3(0, -4.98f, 0), Quaternion.identity);
                         toDestroy.Add(clonedTray);
-                        //쓰나?
-                        //isOvenReady = true;
+
+                        Invoke("moveTray", 1f);
+
+                        isOvenReady = true;
                     }
                 }
 
                 if (rayHit.collider.gameObject.tag.Equals("ovenDoor"))
                 {
                     Destroy(clonedOpenedOven);
-                    toDestroy.Remove(clonedOpenedOven);
 
                     if (!toDestroy.Contains(clonedClosedOven))
                     {
                         clonedClosedOven = Instantiate(closedOven, new Vector3(0, -0.56f, 0), Quaternion.identity);
                         toDestroy.Add(clonedClosedOven);
-                    }
 
-                    SpriteRenderer muffinTraySR = clonedTray.GetComponent<SpriteRenderer>();
-                    Color c = muffinTraySR.color;
-                    c.a = 0.5f;
-                    muffinTraySR.color = c;
+                        clonedOvenSwitch.transform.position = new Vector3(-3.81f, 2.41f, 0);
+
+                        SpriteRenderer traySR = clonedTray.GetComponent<SpriteRenderer>();
+                        Color c = traySR.color;
+                        c.a = 0.5f;
+                        traySR.color = c;
+
+                        Invoke("showTemperatureOrder", 1f);
+                        Invoke("showTemperatureChoice", 2.5f);
+                    }
                 }
 
                 if (rayHit.collider.gameObject.tag.Equals("ovenSwitch"))
                 {
-                    if (!toDestroy.Contains(clonedTemperatureOrder))
-                    {
-                        clonedTemperatureOrder = Instantiate(temperatureOrder, new Vector3(-0.99f, 0.57f, 0), Quaternion.identity);
-                        toDestroy.Add(clonedTemperatureOrder);
-                        Destroy(clonedTemperatureOrder, 1f);
-                    }
+                    //spinArrow = !spinArrow;
+                    spinArrow = false;
 
-                    Invoke("showTemperatureChoice", 1.5f);
+                    if (checkTemperatureDegree())
+                    {
+                        Invoke("showRoasting", 1f);
+                    }
+                    else if (!checkTemperatureDegree())
+                    {
+                        clonedX = Instantiate(x, new Vector3(-1.44f, -0.69f, 0), Quaternion.identity);
+                        Destroy(clonedX, 1f);
+
+                        spinArrow = true;
+                    }
                 }
 
                 if (rayHit.collider.gameObject.tag.Equals("redButton"))
                 {
                     stopRoastingButton = true;
-                    targetPos = clonedRoastingButton.transform.position;
-
-                    Invoke("showPerfect", 0.5f);
-                    // 718
+                    checkRoastingButtonPos(clonedRoastingButton.transform.position);
                 }
-            }
-        }
-
-        if (toDestroy.Contains(clonedRoastingButton))
-        {
-            if (clonedRoastingButton.transform.position.x >= 1.27f
-                && clonedRoastingButton.transform.position.x <= 2.75f)
-            {
-                if (!toDestroy.Contains(clonedWarning))
-                {
-                    clonedWarning = Instantiate(warning, new Vector3(5.86f, 0.46f, 0), Quaternion.identity);
-                    toDestroy.Add(clonedWarning);
-                }
-            }
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            spinArrow = false;
-            if (checkTemperatureDegree())
-            {
-                Invoke("showRoasting", 1);
-            }
-            else if (!checkTemperatureDegree())
-            {
-                clonedX = Instantiate(x, new Vector3(-1.44f, -0.69f, 0), Quaternion.identity);
-                Destroy(clonedX, 1f);
-                spinArrow = true;
             }
         }
 
@@ -894,12 +932,9 @@ public class bakingEdit : MonoBehaviour
         {
             clonedTray.transform.localScale = new Vector3(0.25f, 0.25f, 0);
 
-            do
-            {
-                clonedTray.transform.localPosition =
-                    Vector3.MoveTowards(clonedTray.transform.position,
-                    new Vector3(0, -0.79f, 0), 5 * Time.deltaTime);
-            } while (clonedTray.transform.position.y == -0.79);
+            clonedTray.transform.localPosition =
+                Vector3.MoveTowards(clonedTray.transform.position,
+                new Vector3(0, -0.79f, 0), 5 * Time.deltaTime);
         }
 
         if (spinArrow)
@@ -913,21 +948,30 @@ public class bakingEdit : MonoBehaviour
             {
                 clonedRoastingButton.transform.position =
                     Vector3.MoveTowards(clonedRoastingButton.transform.position,
-                    targetPos, 1 * Time.deltaTime);
+                    new Vector3(2.78f, -3.328f, 0), 1 * Time.deltaTime);
+            }
+            if (clonedRoastingButton.transform.position.x >= 2.78f)
+            {
+                clonedRoastingButton.transform.position = roastingButtonStartingPos;
+                Invoke("moveButtonAgain", 0.8f);
             }
         }
     }
 
-    GameObject chooseFilledTray()
+    void moveTray()
     {
-        if (menuList[0] == 1 && menuList[1] == 0)
-            return pinkChocoTray;
-        else if (menuList[0] == 2 && menuList[1] == 0)
-            return vanillaChocoTray;
-        else if (menuList[0] == 2 && menuList[1] == 1)
-            return vanillaPinkTray;
-        else
-            return null;
+        isOvenReady = false;
+    }
+
+    void showTemperatureOrder()
+    {
+        if (!toDestroy.Contains(clonedTemperatureOrder))
+        {
+            clonedTemperatureOrder = Instantiate(temperatureOrder, new Vector3(-0.99f, 0.57f, 0), Quaternion.identity);
+            toDestroy.Add(clonedTemperatureOrder);
+
+            Destroy(clonedTemperatureOrder, 1f);
+        }
     }
 
     void showTemperatureChoice()
@@ -956,9 +1000,7 @@ public class bakingEdit : MonoBehaviour
     {
         if (clonedArrow.transform.rotation.eulerAngles.z >= 170
             && clonedArrow.transform.rotation.eulerAngles.z <= 190)
-        {
             return true;
-        }
         return false;
     }
 
@@ -969,15 +1011,408 @@ public class bakingEdit : MonoBehaviour
 
         if (!toDestroy.Contains(clonedDegreeOfRoasting))
         {
-            clonedDegreeOfRoasting = Instantiate(degreeOfRoasting, new Vector3(0, -2.9f, 0), Quaternion.identity);
+            clonedDegreeOfRoasting = Instantiate(degreeOfRoasting,
+                new Vector3(0, -2.9f, 0), Quaternion.identity);
             toDestroy.Add(clonedDegreeOfRoasting);
         }
 
         if (!toDestroy.Contains(clonedRoastingButton))
         {
-            clonedRoastingButton = Instantiate(roastingButton, new Vector3(-3.001f, -3.328f, 0), Quaternion.identity);
+            clonedRoastingButton = Instantiate(roastingButton,
+                new Vector3(-3.001f, -3.328f, 0), Quaternion.identity);
             toDestroy.Add(clonedRoastingButton);
         }
     }
 
+    void checkRoastingButtonPos(Vector3 nowPos)
+    {
+        //is in green
+        if (clonedRoastingButton.transform.position.x >= -3.001f
+            && clonedRoastingButton.transform.position.x <= -1.01f)
+        {
+            if (!toDestroy.Contains(clonedWarning))
+            {
+                clonedWarning = Instantiate(warning, new Vector3(0, -2.91f, 0), Quaternion.identity);
+                toDestroy.Add(clonedWarning);
+                Destroy(clonedWarning, 1f);
+                Invoke("removeWarning", 1f);
+            }
+            clonedRoastingButton.transform.position = roastingButtonStartingPos;
+
+            Invoke("moveButtonAgain", 0.8f);
+        }
+        //is in yellow
+        if (clonedRoastingButton.transform.position.x >= -1.01f
+            && clonedRoastingButton.transform.position.x <= 0.93)
+        {
+            Invoke("showPerfect", 1f);
+            Invoke("showWhippingBack", 2f);
+        }
+        //is in red
+        else if (clonedRoastingButton.transform.position.x >= 0.93f
+            && clonedRoastingButton.transform.position.x <= 2.76f)
+        {
+            if (!toDestroy.Contains(clonedWarning))
+            {
+                clonedWarning = Instantiate(warning, new Vector3(5.38f, -1.89f, 0), Quaternion.identity);
+                toDestroy.Add(clonedWarning);
+                Destroy(clonedWarning, 1f);
+                Invoke("removeWarning", 1f);
+            }
+
+            Invoke("moveButtonAgain", 0.8f);
+        }
+        else if (clonedRoastingButton.transform.position.x > 2.77f)
+        {
+            clonedRoastingButton.transform.position = roastingButtonStartingPos;
+            stopRoastingButton = false;
+        }
+    }
+
+    void removeWarning()
+    {
+        toDestroy.Remove(clonedWarning);
+    }
+
+    void moveButtonAgain()
+    {
+        stopRoastingButton = false;
+    }
+
+    GameObject chooseFilledTray()
+    {
+        if (menuList[0] == 1 && menuList[1] == 0)
+            return pinkChocoTray;
+        else if (menuList[0] == 2 && menuList[1] == 0)
+            return vanillaChocoTray;
+        else if (menuList[0] == 2 && menuList[1] == 1)
+            return vanillaPinkTray;
+        else
+            return null;
+    }
+
+    void showWhippingBack()
+    {
+        isBaking = false;
+        isWhipping = true;
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        backRenderer.sprite = backGrounds[2];
+
+        if (!toDestroy.Contains(clonedGreyMuffinTray))
+        {
+            clonedGreyMuffinTray = Instantiate(greyMuffinTray, new Vector3(-0.06f, -2.17f, 0), Quaternion.identity);
+            toDestroy.Add(clonedGreyMuffinTray);
+        }
+
+        if (!toDestroy.Contains(clonedLeftBread))
+        {
+            clonedLeftBread = Instantiate(chooseMuffinBread(menuList[1]), new Vector3(-2.01f, -0.48f, 0), Quaternion.identity);
+            toDestroy.Add(clonedLeftBread);
+        }
+
+        if (!toDestroy.Contains(clonedRightBread))
+        {
+            clonedRightBread = Instantiate(chooseMuffinBread(menuList[0]), new Vector3(1.89f, -0.03f, 0), Quaternion.identity);
+            toDestroy.Add(clonedRightBread);
+        }
+
+        Invoke("delayPipingBag", 1f);
+    }
+
+    GameObject chooseMuffinBread(int flavor)
+    {
+        if (flavor == 0)
+        {
+            return chocoMuffinBread;
+        }
+        else if (flavor == 1)
+        {
+            return redMuffinBread;
+        }
+        else if (flavor == 2)
+        {
+            return vanillaMuffinBread;
+        }
+        else
+            return null;
+    }
+
+    void delayPipingBag()
+    {
+        if (!toDestroy.Contains(clonedPipingBag))
+        {
+            clonedPipingBag = Instantiate(pipingBag, new Vector3(6.25f, 1.14f, 0), Quaternion.identity);
+            clonedPipingBag.transform.localScale = new Vector3(1, 1, 0);
+
+            SpriteRenderer sr = null;
+            sr = clonedPipingBag.GetComponent<SpriteRenderer>();
+            sr.sortingOrder = 6;
+
+            toDestroy.Add(clonedPipingBag);
+        }
+    }
+
+    void BreadWhipping()
+    {
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+        Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+        RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        if (Input.GetMouseButton(0))
+        {
+            if (rayHit.collider != null)
+            {
+                if (rayHit.collider.gameObject.tag.Equals("pipingBag"))
+                {
+                    Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                    Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+                    clonedPipingBag.transform.position = objPosition;
+
+                    //left muffin
+                    if (objPosition.x >= -1.44f && objPosition.x <= 0.76f
+                        && objPosition.y >= 2f && objPosition.y <= 4f)
+                    {
+                        if (!toDestroy.Contains(clonedLeftCream))
+                        {
+                            clonedLeftCream = Instantiate(chooseSharpCream(menuList[5]), new Vector3(-2.17f, 1.74f, 0),
+                                Quaternion.identity);
+                            toDestroy.Add(clonedLeftCream);
+                            checkMuffinWhipping[0] = true;
+
+                            StartCoroutine(FadeInLeftCream());
+                        }
+                    }
+                    if (objPosition.x >= 2.54f && objPosition.x <= 4.69f
+                        && objPosition.y >= 2f && objPosition.y <= 4f)
+                    {
+                        if (!toDestroy.Contains(clonedRightCream))
+                        {
+                            clonedRightCream = Instantiate(chooseSharpCream(menuList[4]), new Vector3(1.78f, 1.78f, 0),
+                                Quaternion.identity);
+                            toDestroy.Add(clonedRightCream);
+                            checkMuffinWhipping[1] = true;
+
+                            StartCoroutine(FadeInRightCream());
+                        }
+                    }
+                }
+            }
+        }
+
+        if (checkWhippingDone())
+        {
+            Invoke("showMiniGameTitle", 5f);
+
+            for (int i = 0; i < checkMuffinWhipping.Length; i++)
+                checkMuffinWhipping[i] = false;
+        }
+    }
+
+    IEnumerator FadeInLeftCream()
+    {
+        float elapsedTime = 0f;
+        SpriteRenderer lcreamSR;
+        Color lcreamColor;
+        float fadeDuration = 2f;
+
+        lcreamSR = clonedLeftCream.GetComponent<SpriteRenderer>();
+        lcreamColor = lcreamSR.color;
+        lcreamSR.color = new Color(lcreamColor.r, lcreamColor.g, lcreamColor.b, 0);
+
+        while (elapsedTime < fadeDuration)
+        {
+            float alpha = Mathf.Lerp(0, 1, elapsedTime / fadeDuration);
+            lcreamSR.color = new Color(lcreamColor.r, lcreamColor.g, lcreamColor.b, alpha);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        lcreamSR.color = lcreamColor;
+    }
+
+    IEnumerator FadeInRightCream()
+    {
+        float elapsedTime = 0f;
+        SpriteRenderer rcreamSR;
+        Color rcreamColor;
+        float fadeDuration = 2f;
+
+        rcreamSR = clonedRightCream.GetComponent<SpriteRenderer>();
+        rcreamColor = rcreamSR.color;
+        rcreamSR.color = new Color(rcreamColor.r, rcreamColor.g, rcreamColor.b, 0);
+
+        while (elapsedTime < fadeDuration)
+        {
+            float alpha = Mathf.Lerp(0, 1, elapsedTime / fadeDuration);
+            rcreamSR.color = new Color(rcreamColor.r, rcreamColor.g, rcreamColor.b, alpha);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        rcreamSR.color = rcreamColor;
+    }
+
+    GameObject chooseSharpCream(int flavor)
+    {
+        if (flavor == 0)
+        {
+            return whiteSharpCream;
+        }
+        else if (flavor == 1)
+        {
+            return cheeseSharpCream;
+        }
+        else if (flavor == 2)
+        {
+            return chocoSharpCream;
+        }
+        else
+            return null;
+    }
+
+    bool checkWhippingDone()
+    {
+        for (int i = 0; i < checkMuffinWhipping.Length; i++)
+        {
+            if (checkMuffinWhipping[i] == false)
+                return false;
+        }
+        return true;
+    }
+
+    void showMiniGameTitle()
+    {
+        if (!toDestroy.Contains(clonedMiniGameTitle))
+        {
+            clonedMiniGameTitle = Instantiate(miniGameTitle, new Vector3(0, 0, 0), Quaternion.identity);
+            toDestroy.Add(clonedMiniGameTitle);
+        }
+
+        Invoke("showMiniGameBack", 1f);
+    }
+
+    void showMiniGameBack()
+    {
+        isWhipping = false;
+        isMiniGame = true;
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        backRenderer.sprite = backGrounds[3];
+
+        //if(!toDestroy.Contains(clonedMiniGameDirection))
+        //{
+        //    clonedMiniGameDirection = Instantiate(miniGameDirection, new Vector3(0, 0, 0), Quaternion.identity);
+        //    toDestroy.Add(clonedMiniGameDirection);
+        //}
+        //Destroy(clonedMiniGameDirection, 3f);
+
+        minigameDirectionText.text = chooseMinigameDirection();
+        GameObject Direction = minigameDirectionText.gameObject;
+        Direction.SetActive(true);
+
+        Invoke("removeDirection", 3f);
+
+        //Invoke("showChocoCupCake", 4f);
+        Invoke("showMinigameCupcake", 4f);
+    }
+
+    void removeDirection()
+    {
+        GameObject Direction = minigameDirectionText.gameObject;
+        Direction.SetActive(false);
+    }
+
+    string chooseMinigameDirection()
+    {
+        if (menuList[1] == 0 && menuList[3] == 0) //choco + milk + cherry
+        {
+            string orderNum1Direction = "Of the toppings that fall from the top, " +
+                "you have to put the cherry on top of the cupcake!";
+            //minigameDirectionText.text = orderNum1Direction;
+            return orderNum1Direction;
+        }
+        else if (menuList[1] == 0 && menuList[3] == 1) //choco + milk + oreo
+        {
+            string orderNum2Direction = "Of the toppings that fall from the top, " +
+                "you have to put the oreo on top of the cupcake!";
+            return orderNum2Direction;
+        }
+        else if (menuList[1] == 1 && menuList[3] == 0) //pink + cheese + cherry
+        {
+            string orderNum3Direction = "Of the toppings that fall from the top, " +
+                "you have to put the cherry on top of the cupcake!";
+            return orderNum3Direction;
+        }
+        else
+            return null;
+    }
+
+    GameObject chooseMiniGameMuffin()
+    {
+        if (menuList[1] == 0 && menuList[5] == 0) //choco + milk
+        {
+            return chocoMilkMuffin;
+        }
+        else if (menuList[1] == 1 && menuList[5] == 1) //pink + cheese
+        {
+            return pinkCheeseMuffin;
+        }
+        else
+            return null;
+    }
+
+    void showMinigameCupcake()
+    {
+        if (!toDestroy.Contains(clonedCupcake))
+        {
+            clonedCupcake = Instantiate(chooseMiniGameMuffin(), new Vector3(-5.27f, -2.48f, 0), Quaternion.identity);
+            toDestroy.Add(clonedCupcake);
+        }
+    }
+
+    void miniGame()
+    {
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+        Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+        RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+
+
+        if (clearMiniGame)
+        {
+            Rigidbody2D rbCupcake = clonedCupcake.GetComponent<Rigidbody2D>();
+
+            rbCupcake.velocity = Vector2.zero;
+        }
+        else
+        {
+            if (toDestroy.Contains(clonedCupcake))
+            {
+                if (Input.GetMouseButton(0))
+                {
+                    Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                    objPos = Camera.main.ScreenToWorldPoint(mousePosition);
+                    objPos.y = clonedCupcake.transform.position.y;
+                }
+                clonedCupcake.transform.position = Vector2.Lerp(clonedCupcake.transform.position,
+                    objPos, Time.deltaTime * 2f);
+            }
+        }
+    }
 }
