@@ -176,6 +176,8 @@ public class bakingEdit : MonoBehaviour
     public GameObject vanillaMixer;
     GameObject clonedVanillaMixer;
 
+    GameObject clonedFullMixer;
+
     public GameObject mixerLid;
     GameObject clonedMixerLid;
     public GameObject mixerButton;
@@ -194,11 +196,7 @@ public class bakingEdit : MonoBehaviour
     GameObject clonedOreoBundle;
     public GameObject vanillaBundle;
     GameObject clonedVanillaBundle;
-
-    //public GameObject strawberryFullMixer;
-    //GameObject clonedStrawberryFullMixer;
-    //public GameObject oreoFullMixer;
-    //GameObject clonedOreoFullMixer;
+    GameObject clonedCorrectBundle;
 
     public GameObject completeStrawberryMixer;
     GameObject clonedCompleteStrawberryMixer;
@@ -206,7 +204,19 @@ public class bakingEdit : MonoBehaviour
     GameObject clonedCompleteOreoMixer;
     public GameObject completeVanillaMixer;
     GameObject clonedCompleteVanillaMixer;
+    GameObject clonedCompleteMixer;
 
+    public GameObject iceButton;
+    GameObject clonedIceButton;
+    public GameObject yogurtButton;
+    GameObject clonedYogurtButton;
+    public GameObject strawberryButton;
+    //GameObject clonedStrawberryButton;
+    public GameObject oreoButton;
+    //GameObject clonedOreoButton;
+    public GameObject vanillaButton;
+    //GameObject clonedVanillaButton;
+    GameObject clonedButton;
 
     bool isMixing = false;
     bool isMuffinDough = false;
@@ -235,6 +245,12 @@ public class bakingEdit : MonoBehaviour
     public int correctToppingNum;
 
     bool canMixThings = false;
+    bool changeMixer = false;
+
+    Animator strawberryMixerAnim;
+    Animator oreoMixerAnim;
+    Animator vanillaMixerAnim;
+    Animator correctMixerAnim;
 
     // Start is called before the first frame update
     void Start()
@@ -245,6 +261,8 @@ public class bakingEdit : MonoBehaviour
 
         GameObject Direction = minigameDirectionText.gameObject;
         Direction.SetActive(false);
+
+        //strawberryMixerAnim = strawberryMixer.GetComponent<Animator>();
 
         showOrderBack();
 
@@ -281,7 +299,7 @@ public class bakingEdit : MonoBehaviour
 
         if (isMixer)
         {
-            Mixing();
+            MixerOn();
         }
     }
 
@@ -1544,7 +1562,8 @@ public class bakingEdit : MonoBehaviour
 
         if (!toDestroy.Contains(clonedCup))
         {
-            clonedCup = Instantiate(chooseMixerCup(), new Vector3(5.13f, -3.34f, 0), Quaternion.identity);
+            GameObject beverageCup = chooseBeverageCup<GameObject>();
+            clonedCup = Instantiate(beverageCup, new Vector3(5.13f, -3.34f, 0), Quaternion.identity);
             toDestroy.Add(clonedCup);
         }
 
@@ -1561,43 +1580,34 @@ public class bakingEdit : MonoBehaviour
         }
     }
 
-    GameObject chooseMixerCup()
+    T chooseBeverageCup<T>()
     {
-        if (menuList[6] == 0) // beverage -> strawberry
+        if (menuList[6] == 0) //bev -> strawberry
         {
-            return strawberryCup;
+            if (typeof(T) == typeof(GameObject))
+                return (T)(object)strawberryCup;
+            else if (typeof(T) == typeof(string))
+                return (T)(object)"strawberryCup";
         }
-        else if (menuList[6] == 1) // beverage -> chocolate
+        else if (menuList[6] == 1) //bev -> oreo
         {
-            return oreoCup;
+            if (typeof(T) == typeof(GameObject))
+                return (T)(object)oreoCup;
+            else if (typeof(T) == typeof(string))
+                return (T)(object)"bananaCup";
         }
-        else if (menuList[6] == 2) //beverage -> vanilla
+        else if (menuList[6] == 2) //bev -> vanilla
         {
-            return vanillaCup;
+            if (typeof(T) == typeof(GameObject))
+                return (T)(object)vanillaCup;
+            else if (typeof(T) == typeof(string))
+                return (T)(object)"blueberryCup";
         }
-        else
-            return null;
+
+        return default(T);
     }
 
-    //GameObject chooseMixer()
-    //{
-    //    if (menuList[6] == 0)
-    //    {
-    //        return
-    //    }
-    //    else if (menuList[6] == 1)
-    //    {
-
-    //    }
-    //    else if (menuList[6] == 2)
-    //    {
-    //        return null;
-    //    }
-    //    else
-    //        return null;
-    //}
-
-    void Mixing()
+    void MixerOn()
     {
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
@@ -1615,6 +1625,10 @@ public class bakingEdit : MonoBehaviour
                         clonedFilledMilkForMixer = Instantiate(filledMilkForMixer,
                             new Vector3(-0.0148f, -0.1353f, 0), Quaternion.identity);
                         toDestroy.Add(clonedFilledMilkForMixer);
+
+                        clonedMilkButton = Instantiate(milkButton, new Vector3(2.76f, -1.27f, 0), Quaternion.identity);
+                        Destroy(clonedMilkButton, 1f);
+
                         checkMixerIngredients[0] = true;
                     }
                 }
@@ -1625,101 +1639,190 @@ public class bakingEdit : MonoBehaviour
                     {
                         clonedIce = Instantiate(ice, new Vector3(0.01f, 2.83f, 0), Quaternion.identity);
                         toDestroy.Add(clonedIce);
+
+                        clonedIceButton = Instantiate(iceButton, new Vector3(2.76f, -1.27f, 0), Quaternion.identity);
+                        Destroy(clonedIceButton, 1f);
+
                         checkMixerIngredients[1] = true;
                     }
                 }
 
-                string correctTagName = mixerCupTag();
-                if (rayHit.collider.gameObject.tag.Equals(correctTagName))
+                string beverageTag = chooseBeverageCup<string>();
+                if (rayHit.collider.gameObject.tag.Equals(beverageTag))
                 {
-                    if (menuList[6] == 0) // bev -> strawberry
+                    if (!toDestroy.Contains(clonedCorrectBundle))
                     {
-                        if (!toDestroy.Contains(clonedStrawberryBundle))
-                        {
-                            clonedStrawberryBundle = Instantiate(strawberryBundle,
-                                new Vector3(-0.01f, 2.13f, 0), Quaternion.identity);
-                            clonedStrawberryBundle.transform.localEulerAngles = new Vector3(0, 0, 90f);
-                            toDestroy.Add(clonedStrawberryBundle);
-                        }
-                    }
-                    else if (menuList[6] == 1) //bev -> chocolate
-                    {
-                        if (!toDestroy.Contains(clonedOreoBundle))
-                        {
-                            clonedOreoBundle = Instantiate(oreoBundle,
-                                new Vector3(-0.01f, 2.13f, 0), Quaternion.identity);
-                            clonedOreoBundle.transform.localEulerAngles = new Vector3(0, 0, 90f);
-                            toDestroy.Add(clonedOreoBundle);
-                        }
-                    }
-                    else if (menuList[6] == 2) //bev -> vanilla
-                    {
-                        if (!toDestroy.Contains(clonedVanillaBundle))
-                        {
-                            clonedVanillaBundle = Instantiate(vanillaBundle,
-                                new Vector3(-0.01f, 2.13f, 0), Quaternion.identity);
-                            clonedVanillaBundle.transform.localEulerAngles = new Vector3(0, 0, 90f);
-                            toDestroy.Add(clonedVanillaBundle);
-                        }
-                    }
+                        clonedCorrectBundle = Instantiate(chooseCorrectBundle(), new Vector3(-0.01f, 2.13f, 0), Quaternion.identity);
+                        clonedCorrectBundle.transform.localEulerAngles = new Vector3(0, 0, 90f);
+                        toDestroy.Add(clonedCorrectBundle);
 
-                    checkMixerIngredients[2] = true;
+                        clonedButton = Instantiate(chooseCorrectButton(), new Vector3(2.76f, -1.27f, 0), Quaternion.identity);
+                        Destroy(clonedButton, 1f);
+
+                        checkMixerIngredients[2] = true;
+                    }
                 }
 
                 if (rayHit.collider.gameObject.tag.Equals("yogurt"))
                 {
                     if (!toDestroy.Contains(clonedFilledYogurt))
                     {
-                        clonedFilledYogurt = Instantiate(filledYogurt, new Vector3(-0.08f, 3.07f, 0),
-                            Quaternion.identity);
+                        clonedFilledYogurt = Instantiate(filledYogurt, new Vector3(-0.08f, 3.07f, 0), Quaternion.identity);
                         clonedFilledYogurt.transform.localScale = new Vector3(0.13f, 0.16f, 0);
                         toDestroy.Add(clonedFilledYogurt);
 
+                        clonedYogurtButton = Instantiate(yogurtButton, new Vector3(2.76f, -1.27f, 0), Quaternion.identity);
+                        Destroy(clonedYogurtButton, 1f);
+
                         checkMixerIngredients[3] = true;
+                    }
+                }
+
+                if (canMixThings)
+                {
+                    if (rayHit.collider.gameObject.tag.Equals("bell"))
+                    {
+                        Destroy(clonedEmptyMixer);
+                        //toDestroy.Remove(clonedEmptyMixer);
+
+                        Destroy(clonedFilledYogurt);
+                        //toDestroy.Remove(clonedFilledYogurt);
+
+                        Destroy(clonedFilledMilkForMixer);
+                        //toDestroy.Remove(clonedFilledMilkForMixer);
+
+                        Destroy(clonedIce);
+                        //toDestroy.Remove(clonedIce);
+
+                        Destroy(clonedCorrectBundle);
+                        //toDestroy.Remove(clonedCorrectBundle);
+
+                        Destroy(clonedMixerLid);
+                        //toDestroy.Remove(clonedMixerLid);
+
+                        Destroy(clonedMixerButton);
+                        //toDestroy.Remove(clonedMixerButton);
+
+                        if (!toDestroy.Contains(clonedFullMixer))
+                        {
+                            clonedFullMixer = Instantiate(chooseCorrectMoveMixer(),
+                                new Vector3(0, -0.24f, 0), Quaternion.identity);
+                            toDestroy.Add(clonedFullMixer);
+                            changeMixer = true;
+                            correctMixerAnim = clonedFullMixer.GetComponent<Animator>();
+                            correctMixerAnim.enabled = true;
+                        }
+                    }
+                }
+
+                if (changeMixer)
+                {
+                    changeMixer = false;
+                    if (!toDestroy.Contains(clonedCompleteMixer))
+                    {
+                        Invoke("showCompleteMixer", 2f);
+                        Invoke("showPerfect", 2.5f);
                     }
                 }
             }
         }
 
-        if (checkAllMixer())
+        if (checkMixerIngredients[1]) //move ice
         {
-            Invoke("delayAllMixer", 1f);
+            if (toDestroy.Contains(clonedIce))
+            {
+                clonedIce.transform.position = Vector3.MoveTowards(clonedIce.transform.position,
+                    new Vector3(0.01f, 0.18f, 0), 2 * Time.deltaTime);
+            }
+
+        }
+
+        if (checkMixerIngredients[2]) //fruit bundle
+        {
+            if (toDestroy.Contains(clonedCorrectBundle))
+            {
+                clonedCorrectBundle.transform.position = Vector3.MoveTowards(clonedCorrectBundle.transform.position,
+                new Vector3(-0.01f, 0.24f, 0), 2 * Time.deltaTime);
+            }
+        }
+
+        if (checkMixerIngredients[3]) //move yogurt
+        {
+            if (toDestroy.Contains(clonedFilledYogurt))
+            {
+                clonedFilledYogurt.transform.position = Vector3.MoveTowards(clonedFilledYogurt.transform.position,
+                new Vector3(0.13f, 1.31f, 0), 2 * Time.deltaTime);
+            }
+        }
+
+        if (checkMixerReady()) //check mixer ingredients ready
+        {
+            Invoke("checkMixerReady", 1f);
 
             if (!toDestroy.Contains(clonedMixerLid))
             {
                 Invoke("showMixerLid", 0.5f);
-
-            }
-        }
-
-        if (canMixThings)
-        {
-            if (rayHit.collider.gameObject.tag.Equals("bell")) //¹Í¼­ ¹öÆ°
-            {
-                Destroy()
+                canMixThings = true;
             }
         }
     }
 
-    string mixerCupTag()
+    GameObject chooseCorrectBundle()
     {
-        if (menuList[6] == 0) // bev -> strawberry
-        {
-            return "strawberryCup";
-        }
-        else if (menuList[6] == 1) //bev -> chocolate
-        {
-            return "bananaCup";
-        }
-        else if (menuList[6] == 2) //bev -> blueberryCup
-        {
-            return "blueberryCup";
-        }
+        if (menuList[6] == 0)
+            return strawberryBundle;
+        else if (menuList[6] == 1)
+            return oreoBundle;
+        else if (menuList[6] == 2)
+            return vanillaBundle;
         else
             return null;
     }
 
-    bool checkAllMixer()
+    GameObject chooseCorrectButton()
+    {
+        if (menuList[6] == 0)
+            return strawberryButton;
+        else if (menuList[6] == 1)
+            return oreoButton;
+        else if (menuList[6] == 2)
+            return vanillaButton;
+        else
+            return null;
+    }
+
+    GameObject chooseCorrectMoveMixer()
+    {
+        if (menuList[6] == 0)
+            return strawberryMixer;
+        else if (menuList[6] == 1)
+            return oreoMixer;
+        else if (menuList[6] == 2)
+            return vanillaMixer;
+        else
+            return null;
+    }
+
+    GameObject chooseCompleteMixer()
+    {
+        if (menuList[6] == 0)
+            return completeStrawberryMixer;
+        else if (menuList[6] == 1)
+            return completeOreoMixer;
+        else if (menuList[6] == 2)
+            return completeVanillaMixer;
+        else
+            return null;
+    }
+
+    void showCompleteMixer()
+    {
+        Destroy(clonedFullMixer);
+        clonedCompleteMixer = Instantiate(chooseCompleteMixer(), new Vector3(0, -0.24f, 0), Quaternion.identity);
+        toDestroy.Add(clonedCompleteMixer);
+    }
+
+    bool checkMixerReady()
     {
         for (int i = 0; i < checkMixerIngredients.Length; i++)
         {
@@ -1729,7 +1832,7 @@ public class bakingEdit : MonoBehaviour
         return true;
     }
 
-    void delayAllMixer()
+    void delayMixer()
     {
         for (int i = 0; i < checkMixerIngredients.Length; i++)
             checkMixerIngredients[i] = false;
@@ -1739,5 +1842,6 @@ public class bakingEdit : MonoBehaviour
     {
         clonedMixerLid = Instantiate(mixerLid, new Vector3(-0.02f, 2.66f, 0), Quaternion.identity);
         toDestroy.Add(clonedMixerLid);
+        CancelInvoke("showMixerLid");
     }
 }
