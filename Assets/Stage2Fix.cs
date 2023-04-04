@@ -19,6 +19,10 @@ public class bakingEdit : MonoBehaviour
 
     public GameObject perfect;
     GameObject clonedPerfect;
+    public GameObject tryAgain;
+    GameObject clonedTryAgain;
+    public GameObject complete;
+    GameObject clonedComplete;
 
     public GameObject menu1;
     GameObject clonedMenu1;
@@ -238,6 +242,16 @@ public class bakingEdit : MonoBehaviour
     public GameObject bell;
     GameObject clonedBell;
 
+    public GameObject firstCompleteMuffin;
+    public GameObject secondCompleteMuffin;
+    public GameObject thirdCompleteMuffin;
+    GameObject clonedCompleteMuffin;
+
+    public GameObject firstBev;
+    public GameObject secondBev;
+    public GameObject thirdBev;
+    GameObject clonedBev;
+
     bool isMixing = false;
     bool isMuffinDough = false;
     bool isBaking = false;
@@ -245,6 +259,7 @@ public class bakingEdit : MonoBehaviour
     bool isMiniGame = false;
     bool isMixer = false;
     bool isDrink = false;
+    bool isFinishBack = false;
 
     public bool[] checkMixingIngredients = new bool[5]; //0:milk, 1:flour, 2:egg, 3:sugar, 4:butter
     public bool[] checkDoughReady = new bool[2]; //0:left tray, 1:right tray
@@ -286,6 +301,10 @@ public class bakingEdit : MonoBehaviour
     bool isSyrupDragging = false;
     List<Vector3> drawnPositions = new List<Vector3>();
 
+    //public bool[] readyToMoveDish = new bool[2]; //0:complete muffin, 1:bev
+    bool readyToMoveDish = false;
+    bool goDish = false;
+    bool canFinish = false;
 
     // Start is called before the first frame update
     void Start()
@@ -340,6 +359,11 @@ public class bakingEdit : MonoBehaviour
         if (isDrink)
         {
             decoDrink();
+        }
+
+        if (isFinishBack)
+        {
+            deliver();
         }
     }
 
@@ -1851,6 +1875,7 @@ public class bakingEdit : MonoBehaviour
 
     GameObject chooseCompleteMixer()
     {
+
         if (menuList[6] == 0)
             return completeStrawberryMixer;
         else if (menuList[6] == 1)
@@ -1863,6 +1888,7 @@ public class bakingEdit : MonoBehaviour
 
     void showCompleteMixer()
     {
+
         Destroy(clonedFullMixer);
         clonedCompleteMixer = Instantiate(chooseCompleteMixer(), new Vector3(0, -0.24f, 0), Quaternion.identity);
         toDestroy.Add(clonedCompleteMixer);
@@ -1886,7 +1912,6 @@ public class bakingEdit : MonoBehaviour
 
     void showMixerLid()
     {
-        Debug.Log("show mixer lid ¸î ¹ø È£ÃâµÇ³Ä");
         clonedMixerLid = Instantiate(mixerLid, new Vector3(-0.02f, 2.66f, 0), Quaternion.identity);
         toDestroy.Add(clonedMixerLid);
         CancelInvoke("showMixerLid");
@@ -1943,9 +1968,9 @@ public class bakingEdit : MonoBehaviour
         Ray2D ray = new Ray2D(touchPos, Vector2.zero);
         RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        if (rayHit.collider != null)
+        if (Input.GetMouseButton(0))
         {
-            if (Input.GetMouseButton(0))
+            if (rayHit.collider != null)
             {
                 if (rayHit.collider.gameObject.tag.Equals("whipping"))
                 {
@@ -1972,89 +1997,117 @@ public class bakingEdit : MonoBehaviour
                         }
                     }
                 }
-
-                if (rayHit.collider.gameObject.tag.Equals("flour"))
-                {
-                    //Vector2 mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-                    //Vector2 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-
-                    //clonedChocoSyrup.transform.position = objPosition;
-
-                    //if (objPosition.x >= -3.35f && objPosition.x <= 1.22f
-                    //    && objPosition.y <= -0.1f && objPosition.y >= -4.58f)
-                    //{
-
-                    //}
-
-                    isSyrupDragging = true;
-
-                    syrupPoints.Clear();
-                }
             }
-
-            if (Input.GetMouseButtonUp(0))
+            if (rayHit.collider.gameObject.tag.Equals("flour"))
             {
-                isSyrupDragging = false;
+                isSyrupDragging = true;
 
-                //lr.loop = true;
+                syrupPoints.Clear();
+            }
+        }
 
-                if (checkLineRendererPoints())
-                {
-                    Debug.Log("±×·È´Ù!");
-                }
-                else if (!checkLineRendererPoints())
+        if (Input.GetMouseButtonUp(0))
+        {
+            isSyrupDragging = false;
+
+            //lr.loop = true;
+
+            if (checkLineRendererPoints()) //Á¦´ë·Î ¿Ã·ÈÀ¸¸é
+            {
+                Debug.Log("±×·È´Ù!");
+                Invoke("showChocoLine", 0.5f);
+
+                Invoke("showPerfect", 3.5f);
+
+                Invoke("showDeliverBack", 5.5f);
+            }
+            else if (!checkLineRendererPoints()) //¾Æ´Ò ¶§
+            {
+
+                if (!toDestroy.Contains(clonedTryAgain))
                 {
                     Debug.Log("¸ø±×·È´Ù!");
-                }
-            }
 
-            if (Input.GetMouseButton(0))
-            {
-                Vector3 dragPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                dragPosition.z = 0f;
-                clonedChocoSyrup.transform.position = dragPosition;
+                    clonedTryAgain = Instantiate(tryAgain, new Vector3(2.4f, 0.14f, 0), Quaternion.identity);
+                    clonedTryAgain.transform.localScale = new Vector3(0.5f, 0.5f, 1);
 
-                if (dragPosition.x >= -3.35f && dragPosition.x <= 1.22f
-                    && dragPosition.y <= -0.1f && dragPosition.y >= -4.58f)
-                {
-                    Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    toDestroy.Add(clonedTryAgain);
 
-                    if (syrupPoints.Count == 0)
-                    {
-                        if (!toDestroy.Contains(clonedLinePrefab))
-                        {
-                            clonedLinePrefab = Instantiate(linePrefab, clonedChocoSyrup.transform.position,
-                                Quaternion.identity);
-                            toDestroy.Add(clonedLinePrefab);
-                        }
-
-                        lr = clonedLinePrefab.GetComponent<LineRenderer>();
-                        lineCol = clonedLinePrefab.GetComponent<EdgeCollider2D>();
-                        lr.useWorldSpace = true;
-                        lr.sortingOrder = 5;
-
-                        syrupPoints.Add(pos);
-                        lr.positionCount++;
-                        lr.SetPosition(lr.positionCount - 1, pos);
-                        lineCol.points = syrupPoints.ToArray();
-
-                        Vector3 temp = new Vector3(Mathf.Round(pos.x * 100) / 100, Mathf.Round(pos.y * 100) / 100, 0);
-                        drawnPositions.Add(temp);
-                    }
-                    else
-                    {
-                        syrupPoints.Add(pos);
-                        lr.positionCount++;
-                        lr.sortingOrder = 4;
-                        lr.SetPosition(lr.positionCount - 1, pos);
-                        lineCol.points = syrupPoints.ToArray();
-
-                        Vector3 temp = new Vector3(Mathf.Round(pos.x * 100) / 100, Mathf.Round(pos.y * 100) / 100, 0);
-                        drawnPositions.Add(temp);
-                    }
+                    Invoke("hideTryAgain", 1.5f);
                 }
             }
         }
+
+        if (isSyrupDragging)
+        {
+            Vector3 dragPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            dragPosition.z = 0f;
+            clonedChocoSyrup.transform.position = dragPosition;
+
+            if (dragPosition.x >= -3.35f && dragPosition.x <= 1.22f
+                && dragPosition.y <= -0.1f && dragPosition.y >= -4.58f)
+            {
+                Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                pos.x += 0.84f;
+                pos.y += 2.09f;
+
+                if (syrupPoints.Count == 0)
+                {
+                    if (!toDestroy.Contains(clonedLinePrefab))
+                    {
+                        clonedLinePrefab = Instantiate(linePrefab, clonedChocoSyrup.transform.position,
+                            Quaternion.identity);
+                        toDestroy.Add(clonedLinePrefab);
+                    }
+
+                    lr = clonedLinePrefab.GetComponent<LineRenderer>();
+                    lineCol = clonedLinePrefab.GetComponent<EdgeCollider2D>();
+                    lr.useWorldSpace = true;
+                    lr.sortingOrder = 5;
+
+                    syrupPoints.Add(pos);
+                    lr.positionCount++;
+                    lr.SetPosition(lr.positionCount - 1, pos);
+                    lineCol.points = syrupPoints.ToArray();
+
+                    Vector3 temp = new Vector3(Mathf.Round(pos.x * 100) / 100, Mathf.Round(pos.y * 100) / 100, 0);
+                    drawnPositions.Add(temp);
+                }
+                else
+                {
+                    syrupPoints.Add(pos);
+                    lr.positionCount++;
+                    lr.sortingOrder = 4;
+                    lr.SetPosition(lr.positionCount - 1, pos);
+                    lineCol.points = syrupPoints.ToArray();
+
+                    Vector3 temp = new Vector3(Mathf.Round(pos.x * 100) / 100, Mathf.Round(pos.y * 100) / 100, 0);
+                    drawnPositions.Add(temp);
+                }
+            }
+        }
+    }
+
+    void showChocoLine()
+    {
+        if (!toDestroy.Contains(clonedChocoLine))
+        {
+            Destroy(clonedLinePrefab);
+            Destroy(clonedDottedLine);
+
+            clonedChocoLine = Instantiate(chocoLine, new Vector3(-0.12f, -0.23f, 0), Quaternion.identity);
+            toDestroy.Add(clonedChocoLine);
+        }
+    }
+
+    void hideTryAgain()
+    {
+        toDestroy.Remove(clonedTryAgain);
+        Destroy(clonedTryAgain);
+        Destroy(clonedLinePrefab);
+
+        syrupPoints.Clear();
+        toDestroy.Remove(clonedLinePrefab);
     }
 
     bool checkLineRendererPoints()
@@ -2212,6 +2265,114 @@ public class bakingEdit : MonoBehaviour
             toDestroy.Add(clonedDottedLine);
 
             StartCoroutine(BlinkCoroutine());
+        }
+    }
+
+    void showDeliverBack()
+    {
+        isDrink = false;
+        isFinishBack = true;
+
+        int temp = toDestroy.Count;
+        for (int i = 0; i < temp; i++)
+        {
+            Destroy(toDestroy[0]);
+            toDestroy.RemoveAt(0);
+        }
+
+        backRenderer.sprite = backGrounds[6];
+
+        if (!toDestroy.Contains(clonedBell))
+        {
+            clonedBell = Instantiate(bell, new Vector3(-5.63f, 2.17f, 0), Quaternion.identity);
+            toDestroy.Add(clonedBell);
+        }
+
+        Invoke("showCompleteMuffins", 1f);
+    }
+
+    void showCompleteMuffins()
+    {
+        if (!toDestroy.Contains(clonedCompleteMuffin))
+        {
+            clonedCompleteMuffin = Instantiate(chooseCompleteMuffins(), new Vector3(-0.25f, -5.28f, 0), Quaternion.identity);
+            toDestroy.Add(clonedCompleteMuffin);
+        }
+
+        if (!toDestroy.Contains(clonedBev))
+        {
+            clonedBev = Instantiate(chooseBev(), new Vector3(5.85f, -5.54f, 0), Quaternion.identity);
+            toDestroy.Add(clonedBev);
+        }
+
+        readyToMoveDish = true;
+    }
+
+    GameObject chooseCompleteMuffins()
+    {
+        if (menuList[0] == 1 && menuList[1] == 0)
+            return firstCompleteMuffin;
+        else if (menuList[0] == 2 && menuList[1] == 0)
+            return secondCompleteMuffin;
+        else if (menuList[0] == 2 && menuList[1] == 1)
+            return thirdCompleteMuffin;
+        else
+            return null;
+    }
+
+    GameObject chooseBev()
+    {
+        if (menuList[6] == 0)
+            return firstBev;
+        else if (menuList[6] == 1)
+            return secondBev;
+        else if (menuList[6] == 2)
+            return thirdBev;
+        else
+            return null;
+    }
+
+    void deliver()
+    {
+        if (readyToMoveDish) //ready to move
+        {
+            clonedCompleteMuffin.transform.position
+                = Vector3.MoveTowards(clonedCompleteMuffin.transform.position,
+                new Vector3(-0.25f, 0.17f, 0), 3 * Time.deltaTime);
+
+            clonedBev.transform.position
+                = Vector3.MoveTowards(clonedBev.transform.position,
+                new Vector3(5.85f, 0.36f, 0), 3 * Time.deltaTime);
+
+            canFinish = true;
+        }
+
+        if (canFinish)
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 touchPos = new Vector2(worldPos.x, worldPos.y);
+            Ray2D ray = new Ray2D(touchPos, Vector2.zero);
+            RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (rayHit.collider != null)
+                {
+                    if (rayHit.collider.gameObject.tag.Equals("bell"))
+                    {
+                        Invoke("showComplete", 1f);
+                    }
+                }
+            }
+        }
+    }
+
+    void showComplete()
+    {
+        if (!toDestroy.Contains(clonedComplete))
+        {
+            clonedComplete = Instantiate(complete, new Vector3(0, 0, 0), Quaternion.identity);
+            toDestroy.Add(clonedComplete);
         }
     }
 }
