@@ -248,6 +248,14 @@ public class CookingEdit : MonoBehaviour
     bool isLatteArt = false;
     bool isFinishBack = false;
 
+    bool useCoffeeMachine = false;
+    bool useLatte = false;
+    bool useFinish = false;
+
+    bool coffeeMachineShown = false;
+    bool latteShown = false;
+    bool finishShown = false;
+
     bool[] checkIngredients = new bool[3]; //1:milk, 2:flour, 3:egg
     int pancakeCount = 0;
     bool makeDough = false;
@@ -346,6 +354,22 @@ public class CookingEdit : MonoBehaviour
         if (isFinishBack)
         {
             deliver();
+        }
+
+        if (useCoffeeMachine && !coffeeMachineShown)
+        {
+            showCoffeeMachineBack();
+            coffeeMachineShown = true;
+        }
+        if (useLatte && !latteShown)
+        {
+            showLatteArt();
+            latteShown = true;
+        }
+        if (useFinish && !finishShown)
+        {
+            showFinishBack();
+            finishShown = true;
         }
     }
 
@@ -1527,8 +1551,8 @@ public class CookingEdit : MonoBehaviour
                             sr.sortingOrder = 5;
 
                             showStrawberryList.Add(toppingStrawberry3);
-                            showStrawberryList[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
-                            showStrawberryList[1].transform.position = new Vector3(0.7f, -0.27f, 0);
+                            //showStrawberryList[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
+                            //showStrawberryList[1].transform.position = new Vector3(0.7f, -0.27f, 0);
 
                             var newData = new decoratingFruitsData(eachStrawberry,
                                 toppingStrawberry3.transform.position, toppingStrawberry3.transform.rotation,
@@ -1536,20 +1560,20 @@ public class CookingEdit : MonoBehaviour
                                 toppingStrawberry3.transform.localScale);
                             decoFruitsList.Add(newData);
 
-                            foreach (decoratingFruitsData data in decoFruitsList)
-                            {
-                                if (data.Type == decoratingFruitsData.FruitType.Strawberry &&
-                                    data.StrawberryNumber == 1)
-                                {
-                                    data.Position = new Vector3(-1.16f, -0.3f, 0);
-                                }
+                            //foreach(decoratingFruitsData data in decoFruitsList)
+                            //{
+                            //    if(data.Type == decoratingFruitsData.FruitType.Strawberry &&
+                            //        data.StrawberryNumber == 1)
+                            //    {
+                            //        data.Position = new Vector3(-1.16f, -0.3f, 0);
+                            //    }
 
-                                else if (data.Type == decoratingFruitsData.FruitType.Strawberry &&
-                                    data.StrawberryNumber == 2)
-                                {
-                                    data.Position = new Vector3(0.7f, -0.27f, 0);
-                                }
-                            }
+                            //    else if(data.Type == decoratingFruitsData.FruitType.Strawberry &&
+                            //        data.StrawberryNumber == 2)
+                            //    {
+                            //        data.Position = new Vector3(0.7f, -0.27f, 0);
+                            //    }
+                            //}
 
                             toDestroy.Add(toppingStrawberry3);
 
@@ -1610,7 +1634,7 @@ public class CookingEdit : MonoBehaviour
                             sr = toppingStrawberry3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
                             showStrawberryList.Add(toppingStrawberry3);
-                            showStrawberryList[0].transform.position = new Vector3(1.03f, 0.67f, 0);
+                            //showStrawberryList[0].transform.position = new Vector3(1.03f, 0.67f, 0);
 
                             var newData = new decoratingFruitsData(eachStrawberry,
                                 toppingStrawberry3.transform.position, toppingStrawberry3.transform.rotation,
@@ -1618,14 +1642,14 @@ public class CookingEdit : MonoBehaviour
                                 toppingStrawberry3.transform.localScale);
                             decoFruitsList.Add(newData);
 
-                            foreach (decoratingFruitsData data in decoFruitsList)
-                            {
-                                if (data.Type == decoratingFruitsData.FruitType.Strawberry &&
-                                    data.StrawberryNumber == 1)
-                                {
-                                    data.Position = new Vector3(1.03f, 0.67f, 0);
-                                }
-                            }
+                            //foreach(decoratingFruitsData data in decoFruitsList)
+                            //{
+                            //    if(data.Type == decoratingFruitsData.FruitType.Strawberry &&
+                            //        data.StrawberryNumber == 1)
+                            //    {
+                            //        data.Position = new Vector3(1.03f, 0.67f, 0);
+                            //    }
+                            //}
 
                             toDestroy.Add(toppingStrawberry3);
 
@@ -1669,7 +1693,7 @@ public class CookingEdit : MonoBehaviour
                             sr = flavorBanana2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
                             showBananaList.Add(flavorBanana2);
-                            showBananaList[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
+                            //showBananaList[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
 
                             var newData = new decoratingFruitsData(eachBanana,
                                 flavorBanana2.transform.position, flavorBanana2.transform.rotation,
@@ -1677,14 +1701,14 @@ public class CookingEdit : MonoBehaviour
                                 flavorBanana2.transform.localScale);
                             decoFruitsList.Add(newData);
 
-                            foreach (decoratingFruitsData data in decoFruitsList)
-                            {
-                                if (data.Type == decoratingFruitsData.FruitType.Banana &&
-                                    data.BananaNumber == 1)
-                                {
-                                    data.Position = new Vector3(-0.78f, 0.25f, 0);
-                                }
-                            }
+                            //foreach(decoratingFruitsData data in decoFruitsList)
+                            //{
+                            //    if(data.Type == decoratingFruitsData.FruitType.Banana &&
+                            //        data.BananaNumber == 1)
+                            //    {
+                            //        data.Position = new Vector3(-0.78f, 0.25f, 0);
+                            //    }
+                            //}
 
                             toDestroy.Add(flavorBanana2);
 
@@ -1695,12 +1719,12 @@ public class CookingEdit : MonoBehaviour
                             GameObject flavorBanana3;
                             SpriteRenderer sr = null;
 
-                            flavorBanana3 = Instantiate(eachBanana, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
+                            flavorBanana3 = Instantiate(eachBanana, new Vector3(0.9f, 0.2f, 0), Quaternion.identity);
                             sr = flavorBanana3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
                             showBananaList.Add(flavorBanana3);
-                            showBananaList[0].transform.position = new Vector3(-0.9f, 0.11f, 0);
-                            showBananaList[1].transform.position = new Vector3(-0.07f, 0.18f, 0);
+                            showBananaList[0].transform.position = new Vector3(-1.04f, 0.11f, 0);
+                            showBananaList[1].transform.position = new Vector3(-0.03f, 0.16f, 0);
 
                             var newData = new decoratingFruitsData(eachBanana,
                                 flavorBanana3.transform.position, flavorBanana3.transform.rotation,
@@ -1713,13 +1737,13 @@ public class CookingEdit : MonoBehaviour
                                 if (data.Type == decoratingFruitsData.FruitType.Banana &&
                                     data.BananaNumber == 1)
                                 {
-                                    data.Position = new Vector3(-0.9f, 0.11f, 0);
+                                    data.Position = new Vector3(-1.04f, 0.11f, 0);
                                 }
 
                                 if (data.Type == decoratingFruitsData.FruitType.Banana &&
                                     data.BananaNumber == 2)
                                 {
-                                    data.Position = new Vector3(-0.07f, 0.18f, 0);
+                                    data.Position = new Vector3(-0.03f, 0.16f, 0);
                                 }
                             }
 
@@ -1915,6 +1939,9 @@ public class CookingEdit : MonoBehaviour
                             sr.sortingOrder = 5;
                             showBlueberryList.Add(toppingBlueberry3);
 
+                            //showBlueberryList[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
+                            //showBlueberryList[1].transform.position = new Vector3(0.7f, -0.27f, 0);
+
                             //EachBlueberrys[0].transform.position = new Vector3(-1.16f, -0.3f, 0);
                             //EachBlueberrys[1].transform.position = new Vector3(0.7f, -0.27f, 0);
 
@@ -1936,7 +1963,7 @@ public class CookingEdit : MonoBehaviour
                             GameObject toppingBlueberry1;
                             SpriteRenderer sr = null;
 
-                            toppingBlueberry1 = Instantiate(eachBlueberry, new Vector3(-1.05f, 0.63f, 0), Quaternion.identity);
+                            toppingBlueberry1 = Instantiate(eachBlueberry, new Vector3(-0.05f, 0.73f, 0), Quaternion.identity);
                             sr = toppingBlueberry1.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
                             showBlueberryList.Add(toppingBlueberry1);
@@ -1956,7 +1983,7 @@ public class CookingEdit : MonoBehaviour
                             GameObject toppingBlueberry2;
                             SpriteRenderer sr = null;
 
-                            toppingBlueberry2 = Instantiate(eachBlueberry, new Vector3(0.87f, 0.42f, 0), Quaternion.identity);
+                            toppingBlueberry2 = Instantiate(eachBlueberry, new Vector3(-0.76f, -0.57f, 0), Quaternion.identity);
                             sr = toppingBlueberry2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
                             showBlueberryList.Add(toppingBlueberry2);
@@ -1976,7 +2003,7 @@ public class CookingEdit : MonoBehaviour
                             GameObject toppingBlueberry3;
                             SpriteRenderer sr = null;
 
-                            toppingBlueberry3 = Instantiate(eachBlueberry, new Vector3(-0.05f, -0.87f, 0), Quaternion.identity);
+                            toppingBlueberry3 = Instantiate(eachBlueberry, new Vector3(0.65f, -0.54f, 0), Quaternion.identity);
                             sr = toppingBlueberry3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 4;
                             showBlueberryList.Add(toppingBlueberry3);
@@ -1987,14 +2014,14 @@ public class CookingEdit : MonoBehaviour
                                 toppingBlueberry3.transform.localScale);
                             decoFruitsList.Add(newData);
 
-                            foreach (decoratingFruitsData data in decoFruitsList)
-                            {
-                                if (data.Type == decoratingFruitsData.FruitType.Blueberry &&
-                                    data.BlueberryNumber == 1)
-                                {
-                                    data.Position = new Vector3(1.03f, 0.67f, 0);
-                                }
-                            }
+                            //foreach(decoratingFruitsData data in decoFruitsList)
+                            //{
+                            //    if(data.Type == decoratingFruitsData.FruitType.Blueberry &&
+                            //        data.BlueberryNumber == 1)
+                            //    {
+                            //        data.Position = new Vector3(1.03f, 0.67f, 0);
+                            //    }
+                            //}
 
                             toDestroy.Add(toppingBlueberry3);
 
@@ -2036,7 +2063,7 @@ public class CookingEdit : MonoBehaviour
                             sr = flavorChocolate2.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
                             showChocolateList.Add(flavorChocolate2);
-                            showChocolateList[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
+                            //showChocolateList[0].transform.position = new Vector3(-0.78f, 0.25f, 0);
 
                             var newData = new decoratingFruitsData(eachRightChocolate,
                                 flavorChocolate2.transform.position, flavorChocolate2.transform.rotation,
@@ -2062,12 +2089,12 @@ public class CookingEdit : MonoBehaviour
                             GameObject flavorChocolate3;
                             SpriteRenderer sr = null;
 
-                            flavorChocolate3 = Instantiate(eachLeftChocolate, new Vector3(0.59f, 0.08f, 0), Quaternion.identity);
+                            flavorChocolate3 = Instantiate(eachLeftChocolate, new Vector3(0.9f, 0.2f, 0), Quaternion.identity);
                             sr = flavorChocolate3.GetComponent<SpriteRenderer>();
                             sr.sortingOrder = 6;
                             showChocolateList.Add(flavorChocolate3);
-                            showChocolateList[0].transform.position = new Vector3(-1.15f, 0.25f, 0);
-                            showChocolateList[1].transform.position = new Vector3(-0.21f, 0.3f, 0.54f);
+                            showChocolateList[0].transform.position = new Vector3(-1.04f, 0.11f, 0);
+                            showChocolateList[1].transform.position = new Vector3(-0.03f, 0.16f, 0);
 
                             var newData = new decoratingFruitsData(eachLeftChocolate,
                                 flavorChocolate3.transform.position, flavorChocolate3.transform.rotation,
@@ -2080,13 +2107,13 @@ public class CookingEdit : MonoBehaviour
                                 if (data.Type == decoratingFruitsData.FruitType.Chocolate &&
                                     data.ChocolateNumber == 1)
                                 {
-                                    data.Position = new Vector3(-1.15f, 0.25f, 0);
+                                    data.Position = new Vector3(-1.04f, 0.11f, 0);
                                 }
 
                                 if (data.Type == decoratingFruitsData.FruitType.Chocolate &&
                                     data.ChocolateNumber == 2)
                                 {
-                                    data.Position = new Vector3(-0.21f, 0.3f, 0.54f);
+                                    data.Position = new Vector3(-0.03f, 0.16f, 0);
                                 }
                             }
 
@@ -2099,6 +2126,23 @@ public class CookingEdit : MonoBehaviour
         }
     }
 
+    public void clickNextButton()
+    {
+        if (menuList[4] == 5) //ordernum0, bev : caffelatte
+        {
+            useCoffeeMachine = true;
+        }
+        else if (menuList[4] == 2) //ordernum1, bev: coke
+        {
+            isDecoratingBack = false;
+            nextButton.SetActive(false);
+            useFinish = true;
+        }
+        else if (menuList[4] == 3) //ordernum2, bev: espresso
+        {
+            useCoffeeMachine = true;
+        }
+    }
 
 
     IEnumerator FadeInRoutine()
@@ -2230,23 +2274,7 @@ public class CookingEdit : MonoBehaviour
     public void showCoffeeMachineBack()
     {
         isDecoratingBack = false;
-        //isCoffeeMachineBack = true;
-
-        if (menuList[4] == 5) //ordernum0, bev : caffelatte
-        {
-            isCoffeeMachineBack = true;
-        }
-        else if (menuList[4] == 2) //ordernum1, bev: coke
-        {
-            isFinishBack = true;
-        }
-        else if (menuList[4] == 3) //ordernum2, bev: espresso
-        {
-            isCoffeeMachineBack = true;
-        }
-
-        Debug.Log("iscoffeemachineback" + isCoffeeMachineBack);
-        Debug.Log("isfinishback" + isFinishBack);
+        isCoffeeMachineBack = true;
 
         int temp = toDestroy.Count;
         for (int i = 0; i < temp; i++)
@@ -2330,19 +2358,34 @@ public class CookingEdit : MonoBehaviour
             checkLiquid[0] = false;
             checkLiquid[1] = false;
 
-            Invoke("showLatteArt", 2f);
+            //Invoke("showLatteArt", 2f);
+
+            if (menuList[4] == 5) //ordernum0, bev caffe latte
+                Invoke("delayUseLatte", 2f);
+            else if (menuList[4] == 3) //ordernum2, bev espresso
+                Invoke("delayUseFinish", 2f);
         }
+    }
+
+    void delayUseLatte()
+    {
+        useLatte = true;
+    }
+
+    void delayUseFinish()
+    {
+        useFinish = true;
     }
 
     void showLatteArt()
     {
         isCoffeeMachineBack = false;
-        //isLatteArt = true;
+        isLatteArt = true;
 
-        if (menuList[4] == 5) //ordernum0, bev caffe latte
-            isLatteArt = true;
-        else if (menuList[4] == 3)//ordernum2, bev espresso
-            isFinishBack = true;
+        //if (menuList[4] == 5) //ordernum0, bev caffe latte
+        //    isLatteArt = true;
+        //else if (menuList[4] == 3)//ordernum2, bev espresso
+        //    isFinishBack = true;
 
         int temp = toDestroy.Count;
         for (int i = 0; i < temp; i++)
@@ -2356,6 +2399,7 @@ public class CookingEdit : MonoBehaviour
         if (!toDestroy.Contains(clonedTopWhiteCup))
         {
             clonedTopWhiteCup = Instantiate(topWhiteCup, new Vector3(-2.98f, 0.13f, 0), Quaternion.identity);
+            clonedTopWhiteCup.transform.localScale = new Vector3(2.6f, 2.6f, 1);
             toDestroy.Add(clonedTopWhiteCup);
         }
 
