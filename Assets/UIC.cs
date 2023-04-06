@@ -11,10 +11,28 @@ public class UI : MonoBehaviour
 
     bool menuPageIsOn = false;
 
+    bool backGroundMusicOn = true;
+
+    GameObject audioManager;
+    AudioSource stage1AudioSource;
+
+    public GameObject musicOnOffButton;
+    public Image musicOnOffButtonImage;
+    public Sprite musicOnSprite;
+    public Sprite musicOffSprite;
+
+    public Slider musicSlider;
+
     // Start is called before the first frame update
     void Start()
     {
         menuPage.SetActive(false);
+
+        audioManager = GameObject.Find("AudioManager");
+        stage1AudioSource = audioManager.GetComponent<AudioSource>();
+
+        //musicSlider.value = musicSlider.maxValue;
+        musicSlider.value = stage1AudioSource.volume;
     }
 
     // Update is called once per frame
@@ -47,5 +65,26 @@ public class UI : MonoBehaviour
     public void clickQuitGame()
     {
         Application.Quit();
+    }
+
+    public void ToggleMusic()
+    {
+        if (backGroundMusicOn) //켜져있으면(defult)
+        {
+            backGroundMusicOn = false;
+            stage1AudioSource.volume = 0f;
+            musicOnOffButtonImage.sprite = musicOffSprite;
+        }
+        else
+        {
+            backGroundMusicOn = true;
+            stage1AudioSource.volume = 1f;
+            musicOnOffButtonImage.sprite = musicOnSprite;
+        }
+    }
+
+    public void BackVolume(float volume)
+    {
+        stage1AudioSource.volume = volume;
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class bakingEdit : MonoBehaviour
 {
@@ -2374,5 +2375,26 @@ public class bakingEdit : MonoBehaviour
             clonedComplete = Instantiate(complete, new Vector3(0, 0, 0), Quaternion.identity);
             toDestroy.Add(clonedComplete);
         }
+
+        GameObject.Find("GameSetting").GetComponent<GameNum>().OrderNum++;
+        if (GameObject.Find("GameSetting").GetComponent<GameNum>().OrderNum == 3)
+        {
+            if (GameObject.Find("GameSetting").GetComponent<GameNum>().StageNum == 2)
+            {
+                Invoke("LoadEndingScene", 1f);
+            }
+            GameObject.Find("GameSetting").GetComponent<GameNum>().StageNum++;
+            GameObject.Find("GameSetting").GetComponent<GameNum>().OrderNum = 0;
+        }
+        Invoke("LoadStage1Scene", 1f);
+    }
+
+    void LoadStage1Scene()
+    {
+        SceneManager.LoadScene("Stage1");
+    }
+    void LoadEndingScene()
+    {
+        SceneManager.LoadScene("Ending");
     }
 }
