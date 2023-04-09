@@ -38,10 +38,7 @@ public class UI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameObject.Find("GameSetting").GetComponent<GameNum>().StageNum == 2)
-        {
-            audioSource.clip = Resources.Load<AudioClip>("stage2πË∞Ê¿Ω");
-        }
+
     }
 
     public void clickBluePlus()

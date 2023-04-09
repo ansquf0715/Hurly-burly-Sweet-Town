@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class bakingEdit : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class bakingEdit : MonoBehaviour
 
     public GameObject startButton;
     public TextMeshProUGUI minigameDirectionText;
+    public GameObject blueList;
+    public GameObject bluePlus;
+    public Slider slTimer;
 
     public GameObject perfect;
     GameObject clonedPerfect;
@@ -262,6 +266,9 @@ public class bakingEdit : MonoBehaviour
     bool isDrink = false;
     bool isFinishBack = false;
 
+    bool isShowPerfect = false;
+    bool isMuffinBack = false;
+
     public bool[] checkMixingIngredients = new bool[5]; //0:milk, 1:flour, 2:egg, 3:sugar, 4:butter
     public bool[] checkDoughReady = new bool[2]; //0:left tray, 1:right tray
     public bool[] checkMuffinWhipping = new bool[2]; //0:left cream, 1: right cream
@@ -307,12 +314,32 @@ public class bakingEdit : MonoBehaviour
     bool goDish = false;
     bool canFinish = false;
 
+    GameObject AudioManager;
+    AudioSource audioMan;
+    AudioSource audioSource;
+
+    public AudioClip miniGameBackSound;
+    public AudioClip mixingBowlSound;
+    public AudioClip openingOvenSound;
+    public AudioClip ovenDoneSound;
+    public AudioClip squishingSound;
+    public AudioClip bellSound;
+    public AudioClip timerWarningSound;
+
+    bool isPlusPageOn = false;
+    GameObject plusPage;
+
+    bool minusHeartisCalled = false;
+
     // Start is called before the first frame update
     void Start()
     {
         orders = CSVReader.Read("order");
 
         startButton.SetActive(false);
+        blueList.SetActive(false);
+        bluePlus.SetActive(false);
+        slTimer.gameObject.SetActive(false);
 
         GameObject Direction = minigameDirectionText.gameObject;
         Direction.SetActive(false);
@@ -322,11 +349,21 @@ public class bakingEdit : MonoBehaviour
         showOrderBack();
 
         checkMenu();
+
+        audioSource = GetComponent<AudioSource>();
+        AudioManager = GameObject.Find("AudioManager");
+        audioMan = AudioManager.GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isMixing || isMuffinDough || isBaking ||
+            isWhipping || isMiniGame || isMixer || isDrink)
+        {
+            Timer();
+        }
+
         if (isMixing)
         {
             Mix();
@@ -365,6 +402,63 @@ public class bakingEdit : MonoBehaviour
         if (isFinishBack)
         {
             deliver();
+        }
+    }
+
+    public void playWarningSound()
+    {
+        if (slTimer.value <= 30f && slTimer.value > 0.0f)//30second left
+        {
+            Debug.Log("되냐?");
+            if (audioSource.clip != timerWarningSound)
+            {
+                audioSource.clip = timerWarningSound;
+                audioSource.loop = false;
+                audioSource.volume = 1f;
+                audioSource.Play();
+            }
+        }
+    }
+
+    void Timer()
+    {
+        if (isMixing || isMuffinDough || isBaking ||
+            isWhipping || isMiniGame || isMixer || isDrink)
+        {
+            slTimer.gameObject.SetActive(true);
+        }
+
+        if (slTimer.value > 0.0f)
+            slTimer.value -= Time.deltaTime;
+        else
+        {
+            if (!minusHeartisCalled)
+            {
+                Debug.Log("Time is zero");
+                GameObject.Find("GameNum").GetComponent<GameNum>().minusHeart();
+                minusHeartisCalled = true;
+            }
+        }
+    }
+
+    void resetHeartCalled()
+    {
+        minusHeartisCalled = false;
+    }
+
+    public void clickBlueList()
+    {
+        if (isPlusPageOn == false) //안켜져있으면
+        {
+            isPlusPageOn = true;
+
+            plusPage = Instantiate(menu1, new Vector3(997, 489, 0),
+                Quaternion.identity, GameObject.Find("Canvas").transform);
+        }
+        else if (isPlusPageOn == true) //켜져있으면
+        {
+            isPlusPageOn = false;
+            Destroy(plusPage);
         }
     }
 
@@ -412,11 +506,15 @@ public class bakingEdit : MonoBehaviour
 
     void showMenu()
     {
-        if (!toDestroy.Contains(clonedMenu1))
-        {
-            clonedMenu1 = Instantiate(menu1, new Vector3(-4.2622f, 0.0368f, 0), Quaternion.identity);
-            toDestroy.Add(clonedMenu1);
-        }
+        //if (!toDestroy.Contains(clonedMenu1))
+        //{
+        //    clonedMenu1 = Instantiate(menu1, new Vector3(-4.2622f, 0.0368f, 0), Quaternion.identity);
+        //    toDestroy.Add(clonedMenu1);
+        //}
+
+        clonedMenu1 = Instantiate(menu1, new Vector3(440, 510, 0),
+            Quaternion.identity, GameObject.Find("Canvas").transform);
+        toDestroy.Add(clonedMenu1);
     }
 
     void showCooker()
@@ -450,6 +548,9 @@ public class bakingEdit : MonoBehaviour
     void showMixingBack()
     {
         isMixing = true;
+
+        blueList.SetActive(true);
+        bluePlus.SetActive(true);
 
         backRenderer.sprite = backGrounds[0];
 
@@ -599,6 +700,26 @@ public class bakingEdit : MonoBehaviour
 
                     isButterReady = true;
                 }
+
+                if (rayHit.collider.gameObject.tag.Equals("whipper"))
+                {
+                    audioSource.clip = mixingBowlSound;
+                    audioSource.loop = true;
+                    audioSource.volume = 1f;
+                    audioSource.Play();
+                }
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (rayHit.collider != null)
+            {
+                if (rayHit.collider.gameObject.tag.Equals("whipper"))
+                {
+                    audioSource.Stop();
+                    audioSource.clip = null;
+                }
             }
         }
 
@@ -617,7 +738,10 @@ public class bakingEdit : MonoBehaviour
                         clonedWhipper.transform.position = objPosition;
                     }
 
-                    Invoke("showPerfect", 1.5f);
+                    if (!toDestroy.Contains(clonedPerfect))
+                    {
+                        Invoke("showPerfect", 1.5f);
+                    }
 
                     //3초 후 show muffin dough back
                     Invoke("showMuffinDough", 3f);
@@ -700,6 +824,7 @@ public class bakingEdit : MonoBehaviour
         }
 
         backRenderer.sprite = backGrounds[1];
+        CancelInvoke();
         Invoke("showMuffinTray", 1f);
         Invoke("showPipingBag", 2f);
     }
@@ -764,8 +889,16 @@ public class bakingEdit : MonoBehaviour
             for (int i = 0; i < checkDoughReady.Length; i++)
                 checkDoughReady[i] = false;
 
-            Invoke("showPerfect", 3f);
-            Invoke("showMuffinBakingBack", 4.5f);
+            if (isShowPerfect == false)
+            {
+                Invoke("showPerfect", 3f);
+                isShowPerfect = true;
+            }
+            if (isMuffinBack == false)
+            {
+                Invoke("showMuffinBakingBack", 4.5f);
+                isMuffinBack = true;
+            }
         }
     }
 
@@ -817,6 +950,10 @@ public class bakingEdit : MonoBehaviour
                 clonedPinkDough = Instantiate(pinkDough, new Vector3(-3.8622f, 0.6083f, 0), Quaternion.identity);
                 toDestroy.Add(clonedPinkDough);
 
+                audioSource.clip = squishingSound;
+                audioSource.loop = false;
+                audioSource.Play();
+
                 StartCoroutine(FadeInPinkCream());
             }
         }
@@ -826,6 +963,10 @@ public class bakingEdit : MonoBehaviour
             {
                 clonedPinkDough = Instantiate(pinkDough, new Vector3(1.23f, 0.56f, 0), Quaternion.identity);
                 toDestroy.Add(clonedPinkDough);
+
+                audioSource.clip = squishingSound;
+                audioSource.loop = false;
+                audioSource.Play();
 
                 StartCoroutine(FadeInPinkCream());
             }
@@ -842,6 +983,10 @@ public class bakingEdit : MonoBehaviour
                 clonedChocoDough = Instantiate(chocoDough, new Vector3(-3.8622f, 0.6083f, 0), Quaternion.identity);
                 toDestroy.Add(clonedChocoDough);
 
+                audioSource.clip = squishingSound;
+                audioSource.loop = false;
+                audioSource.Play();
+
                 StartCoroutine(FadeInChocoCream());
             }
         }
@@ -851,6 +996,10 @@ public class bakingEdit : MonoBehaviour
             {
                 clonedChocoDough = Instantiate(chocoDough, new Vector3(1.23f, 0.56f, 0), Quaternion.identity);
                 toDestroy.Add(clonedChocoDough);
+
+                audioSource.clip = squishingSound;
+                audioSource.loop = false;
+                audioSource.Play();
 
                 StartCoroutine(FadeInChocoCream());
             }
@@ -867,6 +1016,10 @@ public class bakingEdit : MonoBehaviour
                 clonedVanillaDough = Instantiate(vanillaDough, new Vector3(-3.8622f, 0.6083f, 0), Quaternion.identity);
                 toDestroy.Add(clonedVanillaDough);
 
+                audioSource.clip = squishingSound;
+                audioSource.loop = false;
+                audioSource.Play();
+
                 StartCoroutine(FadeInVanillaCream());
             }
         }
@@ -876,6 +1029,10 @@ public class bakingEdit : MonoBehaviour
             {
                 clonedVanillaDough = Instantiate(vanillaDough, new Vector3(1.23f, 0.56f, 0), Quaternion.identity);
                 toDestroy.Add(clonedVanillaDough);
+
+                audioSource.clip = squishingSound;
+                audioSource.loop = false;
+                audioSource.Play();
 
                 StartCoroutine(FadeInVanillaCream());
             }
@@ -903,6 +1060,7 @@ public class bakingEdit : MonoBehaviour
             yield return null;
         }
         pinkDoughRenderer.color = pinkDoughOriginalColor;
+        audioSource.Stop();
     }
 
     IEnumerator FadeInChocoCream()
@@ -927,6 +1085,7 @@ public class bakingEdit : MonoBehaviour
         }
 
         chocoDoughRenderer.color = chocoDoughOriginalColor;
+        audioSource.Stop();
     }
 
     IEnumerator FadeInVanillaCream()
@@ -951,6 +1110,7 @@ public class bakingEdit : MonoBehaviour
         }
 
         vanillaDoughRenderer.color = vanillaDoughOriginalColor;
+        audioSource.Stop();
     }
 
     bool checkDough()
@@ -983,6 +1143,8 @@ public class bakingEdit : MonoBehaviour
         {
             clonedClosedOven = Instantiate(closedOven, new Vector3(0, -0.56f, 0), Quaternion.identity);
             toDestroy.Add(clonedClosedOven);
+
+
         }
 
         if (!toDestroy.Contains(clonedOvenSwitch))
@@ -1014,6 +1176,10 @@ public class bakingEdit : MonoBehaviour
                         clonedOpenedOven = Instantiate(openedOven, new Vector3(0, -0.56f, 0), Quaternion.identity);
 
                         clonedOvenSwitch.transform.position = new Vector3(-3.84f, 2.67f, 0);
+
+                        audioSource.clip = openingOvenSound;
+                        audioSource.loop = false;
+                        audioSource.Play();
 
                         toDestroy.Add(clonedOpenedOven);
                     }
@@ -1051,6 +1217,8 @@ public class bakingEdit : MonoBehaviour
                         Color c = traySR.color;
                         c.a = 0.5f;
                         traySR.color = c;
+
+
 
                         Invoke("showTemperatureOrder", 1f);
                         Invoke("showTemperatureChoice", 2.5f);
@@ -1097,6 +1265,7 @@ public class bakingEdit : MonoBehaviour
             clonedArrow.transform.Rotate(0, 0, -1);
         }
 
+
         if (toDestroy.Contains(clonedDegreeOfRoasting))
         {
             if (!stopRoastingButton)
@@ -1108,6 +1277,7 @@ public class bakingEdit : MonoBehaviour
             if (clonedRoastingButton.transform.position.x >= 2.78f)
             {
                 clonedRoastingButton.transform.position = roastingButtonStartingPos;
+                //stopRoastingButton = false;
                 Invoke("moveButtonAgain", 0.8f);
             }
         }
@@ -1200,6 +1370,14 @@ public class bakingEdit : MonoBehaviour
         if (clonedRoastingButton.transform.position.x >= -1.01f
             && clonedRoastingButton.transform.position.x <= 0.93)
         {
+            stopRoastingButton = true;
+
+            audioSource.clip = ovenDoneSound;
+            audioSource.loop = false;
+            audioSource.Play();
+
+            CancelInvoke();
+
             Invoke("showPerfect", 1f);
             Invoke("showWhippingBack", 2f);
         }
@@ -1343,6 +1521,10 @@ public class bakingEdit : MonoBehaviour
                             toDestroy.Add(clonedLeftCream);
                             checkMuffinWhipping[0] = true;
 
+                            audioSource.clip = squishingSound;
+                            audioSource.loop = false;
+                            audioSource.Play();
+
                             StartCoroutine(FadeInLeftCream());
                         }
                     }
@@ -1355,6 +1537,10 @@ public class bakingEdit : MonoBehaviour
                                 Quaternion.identity);
                             toDestroy.Add(clonedRightCream);
                             checkMuffinWhipping[1] = true;
+
+                            audioSource.clip = squishingSound;
+                            audioSource.loop = false;
+                            audioSource.Play();
 
                             StartCoroutine(FadeInRightCream());
                         }
@@ -1392,6 +1578,7 @@ public class bakingEdit : MonoBehaviour
         }
 
         lcreamSR.color = lcreamColor;
+        audioSource.Stop();
     }
 
     IEnumerator FadeInRightCream()
@@ -1414,6 +1601,7 @@ public class bakingEdit : MonoBehaviour
         }
 
         rcreamSR.color = rcreamColor;
+        audioSource.Stop();
     }
 
     GameObject chooseSharpCream(int flavor)
@@ -1479,6 +1667,14 @@ public class bakingEdit : MonoBehaviour
         minigameDirectionText.text = chooseMinigameDirection();
         GameObject Direction = minigameDirectionText.gameObject;
         Direction.SetActive(true);
+
+        //minigame배경음
+        audioSource.clip = miniGameBackSound;
+        audioSource.loop = true;
+        audioSource.Play();
+
+        //stage 배경음 줄이기
+        //audioMan.volume = 0f;
 
         Invoke("removeDirection", 3f);
 
@@ -1603,6 +1799,10 @@ public class bakingEdit : MonoBehaviour
             Destroy(toDestroy[0]);
             toDestroy.RemoveAt(0);
         }
+
+        //audioSource.clip = null;
+        audioSource.volume = 0f;
+        //audioMan.volume = 1f;
 
         backRenderer.sprite = backGrounds[4];
 
@@ -2362,6 +2562,11 @@ public class bakingEdit : MonoBehaviour
                     if (rayHit.collider.gameObject.tag.Equals("bell"))
                     {
                         Invoke("showComplete", 1f);
+
+                        audioSource.clip = bellSound;
+                        audioSource.volume = 1f;
+                        audioSource.Play();
+                        audioSource.loop = false;
                     }
                 }
             }
