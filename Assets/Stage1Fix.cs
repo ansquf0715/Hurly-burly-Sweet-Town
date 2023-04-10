@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -65,11 +65,11 @@ public class CookingEdit : MonoBehaviour
     public SpriteRenderer backRenderer;
 
     List<Dictionary<string, object>> orders;
-    List<GameObject> toDestroy = new List<GameObject>();
+    public List<GameObject> toDestroy = new List<GameObject>();
 
     public GameObject blueList;
     public GameObject bluePlus;
-    public GameObject bluePlusUI;
+
     public GameObject nextButton;
     public GameObject startButton;
     public Slider slTimer;
@@ -163,7 +163,7 @@ public class CookingEdit : MonoBehaviour
     public GameObject chocolateCup;
     GameObject clonedChocolateCup;
 
-    public GameObject whipping; //ÈÖÇÎ Åë
+    public GameObject whipping; //       
     GameObject clonedWhipping;
 
     public GameObject milkWhipping;
@@ -263,13 +263,19 @@ public class CookingEdit : MonoBehaviour
     int isKnife = 1;
 
     int cutCount = 0;
-    int cutStrawberryCount = 0; //¸Â°Ô Àß¶ú´ÂÁö
+    int cutStrawberryCount = 0; // Â°   ß¶     
     int cutBananaCount = 0;
     int cutChocolateCount = 0;
 
     bool needStrawberry = false;
     bool needBanana = false;
     bool needChocolate = false;
+
+    bool isPlusPageOn = false;
+    GameObject plusPage;
+    bool changeRecipe = false;
+
+    bool timerIsOn = false;
 
     float dragTime = 0;
     float fadeTime = 3f;
@@ -287,7 +293,7 @@ public class CookingEdit : MonoBehaviour
     LineRenderer heartLineLenderer;
     List<Vector3> heartPositions = new List<Vector3>();
     List<Vector3> drawnPositions = new List<Vector3>();
-    float overlapThreshold = 0.8f; //ÇÏÆ® ±×¸®±â Á¤È®µµ 80ÇÁ·Î
+    float overlapThreshold = 0.8f; //  Æ®  ×¸      È®   80    
 
     public int[] menuList = new int[5]; //1:flavor 2:topping1, 3:topping2, 4:cream, 5:bev
     public bool[] cutAllFruits = new bool[3];
@@ -302,6 +308,11 @@ public class CookingEdit : MonoBehaviour
     List<GameObject> showBananaList = new List<GameObject>();
     List<GameObject> showBlueberryList = new List<GameObject>();
     List<GameObject> showChocolateList = new List<GameObject>();
+
+    public AudioClip mixingBowlSound;
+    public AudioClip warningSound;
+
+    bool minusHeartisCalled = false;
 
     // Start is called before the first frame update
     void Start()
@@ -327,6 +338,17 @@ public class CookingEdit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //if(!isBowlBack || !isFinishBack)
+        //{
+        //    Timer();
+        //}
+
+        if (isBowlBack || isInductionBack || isCuttingBoardBack ||
+            isDecoratingBack || isCoffeeMachineBack || isLatteArt)
+        {
+            Timer();
+        }
+
         if (isBowlBack)
         {
             putIngredients();
@@ -342,10 +364,12 @@ public class CookingEdit : MonoBehaviour
         if (isDecoratingBack)
         {
             decorating();
+            changeRecipe = true;
         }
         if (isCoffeeMachineBack)
         {
             makeCoffee();
+            changeRecipe = false;
         }
         if (isLatteArt)
         {
@@ -371,6 +395,101 @@ public class CookingEdit : MonoBehaviour
             showFinishBack();
             finishShown = true;
         }
+    }
+
+    public void playWarningSound()
+    {
+        if (slTimer.value <= 30f && slTimer.value > 0.0f)
+        {
+            if (audioSource.clip != warningSound)
+            {
+                audioSource.clip = warningSound;
+                audioSource.loop = false;
+                audioSource.volume = 1f;
+                audioSource.Play();
+            }
+        }
+    }
+
+    void Timer()
+    {
+        //if(!timerIsOn) //timer   false Ì¸ 
+        //{
+        //    slTimer.gameObject.SetActive(true);
+        //    timerIsOn = true;
+        //}
+
+        if (isBowlBack || isInductionBack || isCuttingBoardBack ||
+            isDecoratingBack || isCoffeeMachineBack || isLatteArt)
+        {
+            slTimer.gameObject.SetActive(true);
+        }
+
+        if (slTimer.value > 0.0f)
+            slTimer.value -= Time.deltaTime;
+        else
+        {
+            if (!minusHeartisCalled)
+            {
+                Debug.Log("Time is zero");
+                GameObject.Find("GameNum").GetComponent<GameNum>().minusHeart();
+                minusHeartisCalled = true;
+            }
+        }
+    }
+
+    public void clickBlueList()
+    {
+        if (changeRecipe == false)
+        {
+            if (isPlusPageOn == false) //            
+            {
+                isPlusPageOn = true;
+
+                plusPage = Instantiate(CookingMenu, new Vector3(997, 489, 0),
+                    Quaternion.identity, GameObject.Find("Canvas").transform);
+            }
+            else if (isPlusPageOn == true) //          
+            {
+                isPlusPageOn = false;
+                Destroy(plusPage);
+            }
+        }
+        else if (changeRecipe == true) //deco  Ò¶          Ù² 
+        {
+            if (isPlusPageOn == false) //            
+            {
+                isPlusPageOn = true;
+                Debug.Log("      È°É¸   ");
+
+                plusPage = Instantiate(decoRecipe, new Vector3(997, 489, 0),
+                    Quaternion.identity, GameObject.Find("Canvas").transform);
+            }
+            else if (isPlusPageOn == true) //          
+            {
+                isPlusPageOn = false;
+                Destroy(plusPage);
+            }
+        }
+    }
+
+    void showDecoRecipe()
+    {
+        clonedDecoRecipe = Instantiate(decoRecipe, new Vector3(0, 0, 0), Quaternion.identity, GameObject.Find("Canvas").transform);
+        toDestroy.Add(clonedDecoRecipe);
+        clonedDecoRecipe.transform.localPosition = new Vector3(0, 0, 0);
+        changeUIRecipe(); // Ì°     Ï´Â°   ?
+
+        Destroy(clonedDecoRecipe, 2f);
+    }
+
+    //   Ó°      ?
+    void changeUIRecipe()
+    {
+        Destroy(clonedCookingMenu);
+        clonedCookingMenu = Instantiate(decoRecipe, new Vector3(0, 0, 0), Quaternion.identity, GameObject.Find("Canvas").transform);
+        clonedCookingMenu.transform.localPosition = new Vector3(0, 0, 0);
+        clonedCookingMenu.SetActive(false);
     }
 
     public void checkMenu()
@@ -414,6 +533,7 @@ public class CookingEdit : MonoBehaviour
     {
         startButton.SetActive(false);
 
+        Debug.Log("toDestroy count" + toDestroy.Count);
         int temp = toDestroy.Count;
         for (int i = 0; i < temp; i++)
         {
@@ -427,6 +547,7 @@ public class CookingEdit : MonoBehaviour
     void showMaker()
     {
         toDestroy.Add(Instantiate(maker, new Vector3(3.820f, -1.48f, 0), Quaternion.identity));
+
     }
 
     void showMenu()
@@ -454,7 +575,7 @@ public class CookingEdit : MonoBehaviour
         clonedEggs = Instantiate(eggs, new Vector3(5.67f, -2.34f, 0), Quaternion.identity);
         toDestroy.Add(clonedEggs);
 
-        //ÈÄÃßÅë 1,2
+        //       1,2
         toDestroy.Add(Instantiate(asset1, new Vector3(6.58f, -0.92f, 0), Quaternion.identity));
         toDestroy.Add(Instantiate(asset2, new Vector3(7.4654f, -0.9054f, 0), Quaternion.identity));
 
@@ -525,6 +646,26 @@ public class CookingEdit : MonoBehaviour
                         clonedEggButton = Instantiate(eggButton, new Vector3(3.85f, 1.83f, 0), Quaternion.identity);
                         Destroy(clonedEggButton, 1.5f);
                     }
+                }
+
+                if (rayHit.collider.gameObject.tag.Equals("whipper"))
+                {
+                    audioSource.clip = mixingBowlSound;
+                    audioSource.loop = true;
+                    audioSource.volume = 1f;
+                    audioSource.Play();
+                }
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (rayHit.collider != null)
+            {
+                if (rayHit.collider.gameObject.tag.Equals("whipper"))
+                {
+                    audioSource.Stop();
+                    audioSource.clip = null;
                 }
             }
         }
@@ -770,7 +911,7 @@ public class CookingEdit : MonoBehaviour
         chooseFlavorToCut();
     }
 
-    void chooseFlavorToCut() //flavor ´ë·Î ÀÚ¸£±â
+    void chooseFlavorToCut() //flavor      Ú¸   
     {
         switch (menuList[0])
         {
@@ -793,7 +934,7 @@ public class CookingEdit : MonoBehaviour
             case 0:
                 Invoke("showBanana", 0.5f);
                 break;
-            case 1: //¿©±â ¼öÁ¤
+            case 1: //         
                 //needChocolate = true;
                 cutCount++;
 
@@ -822,7 +963,7 @@ public class CookingEdit : MonoBehaviour
 
         if (!toDestroy.Contains(clonedStrawberry1))
         {
-            //Debug.Log("µþ±â1");
+            //Debug.Log("    1");
             clonedStrawberry1 = Instantiate(strawberry, new Vector3(-1.7f, 0, 0), Quaternion.identity);
             clonedStrawberry1.transform.localScale = new Vector3(0.27f, 0.27f, 1);
             toDestroy.Add(clonedStrawberry1);
@@ -848,7 +989,7 @@ public class CookingEdit : MonoBehaviour
 
     void cutting()
     {
-        if (needStrawberry) //µþ±â ÀÚ¸¦ ¶§
+        if (needStrawberry) //      Ú¸    
         {
             cuttingStrawberry();
         }
@@ -878,7 +1019,7 @@ public class CookingEdit : MonoBehaviour
         RaycastHit2D rayHit = Physics2D.Raycast(ray.origin, ray.direction);
 
 
-        if (isLine == 1) //Ã¹¹øÂ° Á¡¼±ÀÏ ¶§
+        if (isLine == 1) //Ã¹  Â°          
         {
             //isLine = 0;
             if (!toDestroy.Contains(clonedDottedLine))
@@ -893,7 +1034,7 @@ public class CookingEdit : MonoBehaviour
         {
             if (!toDestroy.Contains(clonedTempLine2))
             {
-                //Debug.Log("¿©±â ¾È°É¸®³ª");
+                //Debug.Log("      È°É¸   ");
                 clonedTempLine2 = Instantiate(dottedLine, new Vector3(2.35f, 0.01f, 0), Quaternion.identity);
                 toDestroy.Add(clonedTempLine2);
                 clonedTempLine2.transform.localEulerAngles = new Vector3(0, 0, 85);
@@ -906,7 +1047,7 @@ public class CookingEdit : MonoBehaviour
             {
                 if (rayHit.collider.gameObject.tag.Equals("dottedLine"))
                 {
-                    if (isLine == 1) //Ã¹¹øÂ° Á¡¼±ÀÏ ¶§
+                    if (isLine == 1) //Ã¹  Â°          
                     {
                         if (!toDestroy.Contains(clonedKnife))
                         {
@@ -981,7 +1122,7 @@ public class CookingEdit : MonoBehaviour
 
             if (cutCount == 1)
             {
-                //Debug.Log("¿©±â µÇ³ª?" +menuList[1]); //¿©±â ¹Ù³ª³ª·Î ¾È³Ñ¾î°¡Áü;
+                //Debug.Log("      Ç³ ?" +menuList[1]); //      Ù³       È³Ñ¾î°¡  ;
                 chooseToppingToCut(menuList[1]);
             }
             else if (cutCount == 2)
@@ -1338,24 +1479,7 @@ public class CookingEdit : MonoBehaviour
         nextButton.SetActive(true);
     }
 
-    void showDecoRecipe()
-    {
-        clonedDecoRecipe = Instantiate(decoRecipe, new Vector3(0, 0, 0), Quaternion.identity, GameObject.Find("Canvas").transform);
-        toDestroy.Add(clonedDecoRecipe);
-        clonedDecoRecipe.transform.localPosition = new Vector3(0, 0, 0);
-        changeUIRecipe(); //ÀÌ°Ô ¹¹ÇÏ´Â°ÅÁö?
 
-        Destroy(clonedDecoRecipe, 2f);
-    }
-
-    //¤·¤Ó°Ô ¹¹Áö?
-    void changeUIRecipe()
-    {
-        Destroy(clonedCookingMenu);
-        clonedCookingMenu = Instantiate(decoRecipe, new Vector3(0, 0, 0), Quaternion.identity, GameObject.Find("Canvas").transform);
-        clonedCookingMenu.transform.localPosition = new Vector3(0, 0, 0);
-        clonedCookingMenu.SetActive(false);
-    }
 
     GameObject chooseAddShotCream()
     {
@@ -1405,7 +1529,7 @@ public class CookingEdit : MonoBehaviour
                     decoClickedCounts[0]++;
                     if (menuList[0] == 0) //flavor == strawberry
                     {
-                        if (decoClickedCounts[0] == 1) //Ã¹ ¹øÂ° Å¬¸¯
+                        if (decoClickedCounts[0] == 1) //Ã¹   Â° Å¬  
                         {
                             GameObject flavorStrawberry1;
                             SpriteRenderer sr = null;
@@ -1426,7 +1550,7 @@ public class CookingEdit : MonoBehaviour
                             showFlavorFirstButton();
                         }
 
-                        if (decoClickedCounts[0] == 2) //µÎ ¹øÂ° Å¬¸¯
+                        if (decoClickedCounts[0] == 2) //     Â° Å¬  
                         {
                             GameObject flavorStrawberry2;
                             SpriteRenderer sr = null;
@@ -1493,10 +1617,10 @@ public class CookingEdit : MonoBehaviour
                         }
                     }
 
-                    else if (menuList[1] == 2) //Ã¹ ¹øÂ° ÅäÇÎÀÌ µþ±âÀÏ ¶§
+                    else if (menuList[1] == 2) //Ã¹   Â°                 
                     {
-                        //Debug.Log("°É?");
-                        if (decoClickedCounts[0] == 1) //Ã¹ ¹øÂ° Å¬¸¯
+                        //Debug.Log("  ?");
+                        if (decoClickedCounts[0] == 1) //Ã¹   Â° Å¬  
                         {
                             GameObject toppingStrawberry1;
                             SpriteRenderer sr = null;
@@ -1581,7 +1705,7 @@ public class CookingEdit : MonoBehaviour
                         }
                     }
 
-                    else if (menuList[2] == 2) //µÎ ¹øÂ° ÅäÇÎÀÌ µþ±âÀÏ ¶§
+                    else if (menuList[2] == 2) //     Â°                 
                     {
                         if (decoClickedCounts[0] == 1)
                         {
@@ -1752,7 +1876,7 @@ public class CookingEdit : MonoBehaviour
                             showFlavorThirdButton();
                         }
                     }
-                    else if (menuList[1] == 0) //ÅäÇÎ1 ¹Ù³ª³ª
+                    else if (menuList[1] == 0) //    1  Ù³   
                     {
                         if (decoClickedCounts[1] == 1)
                         {
@@ -1818,7 +1942,7 @@ public class CookingEdit : MonoBehaviour
                             showTopping1ThirdButton();
                         }
                     }
-                    else if (menuList[2] == 0) //ÅäÇÎ2 ¹Ù³ª³ª
+                    else if (menuList[2] == 0) //    2  Ù³   
                     {
                         if (decoClickedCounts[1] == 1)
                         {
@@ -1888,7 +2012,7 @@ public class CookingEdit : MonoBehaviour
                 {
                     decoClickedCounts[2]++;
 
-                    if (menuList[1] == 1) //ÅäÇÎ1 ºí·çº£¸®
+                    if (menuList[1] == 1) //    1   çº£  
                     {
                         if (decoClickedCounts[2] == 1)
                         {
@@ -1956,7 +2080,7 @@ public class CookingEdit : MonoBehaviour
                             showTopping1ThirdButton();
                         }
                     }
-                    else if (menuList[2] == 1) //ÅäÇÎ2 ºí·çº£¸®
+                    else if (menuList[2] == 1) //    2   çº£  
                     {
                         if (decoClickedCounts[2] == 1)
                         {
@@ -2465,7 +2589,7 @@ public class CookingEdit : MonoBehaviour
 
             //lr.loop = true;
 
-            if (checkLineRendererPoints()) //ÇÏÆ®¸¦ ±×·ÈÀ¸¸é
+            if (checkLineRendererPoints()) //  Æ®    ×·     
             {
                 Invoke("showHeartCoffee", 0.5f);
 
@@ -2794,6 +2918,13 @@ public class CookingEdit : MonoBehaviour
                     audioSource.volume = 1f;
                     audioSource.Play();
                     audioSource.loop = false;
+
+                    int index = findIndex(GameObject.Find("GameSetting").GetComponent<GameNum>().StageNum,
+                        GameObject.Find("GameSetting").GetComponent<GameNum>().OrderNum);
+                    if (!checkDecoCount())
+                    {
+                        PlayerPrefs.SetFloat("Money", PlayerPrefs.GetFloat("Money") - float.Parse(orders[index]["TotalPrice"].ToString()));
+                    }
                 }
             }
         }
@@ -2874,6 +3005,8 @@ public class CookingEdit : MonoBehaviour
                     return false;
                 break;
         }
+
+
 
         return true;
     }

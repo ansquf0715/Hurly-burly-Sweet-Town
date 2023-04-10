@@ -409,7 +409,7 @@ public class bakingEdit : MonoBehaviour
     {
         if (slTimer.value <= 30f && slTimer.value > 0.0f)//30second left
         {
-            Debug.Log("되냐?");
+            //Debug.Log("되냐?");
             if (audioSource.clip != timerWarningSound)
             {
                 audioSource.clip = timerWarningSound;
@@ -1674,7 +1674,7 @@ public class bakingEdit : MonoBehaviour
         audioSource.Play();
 
         //stage 배경음 줄이기
-        //audioMan.volume = 0f;
+        audioMan.volume = 0f;
 
         Invoke("removeDirection", 3f);
 
@@ -1772,11 +1772,14 @@ public class bakingEdit : MonoBehaviour
             clonedCupcake.transform.position = Vector2.Lerp(clonedCupcake.transform.position, objPos, Time.deltaTime * 2f);
         }
 
+        //Debug.Log("clear minigame" + clearMiniGame);
+
         if (clearMiniGame)
         {
             if (!toDestroy.Contains(clonedFinishedCupcake))
             {
-                Destroy(clonedFirstMuffin);
+                //Destroy(clonedFirstMuffin);
+                Destroy(clonedCupcake);
                 clonedFinishedCupcake = Instantiate(chooseFinishCupcake(), nowPos, Quaternion.identity);
                 toDestroy.Add(clonedFinishedCupcake);
 
@@ -1792,6 +1795,9 @@ public class bakingEdit : MonoBehaviour
     {
         isMiniGame = false;
         isMixer = true;
+
+        audioSource.clip = null;
+        audioMan.volume = 1f;
 
         int temp = toDestroy.Count;
         for (int i = 0; i < temp; i++)
@@ -2572,7 +2578,6 @@ public class bakingEdit : MonoBehaviour
             }
         }
     }
-
     void showComplete()
     {
         if (!toDestroy.Contains(clonedComplete))
