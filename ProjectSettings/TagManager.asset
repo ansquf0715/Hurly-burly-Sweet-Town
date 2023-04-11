@@ -8,8 +8,8 @@ TagManager:
   - flour
   - egg
   - whipper
-  - bowl
   - pan
+  - bowl
   - dottedLine
   - strawberryCup
   - blueberryCup
@@ -17,22 +17,27 @@ TagManager:
   - whipping
   - greenButton
   - redButton
-  - greenButton2
-  - redButton2
   - kettle
   - bell
+  - chocolateCup
+  - greenButton2
+  - heart
+  - muffin
   - sugar
   - butter
   - pipingBag
-  - ovenHandle
   - ovenDoor
+  - ovenHandle
   - ovenSwitch
   - arrow
-  - muffin
+  - iceBox
+  - yogurt
   - cherry
   - orange
-  - yogurt
-  - iceBox
+  - oreo
+  - firstHeart
+  - secondHeart
+  - thirdHeart
   layers:
   - Default
   - TransparentFX
@@ -42,7 +47,7 @@ TagManager:
   - UI
   - 
   - 
-  - pan
+  - 
   - 
   - 
   - 

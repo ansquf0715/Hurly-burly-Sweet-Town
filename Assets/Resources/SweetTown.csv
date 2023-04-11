@@ -1,0 +1,35 @@
+number,stage,orderNum,type,messageNum,message
+0,1,,SalespersonName,-1,LILY
+1,0,,SalespersonText,0,Hello. may i take your order?
+2,1,0,,,Add bananas and blueberries to strawberry pancakes and milk cream. And hot cafe latte please.
+3,0,,SalespersonText,1,Please check the receipt. Is this order correct?
+4,0,,CustomerText,0,"Yes, that's right."
+5,2,,SalespersonName,-1,MILLY
+6,2,0,,,"Add milk cream and cherries to chocolate cupcake and add cheese cream and oreo cookies to the red velvet cupcake. please and strawberry shake, whipped cream and chocolate syrup."
+7,,,,,
+8,1,1,,,Add bananas and strawberries to chocolate pancakes and strawberry cream. And coke please.
+9,1,2,,,Add blueberries and strawberries to banana pancakes and chocolate cream. And hot espresso please.
+10,2,1,,,"Add milk cream and oreo cookies to the chocolate cupcake and add cheese cream and strawberries to the vanilla cupcake. please and chocolate shake, whipped cream and chocolate syrup."
+11,2,2,,,"Add cheese cream and cherries to the red chocolate cupcake and add chocolate cream and strawberries to the vanilla cupcake. please and vanilla shake, whipped cream and chocolate syrup."
+12,,,,,
+13,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+0,1,-1,LILY,,Hello. may i take your order?
+1,1,0,customer,,Add bananas and blueberries to strawberry pancakes and sprinkle whipped cream. And hot espresso please.
+2,1,-1,LILY,,Please check the receipt. Is this order correct?
+3,1,-1,customer,,"Yes, that's right."
+0,2,-1,MILLY,,Hello. may i take your order?
+1,2,0,customer,,"Add whipped cream and cherries to chocolate cupcake and add cheese cream and oreo cookies to the red velvet cupcake. please and strawberry shake, whipped cream and chocolate syrup."
